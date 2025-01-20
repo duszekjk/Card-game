@@ -96,6 +96,22 @@ extension ContentView
                 {
                     spell(player: "Player\(activePlayer + 1)", run: zaklęcie["akcjaRzucaneZaklęcie"] as! String, against: "Player\((activePlayer + 1) % 2 + 1)")
                 }
+                
+                for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
+                {
+                        let player = zaklęcie["player"] as! String
+                        var talia = talie[player] as! Array<Dictionary<String, Any>>
+                        talia.append(zaklęcie)
+                        talie[player] = talia
+                }
+                if var playerData = gra["Zaklęcie"] as? [String: Any] {
+                    playerData["karty"] = Array<Dictionary<String, Any>>()
+                    gra["Zaklęcie"] = playerData
+                } else {
+                    print("Zaklęcie not found!!!")
+                }
+                showZaklęcie = false
+                checkumberOfCards(endMove: true)
             } else {
                 print("Failed to calculate spell cost")
             }
@@ -115,10 +131,6 @@ extension ContentView
         print("---------------finished spell---------------")
         printFormatted(dictionary: gra)
         print("---------------ending spell---------------")
-        showZaklęcie = false
-//        setKarty(for: "Zaklęcie", value: [])
-//        setData(for: "Zaklęcie", key: "koszt", 0)
-        showOdrzucanie = true
     }
 
     private func parseAction(action: String, playerMe: String, playerYou: String) -> String

@@ -15,7 +15,10 @@ struct PlayerView: View {
     @Binding var isActive: Bool
     @Binding var activePlayer : Int
     @Binding var gameRound : Int
-
+    @Binding var landscape : Bool
+    @Binding var playerLoose : String
+    @Binding var endGame : Bool
+    
     var body: some View {
         if let player = gra[playerKey] as? Dictionary<String, Any> {
             VStack(alignment: .leading, spacing: 10) {
@@ -30,7 +33,7 @@ struct PlayerView: View {
                 // karty
                 if(isActive)
                 {
-                    KartaContainerView(gra: $gra, talia: $talia, lastPlayed: $lastPlayed, activePlayer: $activePlayer, gameRound: $gameRound, containerKey: playerKey, isDropEnabled: false, size: max(1, min(CGFloat(integerLiteral: (player["karty"]  as? Array<Dictionary<String, Any>>)?.count ?? 0), 5)))
+                    KartaContainerView(gra: $gra, talia: $talia, lastPlayed: $lastPlayed, activePlayer: $activePlayer, gameRound: $gameRound, containerKey: playerKey, isDropEnabled: false, size: max(1, min(CGFloat(integerLiteral: (player["karty"]  as? Array<Dictionary<String, Any>>)?.count ?? 3), landscape ? 10 : 5)))
                 }
 
                 // akcjaRzucaneZaklęcie
@@ -50,6 +53,16 @@ struct PlayerView: View {
                             Image(systemName: "bolt.fill")
                             Text("\(player["mana"] as? Int ?? 0)/\(player["manaMax"] as? Int ?? 0)")
                         }
+                        .onChange(of: player["mana"] as? Int ?? 0)
+                        { newValue in
+                            var manaMax = player["manaMax"] as? Int ?? 0
+                            if(newValue > manaMax)
+                            {
+                                var updatedPlayer = player
+                                updatedPlayer["mana"] = manaMax
+                                gra[playerKey] = updatedPlayer
+                            }
+                        }
 
                         Spacer()
 
@@ -59,6 +72,13 @@ struct PlayerView: View {
                                 .foregroundColor(.red)
                             Text("\(player["życie"] as? Int ?? 0)")
                         }
+                        .onChange(of: player["życie"] as? Int ?? 0) { newValue in
+                            if let life = newValue as? Int, life == 0 {
+                                playerLoose = playerKey // Set the player who lost
+                                endGame = true          // Trigger the end of the game
+                            }
+                        }
+
                         Spacer()
                     }
                     .font(.headline)

@@ -42,7 +42,7 @@ extension ContentView
     func loadPlayer(id: Int = 0) -> Dictionary<String, Any>
     {
         var gracz: Dictionary<String, Any> = Dictionary<String, Any>()
-        let taliaAll = Array(repeating: taliaBase, count: 2).flatMap { $0 }
+        let taliaAll = Array(repeating: taliaBase, count: 5).flatMap { $0 }
         if(id == 1)
         {
             gracz["id"] = "Player1"

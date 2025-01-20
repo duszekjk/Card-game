@@ -38,7 +38,7 @@ var taliaBase : Array<Dictionary<String, Any>> = [
         "akcjaOdrzuconeZaklęcie": "",
         "pacyfizm": "",
         "opis": "Wszyscy gracze ❌ wszystkie 🃏",
-        "postacie": ["Mag Światła", "Mag Krwii"]
+        "postacie": ["Mag Światła"]
     ],
     [
         "koszt": 5,
