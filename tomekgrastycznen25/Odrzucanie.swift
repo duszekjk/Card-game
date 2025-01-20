@@ -8,7 +8,7 @@
 import SwiftUI
 struct OdrzucanieKartView: View {
     @Binding var gra: Dictionary<String, Any>
-    @Binding var talia: Array<Dictionary<String, Any>>
+    @Binding var talie: Dictionary<String, Array<Dictionary<String, Any>>>
     @Binding var activePlayer : Int
     @Binding var gameRound : Int
     @Binding var show : Bool
@@ -36,12 +36,15 @@ struct OdrzucanieKartView: View {
                             ForEach(karty.indices, id: \.self) { index in
                                 let karta = karty[index]
                                 Button(action: {
+                                    let player = karta["player"] as! String
+                                    var talia = talie[player] as! Array<Dictionary<String, Any>>
                                     talia.append(karta)
                                     var kartyEdit = karty
                                     kartyEdit.remove(at: index)
                                     var containerEdit = container
                                     containerEdit["karty"] = kartyEdit
                                     gra[playersList[activePlayer]] = containerEdit
+                                    talie[player] = talia
                                 }, label: { KartaView(karta: karta) })
                                 
                                     

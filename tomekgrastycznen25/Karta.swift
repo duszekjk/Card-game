@@ -92,15 +92,13 @@ struct KartaContainerView: View {
     @State public var kartyCount = 3
     var body: some View {
         VStack {
-//            Text(containerKey)
-//                .font(.headline)
 
             ScrollView(.horizontal, showsIndicators: false) {
                 if let container = gra[containerKey] as? Dictionary<String, Any>
                 {
                     let kartyLoad = container["karty"] as? Array<Dictionary<String, Any>> ?? emptyKarty
                     let karty = (kartyLoad.isEmpty) ? emptyKarty : kartyLoad
-                    let columns = Array(repeating: GridItem(.flexible()), count: Int(max(1, min(5, karty.count))))
+                    let columns = Array(repeating: GridItem(.flexible()), count: Int(max(1, min(Int(size), karty.count))))
 
 
                     VStack {

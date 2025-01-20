@@ -42,34 +42,58 @@ extension ContentView
     func loadPlayer(id: Int = 0) -> Dictionary<String, Any>
     {
         var gracz: Dictionary<String, Any> = Dictionary<String, Any>()
+        let taliaAll = Array(repeating: taliaBase, count: 2).flatMap { $0 }
         if(id == 1)
         {
             gracz["id"] = "Player1"
             gracz["nazwa"] = "Mag Światła"
+            talie[gracz["id"] as! String] = taliaAll.filter { card in
+                guard let postacie = card["postacie"] as? [String] else {
+                    return false
+                }
+                return postacie.contains(gracz["nazwa"] as! String)
+            }.map { card in
+                var modifiedCard = card
+                modifiedCard["player"] = "Player1"
+                return modifiedCard
+            }
             gracz["ilośćKart"] = Int(3)
             gracz["manaMax"] = Int(10)
             gracz["mana"] = Int(3)
             gracz["życie"] = Int(9)
             gracz["akcjaRzucaneZaklęcie"] = "@Zaklęcie.karta 1 > @Table"
             gracz["akcjaOdrzucaneZaklęcie"] = ""
-            gracz["karty"] = loadCards(conut: gracz["ilośćKart"] as! Int)
+            gracz["karty"] = loadCards(conut: gracz["ilośćKart"] as! Int, for: gracz["id"] as! String)
         }
         if(id == 2)
         {
             gracz["id"] = "Player2"
             gracz["nazwa"] = "Mag Krwii"
+            talie[gracz["id"] as! String] = taliaAll.filter { card in
+                guard let postacie = card["postacie"] as? [String] else {
+                    return false
+                }
+                return postacie.contains(gracz["nazwa"] as! String)
+            }.map { card in
+                var modifiedCard = card
+                modifiedCard["player"] = "Player1"
+                return modifiedCard
+            }
             gracz["ilośćKart"] = Int(2)
             gracz["manaMax"] = Int(6)
             gracz["mana"] = Int(3)
             gracz["życie"] = Int(12)
             gracz["akcjaRzucaneZaklęcie"] = "@PlayerMe.życie = @PlayerMe.życie - 1 & @Zaklęcie.koszt = -1"
-            gracz["karty"] = loadCards(conut: gracz["ilośćKart"] as! Int)
+            gracz["karty"] = loadCards(conut: gracz["ilośćKart"] as! Int, for: gracz["id"] as! String)
         }
         
         return gracz
     }
-    func loadCards(conut numberOfCards:Int) -> Array<Dictionary<String, Any>>
+    func loadCards(conut numberOfCards:Int, for player: String) -> Array<Dictionary<String, Any>>
     {
+        var talia = talie[player]!
+        print(talia.count.description)
+        print(player)
         talia.shuffle()
         var karty = Array<Dictionary<String, Any>> ()
         for _ in 0..<numberOfCards
@@ -81,6 +105,8 @@ extension ContentView
             let karta = talia.popLast()
             karty.append(karta!)
         }
+        talie[player] = talia
+        print(talie[player]!.count.description)
         return karty
     }
 }

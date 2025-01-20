@@ -16,6 +16,15 @@ extension ContentView
               let value = gracz[key] as? Int else { return 0 }
         return max(0, value)
     }
+    func getTextData(for player: String, key:String) -> String
+    {
+        print("getTextData(for \(player), key: \(key)")
+        guard let gracz = gra[player] as? [String: Any] else { return "error 1" }
+        print(gracz)
+        guard let value = gracz[key] as? String else { return "error 2" }
+        print(value)
+        return value
+    }
     func getKarty(for player: String) -> [[String: Any]]
     {
         guard let gracz = gra[player] as? [String: Any],

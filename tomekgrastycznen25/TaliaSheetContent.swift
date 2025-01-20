@@ -1,10 +1,12 @@
+import SwiftUI
+
 struct TaliaSheetContent: View {
     @Binding var showTaliaID: Int
-    @Binding var gra: GraType // Replace GraType with your actual type
-    @Binding var talie: TalieType // Replace TalieType with your actual type
-    @Binding var PlayerLast: PlayerType // Replace PlayerType with your actual type
-    @Binding var activePlayer: PlayerType
-    @Binding var gameRound: RoundType // Replace RoundType with your actual type
+    @Binding var gra: Dictionary<String, Any>
+    @Binding var talie: Dictionary<String, Array<Dictionary<String, Any>>>
+    @Binding var PlayerLast: String
+    @Binding var activePlayer : Int
+    @Binding var gameRound : Int
 
     let playersList: [String]
 
@@ -25,12 +27,14 @@ struct TaliaSheetContent: View {
             VStack {
                 Button("Player1") {
                     showTaliaID = 1
+                    print("(showTaliaID - 1) \((showTaliaID - 1)) / \(playersList.count)  \(showTaliaID > 0 && showTaliaID < playersList.count + 1)")
                 }
                 .buttonStyle(.borderedProminent)
                 .padding()
 
                 Button("Player2") {
                     showTaliaID = 2
+                    print("(showTaliaID - 1) \((showTaliaID - 1)) / \(playersList.count)  \(showTaliaID > 0 && showTaliaID < playersList.count + 1)")
                 }
                 .buttonStyle(.borderedProminent)
                 .padding()

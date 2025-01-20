@@ -11,7 +11,7 @@ import SwiftUI
 struct ZaklęcieView: View {
     
     @Binding var gra: Dictionary<String, Any>
-    @Binding var talia: Array<Dictionary<String, Any>>
+    @Binding var talie: Dictionary<String, Array<Dictionary<String, Any>>>
     @Binding var lastPlayed: String
     @Binding var activePlayer : Int
     @Binding var gameRound : Int
@@ -69,7 +69,7 @@ struct ZaklęcieView: View {
             }
             .padding()
             Divider()
-            KartaContainerView(gra: $gra, talia: $talia, lastPlayed: $lastPlayed, activePlayer: $activePlayer, gameRound: $gameRound, containerKey: "Zaklęcie")
+            KartaContainerView(gra: $gra, talia: bindingForKey(playersList[activePlayer], in: $talie), lastPlayed: $lastPlayed, activePlayer: $activePlayer, gameRound: $gameRound, containerKey: "Zaklęcie")
             
             HStack
             {
