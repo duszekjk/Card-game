@@ -21,8 +21,8 @@ struct KartaView: View {
                     .lineLimit(6)
             }
         }
-        .padding(4)
-        .frame(minWidth: 106, idealWidth: 107, maxWidth: 108, minHeight: 135, idealHeight: 135, maxHeight: 145)
+        .padding(1)
+        .frame(minWidth: 96, idealWidth: 97, maxWidth: 98, minHeight: 124, idealHeight: 125, maxHeight: 135)
         .background(RoundedRectangle(cornerRadius: 10).fill(((karta["opis"] as? String ?? "") != "Placeholder") ? Color.blue : Color.gray))
         .foregroundColor(.white)
         .shadow(radius: 5)
@@ -82,6 +82,7 @@ struct KartaContainerView: View {
     @Binding var lastPlayed: String
     @Binding var activePlayer : Int
     @Binding var gameRound : Int
+    @Binding var landscape : Bool
     let containerKey: String // Key in `gra` (e.g., "Zaklęcie", "Lingering")
     var isDragEnabled: Bool = true
     var isDropEnabled: Bool = true
@@ -112,7 +113,7 @@ struct KartaContainerView: View {
                             }
                         }
                     }
-                    .frame(minWidth: size*111)
+                    .frame(minWidth: size*100)
                     .onAppear()
                     {
                         kartyCount = karty.count
@@ -126,8 +127,10 @@ struct KartaContainerView: View {
                 {
                     let karty = emptyKarty
                     let columns = Array(repeating: GridItem(.flexible()), count: Int(max(1, min(5, karty.count))))
-                    VStack {
-                        LazyVGrid(columns: columns, spacing: 5) {
+//                    if(landscape)
+//                    {
+                        HStack
+                        {
                             ForEach(karty.indices, id: \.self) { index in
                                 let karta = karty[index]
                                 KartaView(karta: karta)
@@ -136,12 +139,27 @@ struct KartaContainerView: View {
                                     }
                             }
                         }
-                    }
-                    .frame(minWidth: size*111)
+                        .frame(minWidth: size*100)
+//                    }
+//                    else
+//                    {
+//                        LazyVGrid(columns: columns, spacing: 5) {
+//                            ForEach(karty.indices, id: \.self) { index in
+//                                let karta = karty[index]
+//                                KartaView(karta: karta)
+//                                    .onDrag {
+//                                        NSItemProvider(object: isDragEnabled ? "\(containerKey)|\(index)" as NSString : "" as NSString)
+//                                    }
+//                            }
+//                        }
+//                        .frame(minWidth: size*100)
+//                        
+//                    }
                 }
 
             }
-            .frame(minWidth: size*111, idealWidth: size*112, maxWidth: size*113, minHeight: 135 , idealHeight: 135 * (roundl(CGFloat(kartyCount)/CGFloat(size))), maxHeight: 460, alignment: .center)
+            .frame(minWidth: min(size*100, UIScreen.main.bounds.size.width - 20), alignment: .center)
+//            .frame(minWidth: size*111, idealWidth: size*112, maxWidth: size*113, minHeight: 134 , idealHeight: min(135 * (roundl(CGFloat(kartyCount)/CGFloat(size))), 460), maxHeight: 460, alignment: .center)
             .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 2))
             .onDrop(of: [UTType.text], isTargeted: nil) { providers in
                 guard isDropEnabled else { return false }

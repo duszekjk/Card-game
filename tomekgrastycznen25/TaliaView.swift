@@ -10,10 +10,12 @@ import SwiftUI
 import UniformTypeIdentifiers
 var taliaBase : Array<Dictionary<String, Any>> = [
     [
-        "koszt": 0, //price in mana. If mana is 0, then 1 mana = 1 card. You can pay with card you have in karty and it will also decrease ilośćKart. As last resort you can use życie. 1 życie = 1 mana
+        "koszt": 0,
         "akcjaRzucaneZaklęcie": "@PlayerYou.życie = @PlayerYou.życie - 1",
         "akcjaOdrzuconeZaklęcie": "",
         "pacyfizm": "@PlayerYou.ilośćKart = @PlayerYou.ilośćKart + 1",
+        "wandering": "",
+        "lingering": "",
         "opis": "1 ❤️‍🔥, \nPacyfizm: Przeciwnik 🃏",
         "postacie": ["Mag Światła", "Mag Krwii"]
     ],
@@ -22,6 +24,8 @@ var taliaBase : Array<Dictionary<String, Any>> = [
         "akcjaRzucaneZaklęcie": "@PlayerMe.ilośćKart = @PlayerMe.ilośćKart + 3",
         "akcjaOdrzuconeZaklęcie": "",
         "pacyfizm": "@PlayerYou.ilośćKart = @PlayerYou.ilośćKart + 1",
+        "wandering": "",
+        "lingering": "",
         "opis": "3 🃏, \nPacyfizm: Przeciwnik 🃏",
         "postacie": ["Mag Światła", "Mag Krwii"]
     ],
@@ -29,6 +33,9 @@ var taliaBase : Array<Dictionary<String, Any>> = [
         "koszt": 4,
         "akcjaRzucaneZaklęcie": "@PlayerYou.życie = @PlayerYou.życie - ( @Zaklęcie.koszt / 4 )",
         "akcjaOdrzuconeZaklęcie": "",
+        "pacyfizm": "",
+        "wandering": "",
+        "lingering": "",
         "opis": "1 ❤️‍🔥 za każde 4 many, które kosztuje to zaklęcie",
         "postacie": ["Mag Światła", "Mag Krwii"]
     ],
@@ -37,6 +44,8 @@ var taliaBase : Array<Dictionary<String, Any>> = [
         "akcjaRzucaneZaklęcie": "@PlayerYou.ilośćKart = 0 & @PlayerMe.ilośćKart = 0",
         "akcjaOdrzuconeZaklęcie": "",
         "pacyfizm": "",
+        "wandering": "",
+        "lingering": "",
         "opis": "Wszyscy gracze ❌ wszystkie 🃏",
         "postacie": ["Mag Światła"]
     ],
@@ -45,6 +54,8 @@ var taliaBase : Array<Dictionary<String, Any>> = [
         "akcjaRzucaneZaklęcie": "@PlayerYou.ilośćKart = @PlayerYou.ilośćKart - 3 & if @PlayerYou.ilośćKart == 0 : @PlayerYou.życie = @PlayerYou.życie - 1",
         "akcjaOdrzuconeZaklęcie": "",
         "pacyfizm": "",
+        "wandering": "",
+        "lingering": "",
         "opis": "Przeciwnik ❌ 3 🃏, następnie jeśli nie ma on kart 1 ❤️‍🔥",
         "postacie": ["Mag Światła", "Mag Krwii"]
     ],
@@ -53,6 +64,8 @@ var taliaBase : Array<Dictionary<String, Any>> = [
         "akcjaRzucaneZaklęcie": "@PlayerYou.życie = @PlayerYou.życie - 2",
         "akcjaOdrzuconeZaklęcie": "",
         "pacyfizm": "@PlayerYou.ilośćKart = @PlayerYou.ilośćKart + 1 & @PlayerYou.mana = @PlayerYou.mana + 2",
+        "wandering": "",
+        "lingering": "",
         "opis": "2 ❤️‍🔥, \nPacyfizm: Przeciwnik 1 🃏 i 2 🔋",
         "postacie": ["Mag Światła", "Mag Krwii"]
     ],
@@ -179,7 +192,7 @@ struct TaliaContainerView: View {
                 }
 
             }
-            .frame(minWidth: size*111, idealWidth: size*112, maxWidth: size*113, minHeight: 140 , idealHeight: 140 * (roundl(CGFloat(kartyCount)/CGFloat(size)))+5, maxHeight: 460, alignment: .center)
+            .frame(minWidth: size*111, idealWidth: size*112, maxWidth: size*113, minHeight: 140 , idealHeight: 140 * (round(0.5+CGFloat(kartyCount)/CGFloat(size)))+5, maxHeight: 460, alignment: .center)
 //            .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 2))
             .onDrop(of: [UTType.text], isTargeted: nil) { providers in
                 guard isDropEnabled else { return false }

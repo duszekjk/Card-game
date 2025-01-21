@@ -14,6 +14,7 @@ struct StółView: View {
     @Binding var PlayerLast: String
     @Binding var activePlayer: Int
     @Binding var gameRound: Int
+    @Binding var landscape : Bool
     @Binding var connectionView: Bool
     @Binding var thisDevice: Int
     var createSpell: (String, String, Array<Dictionary<String, Any>>) -> Void
@@ -21,10 +22,10 @@ struct StółView: View {
     
     // Define variables for shared frame sizes
     private var kartaWidth: CGFloat {
-        UIDevice.current.userInterfaceIdiom == .phone ? 252 : 336
+        UIDevice.current.userInterfaceIdiom == .phone ? 252 : 306
     }
     private var kartaHeight: CGFloat {
-        UIDevice.current.userInterfaceIdiom == .phone ? 105 : 150
+        UIDevice.current.userInterfaceIdiom == .phone ? 94 : 140
     }
     var body: some View {
         HStack {
@@ -35,6 +36,7 @@ struct StółView: View {
                     lastPlayed: $PlayerLast,
                     activePlayer: $activePlayer,
                     gameRound: $gameRound,
+                    landscape: $landscape,
                     containerKey: "TablePlayer2",
                     sizeFullAction: { tableKey, kards in
                         createSpell("Player2", tableKey, kards) // No labels here
@@ -48,6 +50,7 @@ struct StółView: View {
                     lastPlayed: $PlayerLast,
                     activePlayer: $activePlayer,
                     gameRound: $gameRound,
+                    landscape: $landscape,
                     containerKey: "TablePlayerLast",
                     sizeFullAction: { tableKey, kards in
                         createSpell(PlayerLast, tableKey, kards) // No labels here
@@ -61,6 +64,7 @@ struct StółView: View {
                     lastPlayed: $PlayerLast,
                     activePlayer: $activePlayer,
                     gameRound: $gameRound,
+                    landscape: $landscape,
                     containerKey: "TablePlayer1",
                     sizeFullAction: { tableKey, kards in
                         createSpell("Player1", tableKey, kards) // No labels here
@@ -73,32 +77,36 @@ struct StółView: View {
             VStack {
                 Text("Lingering")
                     .font(.footnote)
-                
-                KartaContainerView(
-                    gra: $gra,
-                    talia: bindingForKey(playersList[activePlayer], in: $talie),
-                    lastPlayed: $PlayerLast,
-                    activePlayer: $activePlayer,
-                    gameRound: $gameRound,
-                    containerKey: "Lingering",
-                    size: 2
-                )
-                .scaleEffect(UIDevice.current.userInterfaceIdiom == .phone ? 0.7 : 1.0)
-                .padding(UIDevice.current.userInterfaceIdiom == .phone ? 1 : 8)
-                .frame(
-                    width: UIDevice.current.userInterfaceIdiom == .phone ? 110 : 240,
-                    height: UIDevice.current.userInterfaceIdiom == .phone ? 240 : 400
-                )
-                
-                Text("Ruch \(gameRound - 1)")
-                    .padding()
-                if(gameRound < 3 && thisDevice == -1)
-                {
-                    Button("Multiplayer BT") {
-                        connectionView = true
-                    }
-                    .buttonStyle(.borderedProminent)
+                VStack {
+                    
+                    KartaContainerView(
+                        gra: $gra,
+                        talia: bindingForKey(playersList[activePlayer], in: $talie),
+                        lastPlayed: $PlayerLast,
+                        activePlayer: $activePlayer,
+                        gameRound: $gameRound,
+                        landscape: $landscape,
+                        containerKey: "Lingering",
+                        size: 3
+                    )
+                    .scaleEffect(UIDevice.current.userInterfaceIdiom == .phone ? 0.7 : 0.8)
+                    .padding(UIDevice.current.userInterfaceIdiom == .phone ? 1 : 8)
+                    .rotationEffect(Angle(degrees: 90))
+                    
                 }
+                .frame(
+                    width: UIDevice.current.userInterfaceIdiom == .phone ? 120 : 240,
+                    height: UIDevice.current.userInterfaceIdiom == .phone ? 180 : 290
+                )
+                    Text("Ruch \(gameRound - 1)")
+                        .padding()
+                    if(gameRound < 3 && thisDevice == -1)
+                    {
+                        Button("Multiplayer BT") {
+                            connectionView = true
+                        }
+                        .buttonStyle(.borderedProminent)
+                    }
             }
         }
     }

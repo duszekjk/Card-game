@@ -34,7 +34,7 @@ struct PlayerView: View {
                 // karty
                 if(isActive)
                 {
-                    KartaContainerView(gra: $gra, talia: $talia, lastPlayed: $lastPlayed, activePlayer: $activePlayer, gameRound: $gameRound, containerKey: playerKey, isDropEnabled: false, size: max(1, min(CGFloat(integerLiteral: (player["karty"]  as? Array<Dictionary<String, Any>>)?.count ?? 3), landscape ? 10 : 5)))
+                    KartaContainerView(gra: $gra, talia: $talia, lastPlayed: $lastPlayed, activePlayer: $activePlayer, gameRound: $gameRound, landscape: $landscape, containerKey: playerKey, isDropEnabled: false, size: max(1, min(CGFloat(integerLiteral: (player["karty"]  as? Array<Dictionary<String, Any>>)?.count ?? 3), 10)))
                 }
 
                 // akcjaRzucaneZaklęcie
@@ -109,7 +109,7 @@ struct PlayerView: View {
                 .scaleEffect(UIDevice.current.userInterfaceIdiom == .phone ? 0.75 : 1.0)
             }
             .padding()
-            .padding(.vertical, 40)
+//            .padding(.vertical, 40)
             .background(RoundedRectangle(cornerRadius: 10).fill(isActive ? Color(UIColor.secondarySystemGroupedBackground) : Color(UIColor.systemGroupedBackground)))
             .shadow(radius: isActive ? 6 : 1)
             .frame(minWidth: UIScreen.main.bounds.size.width/2, idealWidth: UIScreen.main.bounds.size.width - 5.0, maxWidth: UIScreen.main.bounds.size.width - 2.0)

@@ -15,11 +15,13 @@ struct ZaklęcieView: View {
     @Binding var lastPlayed: String
     @Binding var activePlayer : Int
     @Binding var gameRound : Int
+    @Binding var landscape : Bool
     
     var playerKey:String
     
     var calculateSpellCost: () -> Int?
     var allSpells: () -> Void
+    var cancelSpell: () -> Void
     
     
     @State var cost = 0
@@ -99,7 +101,7 @@ struct ZaklęcieView: View {
                 
             }
             Divider()
-            KartaContainerView(gra: $gra, talia: bindingForKey(playersList[activePlayer], in: $talie), lastPlayed: $lastPlayed, activePlayer: $activePlayer, gameRound: $gameRound, containerKey: "Zaklęcie")
+            KartaContainerView(gra: $gra, talia: bindingForKey(playersList[activePlayer], in: $talie), lastPlayed: $lastPlayed, activePlayer: $activePlayer, gameRound: $gameRound, landscape: $landscape, containerKey: "Zaklęcie")
             
             HStack
             {
@@ -107,13 +109,19 @@ struct ZaklęcieView: View {
                     setData(for: "mana", manaMax - mana)
                     setData(for: "życie", życieMax - życie)
                     setData(for: "ilośćKart", kartyMax - karty)
+                    if var gracz = gra["Zaklęcie"] as? [String: Any] {
+                        gracz["sacrifice"] = max(0, życie + karty)
+                    gra["Zaklęcie"] = gracz
+                    } else {
+                        print("Zaklęcie not found!!!")
+                    }
                     allSpells()
                 })
                 .buttonStyle(.borderedProminent)
                 .disabled((mana + życie + karty) != cost)
                 
                 Button("Odrzuć", action: {
-                    allSpells()
+                    cancelSpell()
                 })
                 .buttonStyle(.borderedProminent)
             }

@@ -131,6 +131,7 @@ struct ContentView: View {
                         PlayerLast: $PlayerLast,
                         activePlayer: $activePlayer,
                         gameRound: $gameRound,
+                        landscape: $landscape,
                         connectionView: $connectionView,
                         thisDevice: $thisDevice,
                         createSpell: createSpell
@@ -151,7 +152,7 @@ struct ContentView: View {
                     showZaklęcieMini = true
                 })
                 {
-                    ZaklęcieView(gra: $gra, talie: $talie, lastPlayed: $PlayerLast, activePlayer: $activePlayer, gameRound: $gameRound, playerKey: playersList[activePlayer], calculateSpellCost: calculateSpellCost, allSpells: allSpells)
+                    ZaklęcieView(gra: $gra, talie: $talie, lastPlayed: $PlayerLast, activePlayer: $activePlayer, gameRound: $gameRound, landscape: $landscape, playerKey: playersList[activePlayer], calculateSpellCost: calculateSpellCost, allSpells: allSpells, cancelSpell: cancelSpell)
                 }
                 .sheet(isPresented: $showOdrzucanie) {
                     checkumberOfCards(endMove: odrzucanieEndMove)
@@ -175,9 +176,9 @@ struct ContentView: View {
                 }
                 gameRound += 1
             }
-            .onChange(of: UIDevice.current.orientation)
-            {
-                if(UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight)
+            .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
+                print("isLandscape \(UIDevice.current.orientation.isLandscape)")
+                if(UIDevice.current.orientation.isLandscape)
                 {
                     landscape = true
                 }
@@ -217,11 +218,24 @@ struct ContentView: View {
                     if(!endGame)
                     {
                         checkumberOfCards(endMove: false)
-                        setData(for: playersList[activePlayer], key: "mana", getData(for: playersList[activePlayer], key: "mana") + 1)
-                        var maxKart = getData(for: playersList[activePlayer], key: "ilośćKart")  + 1
-                        var karty = getKarty(for: playersList[activePlayer])
-                        karty.append(contentsOf: loadCards(conut: max(0, maxKart - karty.count), for: playersList[activePlayer]))
-                        setKarty(for: playersList[activePlayer], value: karty)
+                        waitForOdrzucanieToBeFalse {
+                            setData(for: playersList[activePlayer], key: "mana", getData(for: playersList[activePlayer], key: "mana") + 1)
+                            var maxKart = getData(for: playersList[activePlayer], key: "ilośćKart")  + 1
+                            var karty = getKarty(for: playersList[activePlayer])
+                            karty.append(contentsOf: loadCards(conut: max(1, maxKart - karty.count), for: playersList[activePlayer]))
+                            setKarty(for: playersList[activePlayer], value: karty)
+                            
+                            DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
+                                var maxKart = getData(for: playersList[activePlayer], key: "ilośćKart")  + 1
+                                var karty = getKarty(for: playersList[activePlayer])
+                                if(maxKart > karty.count)
+                                {
+                                    karty.append(contentsOf: loadCards(conut: max(0, maxKart - karty.count), for: playersList[activePlayer]))
+                                    setKarty(for: playersList[activePlayer], value: karty)
+                                }
+                                
+                            }
+                        }
                     }
                 }
             }
@@ -293,7 +307,7 @@ struct ContentView: View {
         print("checkumberOfCards end\(endMove)")
         odrzucanieEndMove = endMove
         var karty = getKarty(for: playersList[activePlayer])
-        var maxKart = getData(for: playersList[activePlayer], key: "ilośćKart")  + (!endMove ? 1 : 0)
+        var maxKart = getData(for: playersList[activePlayer], key: "ilośćKart")//  + (!endMove ? 1 : 0)
         if(karty.count > maxKart)
         {
             showOdrzucanie = true
@@ -318,7 +332,24 @@ struct ContentView: View {
         }
     }
 
-
+    func waitForOdrzucanieToBeFalse(completion: @escaping () -> Void) {
+        DispatchQueue.global().async {
+            var counter = 4
+            while counter > 0
+            {
+                counter -= 1
+                while self.showOdrzucanie {
+                    // Wait for a short period before checking again
+                    counter = 7
+                    Thread.sleep(forTimeInterval: 0.1)
+                }
+                Thread.sleep(forTimeInterval: 0.1)
+            }
+            DispatchQueue.main.async {
+                completion()
+            }
+        }
+    }
 
 }
 func bindingForKey<T>(_ key: String, in dictionary: Binding<[String: [T]]>) -> Binding<[T]> {

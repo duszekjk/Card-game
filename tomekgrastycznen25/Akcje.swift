@@ -53,12 +53,25 @@ extension ContentView
     {
         if var playerData = gra[tableKey] as? [String: Any] {
             if var zaklęcieData = gra["Zaklęcie"] as? [String: Any] {
-                zaklęcieData["karty"] = playerData["karty"]
+                var kartyZaklęte = playerData["karty"] as? [[String: Any]] ?? [[String: Any]]()
+                if var lingeringData = gra["Lingering"] as? [String: Any] {
+                    if(lingeringData["karty"] != nil)
+                    {
+                        var ligeringKarty = (lingeringData["karty"] as? [[String: Any]] ?? [[String: Any]]())
+                        if(ligeringKarty.count > 0)
+                        {
+                            kartyZaklęte.append(contentsOf: ligeringKarty)
+                        }
+                        lingeringData["karty"] = [[String: Any]]()
+                        gra["Lingering"] = lingeringData
+                    }
+                }
+                zaklęcieData["karty"] = kartyZaklęte
                 gra["Zaklęcie"] = zaklęcieData
                 playerData["karty"] = []
                 gra[String(tableKey)] = playerData
                 activePlayer = playersList.firstIndex(of: playerKey) ?? activePlayer
-                if(activePlayer == thisDevice)
+                if(activePlayer == thisDevice || thisDevice == -1)
                 {
                     showZaklęcie = true
                 }
@@ -89,6 +102,17 @@ extension ContentView
 
         return totalCost
     }
+    
+    func cancelSpell()
+    {
+        for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
+        {
+            spell(player: "Player\(activePlayer + 1)", run: zaklęcie["akcjaOdrzuconeZaklęcie"] as! String, against: "Player\((activePlayer + 1) % 2 + 1)")
+        }
+        showZaklęcie = false
+        checkumberOfCards(endMove: true)
+        
+    }
     func allSpells()
     {
             if let spellCost = calculateSpellCost() {
@@ -102,15 +126,30 @@ extension ContentView
                 printFormatted(dictionary: (gra["Zaklęcie"] as! Dictionary<String, Any>))
                 for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
                 {
+                    spell(player: "Player\(activePlayer + 1)", run: zaklęcie["wandering"] as! String, against: "Player\((activePlayer + 1) % 2 + 1)")
+                }
+                for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
+                {
                     spell(player: "Player\(activePlayer + 1)", run: zaklęcie["akcjaRzucaneZaklęcie"] as! String, against: "Player\((activePlayer + 1) % 2 + 1)")
                 }
                 
                 for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
                 {
-                        let player = zaklęcie["player"] as! String
+                    var player = zaklęcie["player"] as! String
+                    if(zaklęcie["lingering"] as! String == "lingering")
+                    {
+                        var lingering = gra["Lingering"] as! Dictionary<String, Any>
+                        var lingeringKarty = lingering["karty"] as! Array<Dictionary<String, Any>>
+                        lingeringKarty.append(zaklęcie)
+                        lingering["karty"] = lingeringKarty
+                        gra["Lingering"] = lingering
+                    }
+                    else
+                    {
                         var talia = talie[player] as! Array<Dictionary<String, Any>>
                         talia.append(zaklęcie)
                         talie[player] = talia
+                    }
                 }
                 if var playerData = gra["Zaklęcie"] as? [String: Any] {
                     playerData["karty"] = Array<Dictionary<String, Any>>()
