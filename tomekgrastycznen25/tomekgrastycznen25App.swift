@@ -8,8 +8,13 @@
 import SwiftUI
 import SwiftData
 
+func randomString(length: Int) -> String {
+    let characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    return String((0..<length).compactMap { _ in characters.randomElement() })
+}
 @main
 struct tomekgrastycznen25App: App {
+    @AppStorage("yourName") var yourName = randomString(length: 8)
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             Item.self,
@@ -24,8 +29,9 @@ struct tomekgrastycznen25App: App {
     }()
 
     var body: some Scene {
+
         WindowGroup {
-            ContentView()
+            ContentView(yourName: yourName)
         }
         .modelContainer(sharedModelContainer)
     }

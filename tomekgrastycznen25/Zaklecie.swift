@@ -45,29 +45,59 @@ struct ZaklęcieView: View {
                 Text("\(mana + życie + karty)/\(cost)")
             }
             .padding()
-            HStack(alignment: .firstTextBaseline)
+            if(UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight)
             {
-                Stepper("Mana \(mana)/\(manaMax)", value: $mana, in: 0...manaMax)
-                    .frame(width:160)
-                    .padding()
-                VStack
+                HStack(alignment: .firstTextBaseline)
                 {
-                    HStack
+                    Stepper("Mana \(mana)/\(manaMax)", value: $mana, in: 0...manaMax)
+                        .frame(width:160)
+                        .padding()
+                    VStack
                     {
-                        Stepper("Karty \(karty)/\(kartyMax)", value: $karty, in: 0...kartyMax)
-                            .frame(width:160)
-                            .padding()
-                        Stepper("Życie \(życie)/\(życieMax)", value: $życie, in: 0...życieMax)
-                            .frame(width:160)
-                            .padding()
+                        HStack
+                        {
+                            Stepper("Karty \(karty)/\(kartyMax)", value: $karty, in: 0...kartyMax)
+                                .frame(width:160)
+                                .padding()
+                            Stepper("Życie \(życie)/\(życieMax)", value: $życie, in: 0...życieMax)
+                                .frame(width:160)
+                                .padding()
+                        }
+                        Text("Sacrifice")
+                            .font(.footnote)
                     }
-                    Text("Sacrifice")
-                        .font(.footnote)
+                    .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 1))
+                    
                 }
-                .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 1))
+                .padding()
+            }
+            else
+            {
+                VStack(alignment: .center)
+                {
+                    Stepper("Mana \(mana)/\(manaMax)", value: $mana, in: 0...manaMax)
+                        .frame(width:160)
+                        .padding()
+                    VStack
+                    {
+                        VStack
+                        {
+                            Stepper("Karty \(karty)/\(kartyMax)", value: $karty, in: 0...kartyMax)
+                                .frame(width:160)
+                                .padding()
+                            Stepper("Życie \(życie)/\(życieMax)", value: $życie, in: 0...życieMax)
+                                .frame(width:160)
+                                .padding()
+                        }
+                        Text("Sacrifice")
+                            .font(.footnote)
+                    }
+                    .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 1))
+                    
+                }
+                .padding()
                 
             }
-            .padding()
             Divider()
             KartaContainerView(gra: $gra, talia: bindingForKey(playersList[activePlayer], in: $talie), lastPlayed: $lastPlayed, activePlayer: $activePlayer, gameRound: $gameRound, containerKey: "Zaklęcie")
             

@@ -58,7 +58,15 @@ extension ContentView
                 playerData["karty"] = []
                 gra[String(tableKey)] = playerData
                 activePlayer = playersList.firstIndex(of: playerKey) ?? activePlayer
-                showZaklęcie = true
+                if(activePlayer == thisDevice)
+                {
+                    showZaklęcie = true
+                }
+                else
+                {
+                    gra["talie"] = talie
+                    connectionManager.send(gameState: gra)
+                }
             }
         } else {
             print("Player not found: \(playerKey)")

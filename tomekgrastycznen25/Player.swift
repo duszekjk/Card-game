@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct PlayerView: View {
+    @EnvironmentObject var connectionManager: MPConnectionManager
     let playerKey: String
     @Binding var gra: Dictionary<String, Any>
     @Binding var talia: Array<Dictionary<String, Any>>
@@ -75,6 +76,7 @@ struct PlayerView: View {
                         .onChange(of: player["życie"] as? Int ?? 0) { newValue in
                             if let life = newValue as? Int, life == 0 {
                                 playerLoose = playerKey // Set the player who lost
+                                connectionManager.send(gameState: gra)
                                 endGame = true          // Trigger the end of the game
                             }
                         }
@@ -110,7 +112,7 @@ struct PlayerView: View {
             .padding(.vertical, 40)
             .background(RoundedRectangle(cornerRadius: 10).fill(isActive ? Color(UIColor.secondarySystemGroupedBackground) : Color(UIColor.systemGroupedBackground)))
             .shadow(radius: isActive ? 6 : 1)
-            .frame(maxWidth: UIScreen.main.bounds.size.width - 2.0)
+            .frame(minWidth: UIScreen.main.bounds.size.width/2, idealWidth: UIScreen.main.bounds.size.width - 5.0, maxWidth: UIScreen.main.bounds.size.width - 2.0)
         } else {
             Text("Player not found")
                 .font(.headline)
