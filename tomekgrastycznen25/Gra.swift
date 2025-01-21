@@ -61,8 +61,10 @@ extension ContentView
             gracz["manaMax"] = Int(10)
             gracz["mana"] = Int(3)
             gracz["życie"] = Int(9)
-            gracz["akcjaRzucaneZaklęcie"] = "@Zaklęcie.karta 1 > @Table"
+            gracz["akcjaRzucaneZaklęcie"] = "@Zaklęcie.karty.a.lingeringNow = 1"//selectKarta
             gracz["akcjaOdrzucaneZaklęcie"] = ""
+            gracz["opisRzucaneZaklęcie"] = "Gdy rzucasz zaklęcie, jeden fragment dostaje Lingering"
+            gracz["opisOdrzucaneZaklęcie"] = nil
             gracz["karty"] = loadCards(conut: gracz["ilośćKart"] as! Int, for: gracz["id"] as! String)
         }
         if(id == 2)
@@ -83,7 +85,10 @@ extension ContentView
             gracz["manaMax"] = Int(6)
             gracz["mana"] = Int(3)
             gracz["życie"] = Int(12)
-            gracz["akcjaRzucaneZaklęcie"] = "@PlayerMe.życie = @PlayerMe.życie - 1 & @Zaklęcie.koszt = -1"
+            gracz["akcjaRzucaneZaklęcie"] = "@PlayerMe.życie = @PlayerMe.życie - 1 & @Zaklęcie.koszt = @Zaklęcie.koszt - 3"
+            gracz["akcjaOdrzucaneZaklęcie"] = ""
+            gracz["opisRzucaneZaklęcie"] = "Gdy rzucasz zaklęcie, tracisz 1 ❤️ i staniasz to zaklęcie o 3."
+            gracz["opisOdrzucaneZaklęcie"] = nil
             gracz["karty"] = loadCards(conut: gracz["ilośćKart"] as! Int, for: gracz["id"] as! String)
         }
         

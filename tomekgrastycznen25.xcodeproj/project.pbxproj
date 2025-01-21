@@ -200,11 +200,12 @@
 				};
 			};
 			buildConfigurationList = E06C35442D3C28F50037BA51 /* Build configuration list for PBXProject "tomekgrastycznen25" */;
-			developmentRegion = en;
+			developmentRegion = pl;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
+				pl,
 			);
 			mainGroup = E06C35402D3C28F50037BA51;
 			minimizedProjectReferenceProxies = 1;

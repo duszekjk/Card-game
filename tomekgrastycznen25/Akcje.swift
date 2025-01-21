@@ -53,7 +53,18 @@ extension ContentView
     {
         if var playerData = gra[tableKey] as? [String: Any] {
             if var zaklęcieData = gra["Zaklęcie"] as? [String: Any] {
-                var kartyZaklęte = playerData["karty"] as? [[String: Any]] ?? [[String: Any]]()
+                var kartyZaklęte = [[String: Any]]()
+                let stareKarty = (playerData["karty"] as? [[String: Any]] ?? [[String: Any]]())
+                for kartaZaklęta in stareKarty
+                {
+                    var kartaNowa = kartaZaklęta
+                    if(kartaNowa["lingering"] != nil)
+                    {
+                        kartaNowa["lingeringNow"] = kartaNowa["lingering"]
+                    }
+                    kartyZaklęte.append(kartaNowa)
+                }
+                
                 if var lingeringData = gra["Lingering"] as? [String: Any] {
                     if(lingeringData["karty"] != nil)
                     {
@@ -99,12 +110,80 @@ extension ContentView
             }
             return result
         }
+        var totaltotalCost = totalCost
+        print("wycenianie")
+        if let playerNow = gra["Player\(activePlayer + 1)"] as? [String: Any]
+        {
+            print("Player\(activePlayer + 1)")
+            if let akcjeString = playerNow["akcjaRzucaneZaklęcie"] as? String
+            {
+                print(akcjeString)
+                let akcje = akcjeString.split(separator: "&")
+                for akcja in akcje
+                {
+                    print(akcja)
+                    if(akcja.contains("@Zaklęcie.koszt = "))
+                    {
+                        print("koszt")
+                        var akcjaRight = akcja.split(separator: "=").last!.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: "@Zaklęcie.koszt", with: totaltotalCost.description)
+                        print(akcjaRight)
+                        if let result = preprocessAndEvaluate(expression: akcjaRight) {
+                            totaltotalCost = max(0, result)
+                        } else {
+                            print("Failed to evaluate: \(akcjaRight)")
+                        }
+                    }
+                }
+            }
+        }
+        
+        for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
+        {
+            if let akcja = zaklęcie["wandering"] as? String
+            {
+                if(akcja.contains("@Zaklęcie.koszt = "))
+                {
+                    var akcjaRight = akcja.split(separator: "=").last!.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: "@Zaklęcie.koszt", with: totaltotalCost.description)
+                    if let result = preprocessAndEvaluate(expression: akcjaRight) {
+                        totaltotalCost = max(0, result)
+                    } else {
+                        print("Failed to evaluate: \(akcjaRight)")
+                    }
+                }
+            }
+            
+        }
+        for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
+        {
+            if let akcja = zaklęcie["akcjaRzucaneZaklęcie"] as? String
+            {
+                if(akcja.contains("@Zaklęcie.koszt = "))
+                {
+                    var akcjaRight = akcja.split(separator: "=").last!.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: "@Zaklęcie.koszt", with: totaltotalCost.description)
+                    if let result = preprocessAndEvaluate(expression: akcjaRight) {
+                        totaltotalCost = max(0, result)
+                    } else {
+                        print("Failed to evaluate: \(akcjaRight)")
+                    }
+                }
+            }
+            
+        }
 
-        return totalCost
+        return totaltotalCost
     }
     
     func cancelSpell()
     {
+        
+        var playerNow = gra["Player\(activePlayer + 1)"] as! [String: Any]
+        if(playerNow["akcjaOdrzuconeZaklęcie"] != nil)
+        {
+            if((playerNow["akcjaOdrzuconeZaklęcie"] as? String ?? "") != "")
+            {
+                spell(player: "Player\(activePlayer + 1)", run: playerNow["akcjaOdrzuconeZaklęcie"] as! String, against: "Player\((activePlayer + 1) % 2 + 1)")
+            }
+        }
         for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
         {
             spell(player: "Player\(activePlayer + 1)", run: zaklęcie["akcjaOdrzuconeZaklęcie"] as! String, against: "Player\((activePlayer + 1) % 2 + 1)")
@@ -112,20 +191,20 @@ extension ContentView
         for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
         {
             var player = zaklęcie["player"] as! String
-            if(zaklęcie["lingering"] as! String == "lingering")
-            {
-                var lingering = gra["Lingering"] as! Dictionary<String, Any>
-                var lingeringKarty = lingering["karty"] as! Array<Dictionary<String, Any>>
-                lingeringKarty.append(zaklęcie)
-                lingering["karty"] = lingeringKarty
-                gra["Lingering"] = lingering
-            }
-            else
-            {
+//            if(zaklęcie["lingering"] as! String == "lingering")
+//            {
+//                var lingering = gra["Lingering"] as! Dictionary<String, Any>
+//                var lingeringKarty = lingering["karty"] as! Array<Dictionary<String, Any>>
+//                lingeringKarty.append(zaklęcie)
+//                lingering["karty"] = lingeringKarty
+//                gra["Lingering"] = lingering
+//            }
+//            else
+//            {
                 var talia = talie[player] as! Array<Dictionary<String, Any>>
                 talia.append(zaklęcie)
                 talie[player] = talia
-            }
+//            }
         }
         if var playerData = gra["Zaklęcie"] as? [String: Any] {
             playerData["karty"] = Array<Dictionary<String, Any>>()
@@ -148,6 +227,14 @@ extension ContentView
                     print("Zaklęcie not found!!!")
                 }
                 printFormatted(dictionary: (gra["Zaklęcie"] as! Dictionary<String, Any>))
+                var playerNow = gra["Player\(activePlayer + 1)"] as! [String: Any]
+                if(playerNow["akcjaRzucaneZaklęcie"] != nil)
+                {
+                    if((playerNow["akcjaRzucaneZaklęcie"] as? String ?? "") != "")
+                    {
+                        spell(player: "Player\(activePlayer + 1)", run: playerNow["akcjaRzucaneZaklęcie"] as! String, against: "Player\((activePlayer + 1) % 2 + 1)")
+                    }
+                }
                 for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
                 {
                     spell(player: "Player\(activePlayer + 1)", run: zaklęcie["wandering"] as! String, against: "Player\((activePlayer + 1) % 2 + 1)")
@@ -159,19 +246,35 @@ extension ContentView
                 
                 for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
                 {
+                    var zaklęcieNow = zaklęcie
                     var player = zaklęcie["player"] as! String
-                    if(zaklęcie["lingering"] as! String == "lingering")
+                    if(zaklęcie["lingeringNow"] != nil)
                     {
-                        var lingering = gra["Lingering"] as! Dictionary<String, Any>
-                        var lingeringKarty = lingering["karty"] as! Array<Dictionary<String, Any>>
-                        lingeringKarty.append(zaklęcie)
-                        lingering["karty"] = lingeringKarty
-                        gra["Lingering"] = lingering
+                        if let ling = zaklęcie["lingeringNow"] as? String
+                        {
+                            if(!ling.isEmpty)
+                            {
+                                spell(player: "Player\(activePlayer + 1)", run: ling, against: "Player\((activePlayer + 1) % 2 + 1)")
+                            }
+                            zaklęcieNow["lingeringNow"] = nil
+                        }
+                        else
+                        {
+                            if let ling = zaklęcie["lingeringNow"] as? Int
+                            {
+                                var lingering = gra["Lingering"] as! Dictionary<String, Any>
+                                var lingeringKarty = lingering["karty"] as! Array<Dictionary<String, Any>>
+                                zaklęcieNow["lingeringNow"] = nil
+                                lingeringKarty.append(zaklęcieNow)
+                                lingering["karty"] = lingeringKarty
+                                gra["Lingering"] = lingering
+                            }
+                        }
                     }
                     else
                     {
                         var talia = talie[player] as! Array<Dictionary<String, Any>>
-                        talia.append(zaklęcie)
+                        talia.append(zaklęcieNow)
                         talie[player] = talia
                     }
                 }
@@ -190,18 +293,18 @@ extension ContentView
     func spell(player playerMe: String, run action: String, against playerYou: String)
     {
         print("---------------starting spell---------------")
-        printFormatted(dictionary: gra)
-        
-        // Parse and execute the action
-        print("---------------parsing spell---------------")
+//        printFormatted(dictionary: gra)
+//        
+//        // Parse and execute the action
+//        print("---------------parsing spell---------------")
         let parsedAction = parseAction(action: action, playerMe: playerMe, playerYou: playerYou)
         printFormatted(dictionary: (gra["Zaklęcie"] as! Dictionary<String, Any>))
         print("---------------running spell \(parsedAction)---------------")
         executeAction(parsedAction)
         
-        print("---------------finished spell---------------")
-        printFormatted(dictionary: gra)
-        print("---------------ending spell---------------")
+//        print("---------------finished spell---------------")
+//        printFormatted(dictionary: gra)
+//        print("---------------ending spell---------------")
     }
 
     private func parseAction(action: String, playerMe: String, playerYou: String) -> String
@@ -404,28 +507,152 @@ extension ContentView
             if let dict = current as? [String: Any], let next = dict[key] {
                 current = next
             } else {
-                print("Key \(key) not found in \(current ?? "nil")")
-                return nil
+                if let dict = current as? [Any]  {
+                    var atIndex = 0
+                    if(key == "selectKarta")
+                    {
+                        if let arrayKarty = dict as? Array<Dictionary<String, Any>>
+                        {
+                            Task {
+                                atIndex = await showCardSelectionSheet(options: arrayKarty)
+                                let next = dict[atIndex]
+                                // Proceed with the selected value
+                                print("User selected: \(next)")
+                            }
+                        }
+                        print("Brak kart")
+                        return nil
+                    }
+                    else
+                    {
+                        atIndex = Int(key) ?? Int.random(in: 0..<dict.count)
+                    }
+                    let next = dict[atIndex]
+                    current = next
+                } else {
+                    print("Key \(key) not found in \(current ?? "nil")")
+                    return nil
+                }
             }
         }
 
         return current
+    }
+    func showCardSelectionSheet(options: Array<Dictionary<String, Any>>) async -> Int {
+        await withCheckedContinuation { continuation in
+            
+            self.actionUserIntpuKartaOptions = options
+            self.actionUserIntpuKartaOnSelected = { selectedOption in
+                continuation.resume(returning: selectedOption)
+            }
+            self.actionUserIntpuKartaShow = true
+        }
     }
 
 
     private func assignValue(to key: String, value: Any)
     {
         let parts = key.split(separator: ".")
-        guard parts.count == 2, let playerKeyStart = parts.first, let variableKey = parts.last else {
+        if let playerKeyStart = parts.first
+        {
+            var keys = parts
+            let playerKey = String(playerKeyStart.dropFirst()).replacingOccurrences(of: "@", with: "")
+            var current: Any? = gra[playerKey]
+            var startId = true
+            var backTrace = [Any]()
+            var backTraceKey = [Any]()
+            var selected:Any? = nil
+            print("Keys down:")
+            for key in keys {
+                if(startId)
+                {
+                    startId = false
+                    continue
+                }
+                print("\(String(key)) = \(current.debugDescription)")
+
+                if let dict = current as? [String: Any], let next = dict[String(key)] {
+                    backTrace.append(current)
+                    backTraceKey.append(String(key))
+                    current = next                } else {
+                    if let dict = current as? [Any]  {
+                        var atIndex = 0
+                        if(key == "selectKarta")
+                        {
+                            print("User select")
+                            if let arrayKarty = dict as? Array<Dictionary<String, Any>>
+                            {
+                                Task {
+                                    atIndex = await showCardSelectionSheet(options: arrayKarty)
+                                    let next = dict[atIndex]
+                                    // Proceed with the selected value
+                                    print("User selected: \(next)")
+                                }
+                            }
+                            print("Brak kart")
+                            return
+                        }
+                        else
+                        {
+                            atIndex = Int(key) ?? Int.random(in: 0..<dict.count)
+                        }
+                        selected = atIndex
+                        let next = dict[atIndex]
+                        backTrace.append(current)
+                        backTraceKey.append(Int(atIndex))
+                        current = next
+                    } else {
+                        print("Key \(key) not found in \(current ?? "nil")")
+                        return
+                    }
+                }
+            }
+            current = value
+            var imax = backTraceKey.count
+            
+            print("Keys up:")
+            for i in 1...backTraceKey.count
+            {
+                if let key = backTraceKey[imax - i] as? Int, let back = backTrace[imax - i] as? [Any] {
+                    var newBack = back
+                    print("\(String(key)) = \(current.debugDescription)")
+
+                    newBack[key] = current
+                    current = newBack
+                }
+                else
+                {
+                    if let key = backTraceKey[imax - i] as? String, let back = backTrace[imax - i] as? [String: Any] {
+                        var newBack = back
+                        print("\(newBack.debugDescription) \(String(key)) = \(current.debugDescription)")
+
+                        newBack[key] = current
+                        current = newBack
+                    }
+                    else
+                    {
+                        print("Can't set \(current ?? "nil") to \(key)")
+                        
+                    }
+                }
+            }
+            gra[playerKey] = current
+            
+            
+            
+//            if var playerData = gra[playerKey] as? [String: Any] {
+//                
+//                for key in keys
+//                {
+//                playerData[String(variableKey)] = value
+//                gra[String(playerKey)] = playerData
+//            } else {
+//                print("Player not found: \(playerKey)")
+//            }
+        }
+        else {
             print("Invalid key: \(key)")
             return
-        }
-        let playerKey = String(playerKeyStart.dropFirst()).replacingOccurrences(of: "@", with: "")
-        if var playerData = gra[playerKey] as? [String: Any] {
-            playerData[String(variableKey)] = value
-            gra[String(playerKey)] = playerData
-        } else {
-            print("Player not found: \(playerKey)")
         }
     }
 }

@@ -44,6 +44,10 @@ struct ContentView: View {
     
     @State public var landscape = false
     
+    @State public var actionUserIntpuKartaShow: Bool = false
+    @State public var actionUserIntpuKartaOptions: Array<Dictionary<String, Any>> = Array<Dictionary<String, Any>>()
+    @State public var actionUserIntpuKartaOnSelected: ((Int) -> Void)? = nil
+    
     init(yourName: String) {
         self.yourName = yourName
         _connectionManager = StateObject(wrappedValue: MPConnectionManager(yourName: yourName))
@@ -64,7 +68,7 @@ struct ContentView: View {
                     VStack
                     {
                         TaliaView(gra: $gra, talia: bindingForKey("Player2", in: $talie), nazwa: "Talia Player 2")
-                            .onTapGesture(count: 2) {
+                            .onTapGesture(count: 1) {
                                 DispatchQueue.main.async
                                 {
                                     showTaliaID = 2
@@ -92,7 +96,7 @@ struct ContentView: View {
                         }
                         .padding()
                         TaliaView(gra: $gra, talia: bindingForKey("Player1", in: $talie), nazwa: "Talia Player 1")
-                            .onTapGesture(count: 2) {
+                            .onTapGesture(count: 1) {
                                 DispatchQueue.main.async
                                 {
                                     showTaliaID = 1
@@ -259,6 +263,19 @@ struct ContentView: View {
                         showZaklęcie = true
                     }
                 }
+            }
+            .sheet(isPresented: $actionUserIntpuKartaShow)
+            {
+                ForEach(actionUserIntpuKartaOptions.indices, id: \.self) { index in
+                    Button("\((actionUserIntpuKartaOptions[index]).debugDescription)")
+                    {
+                        if(actionUserIntpuKartaOnSelected != nil)
+                        {
+                            actionUserIntpuKartaOnSelected!(index)
+                        }
+                    }
+                }
+                
             }
             .sheet(isPresented: $endGame) {
                 VStack {
