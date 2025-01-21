@@ -109,6 +109,30 @@ extension ContentView
         {
             spell(player: "Player\(activePlayer + 1)", run: zaklęcie["akcjaOdrzuconeZaklęcie"] as! String, against: "Player\((activePlayer + 1) % 2 + 1)")
         }
+        for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
+        {
+            var player = zaklęcie["player"] as! String
+            if(zaklęcie["lingering"] as! String == "lingering")
+            {
+                var lingering = gra["Lingering"] as! Dictionary<String, Any>
+                var lingeringKarty = lingering["karty"] as! Array<Dictionary<String, Any>>
+                lingeringKarty.append(zaklęcie)
+                lingering["karty"] = lingeringKarty
+                gra["Lingering"] = lingering
+            }
+            else
+            {
+                var talia = talie[player] as! Array<Dictionary<String, Any>>
+                talia.append(zaklęcie)
+                talie[player] = talia
+            }
+        }
+        if var playerData = gra["Zaklęcie"] as? [String: Any] {
+            playerData["karty"] = Array<Dictionary<String, Any>>()
+            gra["Zaklęcie"] = playerData
+        } else {
+            print("Zaklęcie not found!!!")
+        }
         showZaklęcie = false
         checkumberOfCards(endMove: true)
         

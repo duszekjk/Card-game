@@ -101,7 +101,7 @@ struct ZaklęcieView: View {
                 
             }
             Divider()
-            KartaContainerView(gra: $gra, talia: bindingForKey(playersList[activePlayer], in: $talie), lastPlayed: $lastPlayed, activePlayer: $activePlayer, gameRound: $gameRound, landscape: $landscape, containerKey: "Zaklęcie")
+            KartaContainerView(gra: $gra, talia: bindingForKey(playersList[activePlayer], in: $talie), lastPlayed: $lastPlayed, activePlayer: $activePlayer, gameRound: $gameRound, landscape: $landscape, containerKey: "Zaklęcie", isReorderable: true, size: 11)
             
             HStack
             {
