@@ -69,6 +69,15 @@ struct PlayerView: View {
 
                         Spacer()
 
+                        // tarcza
+                        HStack {
+                            Image(systemName: "shield.pattern.checkered")
+                                .foregroundColor(.red)
+                            Text("\(player["tarcza"] as? Int ?? 0)")
+                        }
+                        
+                        Spacer()
+
                         // życie
                         HStack {
                             Image(systemName: "heart.fill")
@@ -147,12 +156,72 @@ struct PlayerBigView: View {
     
     var body: some View {
         if let player = gra[playerKey] as? Dictionary<String, Any> {
-            VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .center, spacing: 10) {
                 // Name
-                Text(player["nazwa"] as? String ?? "Unknown Player")
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .padding(.leading, 40)
+                if let playerName = player["nazwa"] as? String,
+                   UIImage(named: playerName) != nil {
+                    ZStack {
+                        // Background Image with Inner Shadow
+                        Image(playerName)
+                            .resizable()
+                            .scaledToFill()
+                            .blur(radius: 30)
+                        Image(playerName)
+                            .resizable()
+                            .scaledToFill()
+                            .blur(radius: 30)
+                        Image(playerName)
+                            .resizable()
+                            .scaledToFill()
+                            .blur(radius: 50)
+                        Image(playerName)
+                            .resizable()
+                            .scaledToFill()
+                            .blur(radius: 50)
+                        Image(playerName)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .clipShape(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            ) // Rounded top corners
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .stroke(Color.primary.opacity(0.1), lineWidth: 0) // Subtle edge polish
+                            )
+                            .overlay(
+                                // Simulate inner shadow using gradient
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .fill(
+                                        LinearGradient(
+                                            gradient: Gradient(colors: [
+                                                Color.black.opacity(0.2), // Dark inner shadow
+                                                Color.clear
+                                            ]),
+                                            startPoint: .top,
+                                            endPoint: .bottom
+                                        )
+                                    )
+                            )
+                            .clipped()
+
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: 300) // Adjust height as needed
+                    
+                    Text(player["nazwa"] as? String ?? "Unknown Player")
+                        .foregroundColor(.white)
+                        .font(.title2)
+                        .fontWeight(.bold)
+                }
+                else
+                {
+                    Text(player["nazwa"] as? String ?? "Unknown Player")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .padding()
+                }
+
+//                    .padding(.leading, 40)
                 // karty
                 if(isActive)
                 {
@@ -164,6 +233,7 @@ struct PlayerBigView: View {
                 {
                     HStack {
                         // ilośćKart
+                        Spacer()
                         HStack {
                             Image(systemName: "doc.on.doc")
                             Text("\(player["ilośćKart"] as? Int ?? 0)")
@@ -178,7 +248,13 @@ struct PlayerBigView: View {
                         }
 
                         Spacer()
-
+                        
+                        HStack {
+                            Image(systemName: "shield.pattern.checkered")
+                                .foregroundColor(.red)
+                            Text("\(player["tarcza"] as? Int ?? 0)")
+                        }
+                        
                         // życie
                         HStack {
                             Image(systemName: "heart.fill")
@@ -189,7 +265,10 @@ struct PlayerBigView: View {
                         Spacer()
                     }
                     .font(.headline)
+                    .padding()
                     Divider()
+                    Spacer()
+                    Text(player["opis"] as? String ?? "")
                     Spacer()
                     VStack(alignment: .leading){
                         HStack(alignment: .firstTextBaseline) {
@@ -215,6 +294,7 @@ struct PlayerBigView: View {
             }
             .padding()
             .background(RoundedRectangle(cornerRadius: 10).fill(isActive ? Color(UIColor.secondarySystemGroupedBackground) : Color(UIColor.systemGroupedBackground)))
+            .frame(minHeight: UIScreen.main.bounds.size.height*0.85)
             .shadow(radius: isActive ? 6 : 1)
         } else {
             Text("Player not found")

@@ -36,13 +36,14 @@ extension ContentView
         var zaklęcie: Dictionary<String, Any> = Dictionary<String, Any>()
         zaklęcie["koszt"] = 0
         zaklęcie["atak"] = 0
+        zaklęcie["sacrifice"] = 0
         zaklęcie["karty"] = Array<Dictionary<String, Any>>()
         return zaklęcie
     }
     func loadPlayer(id: Int = 0) -> Dictionary<String, Any>
     {
         var gracz: Dictionary<String, Any> = Dictionary<String, Any>()
-        let taliaAll = Array(repeating: taliaBase, count: 5).flatMap { $0 }
+        let taliaAll = Array(repeating: taliaBase, count: 2).flatMap { $0 }
         if(id == 1)
         {
             gracz["id"] = "Player1"
@@ -61,10 +62,12 @@ extension ContentView
             gracz["manaMax"] = Int(10)
             gracz["mana"] = Int(3)
             gracz["życie"] = Int(9)
+            gracz["tarcza"] = Int(0)
             gracz["akcjaRzucaneZaklęcie"] = "@Zaklęcie.karty.a.lingeringNow = 1"//selectKarta
             gracz["akcjaOdrzucaneZaklęcie"] = ""
             gracz["opisRzucaneZaklęcie"] = "Gdy rzucasz zaklęcie, jeden fragment dostaje Lingering"
             gracz["opisOdrzucaneZaklęcie"] = nil
+            gracz["opis"] = "Mistyczny czarodziej władający mocą czystej energii światła. Jego zaklęcia nie tylko ranią przeciwników, ale także pozostawiają świetliste echa, które utrzymują się na polu walki, wzmacniając jego sojuszników. Przemierza krainy, by szerzyć blask nadziei i obnażać ukryte cienie."
             gracz["karty"] = loadCards(conut: gracz["ilośćKart"] as! Int, for: gracz["id"] as! String)
         }
         if(id == 2)
@@ -85,10 +88,12 @@ extension ContentView
             gracz["manaMax"] = Int(6)
             gracz["mana"] = Int(3)
             gracz["życie"] = Int(12)
+            gracz["tarcza"] = Int(0)
             gracz["akcjaRzucaneZaklęcie"] = "@PlayerMe.życie = @PlayerMe.życie - 1 & @Zaklęcie.koszt = @Zaklęcie.koszt - 3"
             gracz["akcjaOdrzucaneZaklęcie"] = ""
             gracz["opisRzucaneZaklęcie"] = "Gdy rzucasz zaklęcie, tracisz 1 ❤️ i staniasz to zaklęcie o 3."
             gracz["opisOdrzucaneZaklęcie"] = nil
+            gracz["opis"] = "Mroczny mag, który czerpie siłę z własnej żywotności, aby tworzyć potężne zaklęcia. Każde użycie magii to dla niego akt poświęcenia, lecz w zamian zyskuje przerażającą przewagę nad wrogami. Jego krew płynie nie tylko w żyłach, ale także w ogniu jego czarów, które niszczą i wyczerpują każdego, kto odważy się go wyzwać."
             gracz["karty"] = loadCards(conut: gracz["ilośćKart"] as! Int, for: gracz["id"] as! String)
         }
         

@@ -224,6 +224,7 @@ struct ContentView: View {
                         checkumberOfCards(endMove: false)
                         waitForOdrzucanieToBeFalse {
                             setData(for: playersList[activePlayer], key: "mana", getData(for: playersList[activePlayer], key: "mana") + 1)
+                            setData(for: playersList[activePlayer], key: "tarcza", max(0, getData(for: playersList[activePlayer], key: "tarcza") - 1))
                             var maxKart = getData(for: playersList[activePlayer], key: "ilośćKart")  + 1
                             var karty = getKarty(for: playersList[activePlayer])
                             karty.append(contentsOf: loadCards(conut: max(1, maxKart - karty.count), for: playersList[activePlayer]))

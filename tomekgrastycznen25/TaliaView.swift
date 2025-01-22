@@ -46,7 +46,7 @@ var taliaBase : Array<Dictionary<String, Any>> = [
         "pacyfizm": "",
         "wandering": "",
         "lingering": "",
-        "opis": "Wszyscy gracze ❌ wszystkie 🃏",
+        "opis": "Wszyscy gracze wszystkie 🎇",
         "postacie": ["Mag Światła"]
     ],
     [
@@ -56,7 +56,7 @@ var taliaBase : Array<Dictionary<String, Any>> = [
         "pacyfizm": "",
         "wandering": "",
         "lingering": "",
-        "opis": "Przeciwnik ❌ 3 🃏, następnie jeśli nie ma on kart 1 ❤️‍🔥",
+        "opis": "Przeciwnik 3 🎇, następnie jeśli nie ma on kart 1 ❤️‍🔥",
         "postacie": ["Mag Światła", "Mag Krwii"]
     ],
     [
@@ -67,6 +67,66 @@ var taliaBase : Array<Dictionary<String, Any>> = [
         "wandering": "",
         "lingering": "",
         "opis": "2 ❤️‍🔥, \nPacyfizm: Przeciwnik 1 🃏 i 2 🔋",
+        "postacie": ["Mag Światła", "Mag Krwii"]
+    ],
+    [
+        "koszt": 4,
+        "akcjaRzucaneZaklęcie": "@PlayerMe.tarcza = @PlayerMe.tarcza + 5 & @PlayerYou.tarcza = @PlayerYou.tarcza + 3",
+        "akcjaOdrzuconeZaklęcie": "",
+        "pacyfizm": "",
+        "wandering": "",
+        "lingering": "",
+        "opis": "5 🛡️, \nPrzeciwnik 3 🛡️",
+        "postacie": ["Mag Światła"]
+    ],
+    [
+        "koszt": 8,
+        "akcjaRzucaneZaklęcie": "@PlayerYou.życie = @PlayerYou.życie - 3 & @PlayerMe.tarcza = @PlayerMe.tarcza + 3",
+        "akcjaOdrzuconeZaklęcie": "",
+        "pacyfizm": "",
+        "wandering": "",
+        "lingering": "",
+        "opis": "3 ❤️‍🔥, 3 🛡️",
+        "postacie": ["Mag Światła"]
+    ],
+    [
+        "koszt": 0,
+        "akcjaRzucaneZaklęcie": "@PlayerMe.mana = @PlayerMe.mana + 1",
+        "akcjaOdrzuconeZaklęcie": "",
+        "pacyfizm": "@PlayerYou.mana = @PlayerYou.mana + 1",
+        "wandering": "",
+        "lingering": "",
+        "opis": "1 🔋,\nPacyfizm: Przeciwnik 1 🔋",
+        "postacie": ["Mag Światła", "Mag Krwii"]
+    ],
+    [
+        "koszt": 3,
+        "akcjaRzucaneZaklęcie": "@PlayerYou.życie = @PlayerYou.życie - 3 & @PlayerMe.mana = @PlayerMe.mana + @Zaklęcie.sacrifice",
+        "akcjaOdrzuconeZaklęcie": "@PlayerMe.ilośćKart = @PlayerMe.ilośćKart - 1",
+        "pacyfizm": "",
+        "wandering": "",
+        "lingering": "",
+        "opis": "Pustka 1\n3 ❤️‍🔥,\nSacrifice: 2 🔋",
+        "postacie": ["Mag Światła", "Mag Krwii"]
+    ],
+    [
+        "koszt": 5,
+        "akcjaRzucaneZaklęcie": "@PlayerYou.życie = @PlayerYou.życie - 3 & @PlayerYou.tarcza = @PlayerYou.tarcza + 3",
+        "akcjaOdrzuconeZaklęcie": "",
+        "pacyfizm": "",
+        "wandering": "",
+        "lingering": 1,
+        "opis": "3 ❤️‍🔥,\nPrzeciwnik: 3 🛡️",
+        "postacie": ["Mag Światła", "Mag Krwii"]
+    ],
+    [
+        "koszt": 2,
+        "akcjaRzucaneZaklęcie": "@PlayerMe.mana = @PlayerMe.mana + ( 3 * @Zaklęcie.sacrifice )",
+        "akcjaOdrzuconeZaklęcie": "@PlayerMe.ilośćKart = @PlayerMe.ilośćKart - 2",
+        "pacyfizm": "",
+        "wandering": "",
+        "lingering": 1,
+        "opis": "Pustka 2\n Sacrifice: 3 🔋",
         "postacie": ["Mag Światła", "Mag Krwii"]
     ],
 ]

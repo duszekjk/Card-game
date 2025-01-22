@@ -327,7 +327,7 @@ extension ContentView
     {
         // Split the action into left-hand side and right-hand side
         var action = actionFull
-        if action.contains("if") {
+        if action.contains(" if ") {
             // Split the action into condition and execution parts
             let ifParts = action.split(separator: "if", maxSplits: 1).last!.split(separator: ":", maxSplits: 1)
             let conditionPart = ifParts.first!.trimmingCharacters(in: .whitespaces)
@@ -393,7 +393,30 @@ extension ContentView
         print("right \(rightSide)")
         // Evaluate the right side and assign it to the left side
         if let result = preprocessAndEvaluate(expression: rightSide) {
-            assignValue(to: leftSide, value: max(0, result))
+            var value = max(0, result)
+            if(leftSide.contains(".życie"))
+            {
+                var kto = String(leftSide.split(separator: ".").first!.dropFirst())
+                var życieNow = getData(for: kto, key: "życie")
+                var tarczaNow = getData(for: kto, key: "tarcza")
+                if(value < życieNow && tarczaNow > 0)
+                {
+                    var change = życieNow - value
+                    if(tarczaNow >= change)
+                    {
+                        tarczaNow -= change
+                        value = życieNow
+                        setData(for: kto, key: "tarcza", tarczaNow)
+                    }
+                    else
+                    {
+                        change -= tarczaNow
+                        setData(for: kto, key: "tarcza", 0)
+                        value = życieNow - change
+                    }
+                }
+            }
+            assignValue(to: leftSide, value: max(0, value))
         } else {
             print("Failed to evaluate: \(rightSide)")
         }
