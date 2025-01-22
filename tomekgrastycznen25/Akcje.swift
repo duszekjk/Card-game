@@ -243,11 +243,20 @@ extension ContentView
                 {
                     spell(player: "Player\(activePlayer + 1)", run: zaklęcie["akcjaRzucaneZaklęcie"] as! String, against: "Player\((activePlayer + 1) % 2 + 1)")
                 }
+                for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
+                {
+                    if let pacyfizm = zaklęcie["pacyfizm"] as? String, zaklęcie["pacyfizmNow"] != nil
+                    {
+                        spell(player: "Player\(activePlayer + 1)", run: pacyfizm, against: "Player\((activePlayer + 1) % 2 + 1)")
+                    }
+                }
                 
                 for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
                 {
                     var zaklęcieNow = zaklęcie
                     var player = zaklęcie["player"] as! String
+                    
+                    zaklęcieNow["pacyfizmNow"] = nil
                     if(zaklęcie["lingeringNow"] != nil)
                     {
                         if let ling = zaklęcie["lingeringNow"] as? String
@@ -414,8 +423,14 @@ extension ContentView
                         setData(for: kto, key: "tarcza", 0)
                         value = życieNow - change
                     }
+                    if(value < życieNow && kto != "Player\(activePlayer + 1)")
+                    {
+                        setData(for: "Zaklęcie", key: "pacyfizmNow", change)
+                        
+                    }
                 }
             }
+            
             assignValue(to: leftSide, value: max(0, value))
         } else {
             print("Failed to evaluate: \(rightSide)")
