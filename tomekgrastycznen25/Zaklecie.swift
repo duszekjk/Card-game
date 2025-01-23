@@ -47,22 +47,22 @@ struct ZaklęcieView: View {
                 Text("\(mana + życie + karty)/\(cost)")
             }
             .padding()
-            if(UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight)
+            if(landscape)
             {
                 HStack(alignment: .firstTextBaseline)
                 {
                     Stepper("Mana \(mana)/\(manaMax)", value: $mana, in: 0...manaMax)
-                        .frame(width:160)
+                        .frame(width:250)
                         .padding()
                     VStack
                     {
                         HStack
                         {
                             Stepper("Karty \(karty)/\(kartyMax)", value: $karty, in: 0...kartyMax)
-                                .frame(width:160)
+                                .frame(width:250)
                                 .padding()
                             Stepper("Życie \(życie)/\(życieMax)", value: $życie, in: 0...życieMax)
-                                .frame(width:160)
+                                .frame(width:250)
                                 .padding()
                         }
                         Text("Sacrifice")
@@ -78,17 +78,17 @@ struct ZaklęcieView: View {
                 VStack(alignment: .center)
                 {
                     Stepper("Mana \(mana)/\(manaMax)", value: $mana, in: 0...manaMax)
-                        .frame(width:160)
+                        .frame(width:250)
                         .padding()
                     VStack
                     {
                         VStack
                         {
                             Stepper("Karty \(karty)/\(kartyMax)", value: $karty, in: 0...kartyMax)
-                                .frame(width:160)
+                                .frame(width:250)
                                 .padding()
                             Stepper("Życie \(życie)/\(życieMax)", value: $życie, in: 0...życieMax)
-                                .frame(width:160)
+                                .frame(width:250)
                                 .padding()
                         }
                         Text("Sacrifice")

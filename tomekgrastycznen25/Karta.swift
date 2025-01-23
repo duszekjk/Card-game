@@ -4,7 +4,8 @@ import UniformTypeIdentifiers
 struct KartaView: View {
     let karta: Dictionary<String, Any>
     @State public var showBig = false
-
+    
+    @State private var capturedImage: UIImage?
     var body: some View {
         VStack {
             if((karta["opis"] as? String ?? "") != "Placeholder")
@@ -29,43 +30,122 @@ struct KartaView: View {
         .onTapGesture(count: 2) {
             showBig.toggle()
         }
-        .sheet(isPresented: $showBig)
+        .sheet(isPresented: $showBig, onDismiss: {
+            // Trigger share after dismissing the sheet
+            if let image = capturedImage {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    saveAndShareImage(image: image, playerName: randomString(length: 15))
+                }
+                   
+            }
+        })
         {
-            KartaBigView(karta: karta, showBig: $showBig)
+            KartaBigView(karta: karta, showBig: $showBig, onLongPress: { image in
+                capturedImage = image
+                showBig = false
+            })
         }
     }
 }
 struct KartaBigView: View {
     let karta: Dictionary<String, Any>
     @Binding var showBig: Bool
+    let onLongPress: (UIImage) -> Void
+    @State var isSharing: Bool = false
 
     var body: some View {
-        VStack {
-            if((karta["opis"] as? String ?? "") != "Placeholder")
-            {
-                HStack
+        GeometryReader { geometry in
+            VStack {
+                if((karta["opis"] as? String ?? "") != "Placeholder")
                 {
-                    Text("\(karta["koszt"] as? Int ?? 0)")
-                        .font(.footnote)
+                    HStack
+                    {
+                        Text("\(karta["koszt"] as? Int ?? 0)")
+                            .font(.footnote)
+                        Spacer()
+                    }
+                    .padding()
+                    Spacer()
+                    Text("\(karta["opis"] as? String ?? karta["akcjaRzucaneZaklęcie"] as? String ?? "----------")")
+                        .font(.caption)
+                        .lineLimit(6)
+                        .padding()
+                        .onLongPressGesture {
+                            
+                            isSharing = true
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                captureView(size: geometry.size)
+                            }
+                        }
                     Spacer()
                 }
-                .padding()
-                Spacer()
-                Text("\(karta["opis"] as? String ?? "")")
-                    .font(.caption)
-                    .lineLimit(6)
-                    .padding()
-                Spacer()
+            }
+            .padding(15)
+            .background(RoundedRectangle(cornerRadius: 10).fill(((karta["opis"] as? String ?? "") != "Placeholder") ? Color.blue : Color.gray))
+            .foregroundColor(.white)
+            .shadow(radius: 5)
+            .onTapGesture(count: 2) {
+                showBig.toggle()
             }
         }
-        .padding(15)
-        .background(RoundedRectangle(cornerRadius: 10).fill(((karta["opis"] as? String ?? "") != "Placeholder") ? Color.blue : Color.gray))
-        .foregroundColor(.white)
-        .shadow(radius: 5)
-        .onTapGesture(count: 2) {
-            showBig.toggle()
-        }
+        .frame(maxWidth: .infinity ,minHeight: UIScreen.main.bounds.size.height*0.85)
     }
+    
+#if os(iOS)
+    private func captureView(size: CGSize) {
+        // Render the view with the specific dimensions
+        let hostingController = UIHostingController(rootView: self)
+        let window = UIApplication.shared.windows.first
+        guard let targetView = hostingController.view,
+              let parentView = window?.rootViewController?.view else { return }
+
+        // Match the size to the geometry-provided dimensions
+        targetView.frame = CGRect(origin: CGPoint(x: 0.0, y: 30), size: size)
+        parentView.addSubview(targetView)
+
+        // Render the view into an image
+        let renderer = UIGraphicsImageRenderer(size: targetView.bounds.size)
+        let image = renderer.image { _ in
+            targetView.drawHierarchy(in: targetView.bounds, afterScreenUpdates: true)
+        }
+
+        // Clean up the temporary view
+        targetView.removeFromSuperview()
+
+        // Pass the captured image
+        onLongPress(image)
+    }
+#else
+    private func captureView(size: CGSize) {
+        // Create a hosting controller for the SwiftUI view
+        let hostingController = NSHostingController(rootView: self)
+        
+        // Create an off-screen window to render the view
+        let offscreenWindow = NSWindow(
+            contentRect: CGRect(origin: .zero, size: size),
+            styleMask: [.borderless],
+            backing: .buffered,
+            defer: false
+        )
+        offscreenWindow.contentView = hostingController.view
+        offscreenWindow.makeKeyAndOrderFront(nil)
+        
+        // Match the size to the geometry-provided dimensions
+        hostingController.view.frame = CGRect(origin: .zero, size: size)
+        
+        // Render the view into an image
+        guard let bitmapRep = hostingController.view.bitmapImageRepForCachingDisplay(in: hostingController.view.bounds) else { return }
+        hostingController.view.cacheDisplay(in: hostingController.view.bounds, to: bitmapRep)
+        let image = NSImage(size: size)
+        image.addRepresentation(bitmapRep)
+        
+        // Clean up the temporary window
+        offscreenWindow.orderOut(nil)
+        
+        // Pass the captured image
+        onLongPress(image)
+    }
+#endif
 }
 var emptyKarta:Dictionary<String, Any> = [
     "koszt": 0,
@@ -312,4 +392,10 @@ struct DropBoxView: View {
                 return true
             }
     }
+}
+func triggerDragAction(draggedData: String, action: ()->Void) {
+    guard !draggedData.isEmpty else { return }
+    print("Drag action triggered with data: \(draggedData)")
+    action()
+    // Perform any immediate actions for drag start here
 }

@@ -243,12 +243,19 @@ extension ContentView
                 {
                     spell(player: "Player\(activePlayer + 1)", run: zaklęcie["akcjaRzucaneZaklęcie"] as! String, against: "Player\((activePlayer + 1) % 2 + 1)")
                 }
-                for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
+                if let mainZaklęcie = gra["Zaklęcie"] as? Dictionary<String, Any>, let pacyfizmCount = mainZaklęcie["pacyfizmNow"] as? Int
                 {
-                    if let pacyfizm = zaklęcie["pacyfizm"] as? String, zaklęcie["pacyfizmNow"] != nil
+                    for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
                     {
-                        spell(player: "Player\(activePlayer + 1)", run: pacyfizm, against: "Player\((activePlayer + 1) % 2 + 1)")
+                        if let pacyfizm = zaklęcie["pacyfizm"] as? String
+                        {
+                            for _ in 0..<pacyfizmCount
+                            {
+                                spell(player: "Player\(activePlayer + 1)", run: pacyfizm, against: "Player\((activePlayer + 1) % 2 + 1)")
+                            }
+                        }
                     }
+                    setData(for: "Zaklęcie", key: "pacyfizmNow", 0)
                 }
                 
                 for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
@@ -256,7 +263,6 @@ extension ContentView
                     var zaklęcieNow = zaklęcie
                     var player = zaklęcie["player"] as! String
                     
-                    zaklęcieNow["pacyfizmNow"] = nil
                     if(zaklęcie["lingeringNow"] != nil)
                     {
                         if let ling = zaklęcie["lingeringNow"] as? String
@@ -408,9 +414,12 @@ extension ContentView
                 var kto = String(leftSide.split(separator: ".").first!.dropFirst())
                 var życieNow = getData(for: kto, key: "życie")
                 var tarczaNow = getData(for: kto, key: "tarcza")
+                
+                var change = życieNow - value
+                print("Changing życie from \(życieNow) to \(value)")
                 if(value < życieNow && tarczaNow > 0)
                 {
-                    var change = życieNow - value
+                    print("Changing życie by  \(change)")
                     if(tarczaNow >= change)
                     {
                         tarczaNow -= change
@@ -423,11 +432,14 @@ extension ContentView
                         setData(for: kto, key: "tarcza", 0)
                         value = życieNow - change
                     }
-                    if(value < życieNow && kto != "Player\(activePlayer + 1)")
-                    {
-                        setData(for: "Zaklęcie", key: "pacyfizmNow", change)
-                        
-                    }
+                }
+                print("Adding pacyfizmNow \(kto) Player\(activePlayer + 1) \(value) < \(życieNow)")
+                if(value < życieNow && kto != "Player\(activePlayer + 1)")
+                {
+                    var pacyfizmNow = getData(for: kto, key: "pacyfizmNow")
+                    pacyfizmNow += change
+                    setData(for: "Zaklęcie", key: "pacyfizmNow", pacyfizmNow)
+                    print("Adding pacyfizmNow \(pacyfizmNow)")
                 }
             }
             

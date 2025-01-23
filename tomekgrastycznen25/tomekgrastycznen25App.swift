@@ -8,10 +8,7 @@
 import SwiftUI
 import SwiftData
 
-func randomString(length: Int) -> String {
-    let characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    return String((0..<length).compactMap { _ in characters.randomElement() })
-}
+
 @main
 struct tomekgrastycznen25App: App {
     @AppStorage("yourName") var yourName = randomString(length: 8)
@@ -28,6 +25,11 @@ struct tomekgrastycznen25App: App {
         }
     }()
 
+    init() {
+        #if os(macOS)
+        _ = DeviceOrientationManager.shared
+        #endif
+    }
     var body: some Scene {
 
         WindowGroup {

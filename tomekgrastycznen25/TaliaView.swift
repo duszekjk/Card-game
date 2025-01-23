@@ -143,14 +143,19 @@ struct TaliaView: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 10)
                     .fill(Color.gray)
-                    .frame(width: 120, height: 180)
+                    .frame(width: 80, height: 110)
                     .shadow(radius: 5)
 
                 VStack{
                 Text(nazwa)
-                    .font(.headline)
+                    .frame(width: 100, height: 70)
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
                     .foregroundColor(.white)
+                    .rotationEffect(Angle(degrees: -60))
+                    .frame(width: 80, height: 30)
                     .padding()
+                    .padding(.top, 15)
+                    .padding(.bottom, -15)
                 Text("\(talia.count) kart")
                     .foregroundColor(.white)
                     .padding()
@@ -228,7 +233,7 @@ struct TaliaContainerView: View {
             Text("Karty z talii \(containerKey)")
                 .font(.headline)
                 .padding()
-            ScrollView(.horizontal, showsIndicators: false) {
+//            ScrollView(.horizontal, showsIndicators: false) {
                 VStack {
                     let columns = Array(repeating: GridItem(.flexible()), count: Int(max(1, min(5, talia.count))))
                     LazyVGrid(columns: columns, spacing: 5) {
@@ -241,7 +246,7 @@ struct TaliaContainerView: View {
                         }
                     }
                 }
-                .frame(minWidth: size*111)
+                .frame(minWidth: size*100)
                 .onAppear()
                 {
                     kartyCount = talia.count
@@ -251,17 +256,15 @@ struct TaliaContainerView: View {
                     kartyCount = talia.count
                 }
 
-            }
-            .frame(minWidth: size*111, idealWidth: size*112, maxWidth: size*113, minHeight: 140 , idealHeight: 140 * (round(0.5+CGFloat(kartyCount)/CGFloat(size)))+5, maxHeight: 460, alignment: .center)
-//            .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 2))
-            .onDrop(of: [UTType.text], isTargeted: nil) { providers in
-                guard isDropEnabled else { return false }
-                return handleDrop(providers: providers)
-            }
+                .onDrop(of: [UTType.text], isTargeted: nil) { providers in
+                    guard isDropEnabled else { return false }
+                    return handleDrop(providers: providers)
+                }
         }
-        .scaleEffect(UIDevice.current.userInterfaceIdiom == .phone ? 0.75 : 1.0)
+        .scaleEffect(UIDevice.current.userInterfaceIdiom == .phone ? 0.70 : 1.0)
+        .frame(width: min(size*135, (UIScreen.main.bounds.size.width)))
+        .padding(-10)
     }
-
     private func handleDrop(providers: [NSItemProvider]) -> Bool {
         for provider in providers {
             provider.loadItem(forTypeIdentifier: UTType.text.identifier, options: nil) { (data, error) in

@@ -38,6 +38,7 @@ struct StółView: View {
                     gameRound: $gameRound,
                     landscape: $landscape,
                     containerKey: "TablePlayer2",
+                    isDragEnabled: false,
                     sizeFullAction: { tableKey, kards in
                         createSpell("Player2", tableKey, kards) // No labels here
                     }
@@ -52,6 +53,7 @@ struct StółView: View {
                     gameRound: $gameRound,
                     landscape: $landscape,
                     containerKey: "TablePlayerLast",
+                    isDragEnabled: false,
                     sizeFullAction: { tableKey, kards in
                         createSpell(PlayerLast, tableKey, kards) // No labels here
                     }
@@ -66,6 +68,7 @@ struct StółView: View {
                     gameRound: $gameRound,
                     landscape: $landscape,
                     containerKey: "TablePlayer1",
+                    isDragEnabled: false,
                     sizeFullAction: { tableKey, kards in
                         createSpell("Player1", tableKey, kards) // No labels here
                     }
@@ -87,6 +90,7 @@ struct StółView: View {
                         gameRound: $gameRound,
                         landscape: $landscape,
                         containerKey: "Lingering",
+                        isDragEnabled: false,
                         size: 3
                     )
                     .scaleEffect(UIDevice.current.userInterfaceIdiom == .phone ? 0.7 : 0.8)

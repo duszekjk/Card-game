@@ -21,6 +21,7 @@ class MPConnectionManager: NSObject, ObservableObject {
     let nearbyServiceBrowser: MCNearbyServiceBrowser
     
     @Published var availablePeers = [MCPeerID]()
+    @Published var connectedPeer : MCPeerID? = nil
     @Published var receivedInvite: Bool = false
     @Published var receivedInviteFrom: MCPeerID?
     @Published var invitationHandler: ((Bool, MCSession?) -> Void)?
@@ -102,6 +103,10 @@ extension MPConnectionManager: MCNearbyServiceBrowserDelegate {
             if !self.availablePeers.contains(peerID) {
                 self.availablePeers.append(peerID)
             }
+            if let disconnectedPeer = self.connectedPeer, peerID.displayName == disconnectedPeer.displayName {
+                print("Reconnecting to peer: \(peerID.displayName)")
+                browser.invitePeer(peerID, to: self.session, withContext: nil, timeout: 30)
+            }
         }
     }
     
@@ -117,10 +122,19 @@ extension MPConnectionManager: MCNearbyServiceBrowserDelegate {
 extension MPConnectionManager: MCNearbyServiceAdvertiserDelegate {
     func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void) {
         print("Received invitation from peer: \(peerID.displayName)")
-        DispatchQueue.main.async {
-            self.receivedInvite = true
-            self.receivedInviteFrom = peerID
-            self.invitationHandler = invitationHandler
+        
+        // Use a direct closure syntax
+        if let connectedPeer = self.connectedPeer {
+            // Auto-accept invitation if already in a game
+            print("Auto-accepting invitation because connectedPeer is \(connectedPeer.displayName)")
+                invitationHandler(true, self.session)
+        } else {
+            DispatchQueue.main.async {
+                    // Handle showing the alert for first-time invitations
+                    self.receivedInvite = true
+                    self.receivedInviteFrom = peerID
+                    self.invitationHandler = invitationHandler
+                }
         }
     }
 }
@@ -131,11 +145,14 @@ extension MPConnectionManager: MCSessionDelegate {
         switch state {
         case .notConnected:
             DispatchQueue.main.async {
+                self.availablePeers.removeAll()
                 self.paired = false
                 self.isAvailableToPlay = true
+                self.startBrowsing()
             }
         case .connected:
             DispatchQueue.main.async {
+                self.connectedPeer = peerID
                 self.paired = true
                 self.isAvailableToPlay = false
             }

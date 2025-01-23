@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		E0BCC74F2D41C50300894D95 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = E0BCC74E2D41C50300894D95 /* README.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		E06C355E2D3C28FB0037BA51 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		E06C35492D3C28F60037BA51 /* tomekgrastycznen25.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = tomekgrastycznen25.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E06C355D2D3C28FB0037BA51 /* tomekgrastycznen25Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = tomekgrastycznen25Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E06C35672D3C28FC0037BA51 /* tomekgrastycznen25UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = tomekgrastycznen25UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E0BCC74E2D41C50300894D95 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -88,6 +93,7 @@
 		E06C35402D3C28F50037BA51 = {
 			isa = PBXGroup;
 			children = (
+				E0BCC74E2D41C50300894D95 /* README.md */,
 				E06C354B2D3C28F60037BA51 /* tomekgrastycznen25 */,
 				E06C35602D3C28FB0037BA51 /* tomekgrastycznen25Tests */,
 				E06C356A2D3C28FC0037BA51 /* tomekgrastycznen25UITests */,
@@ -228,6 +234,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E0BCC74F2D41C50300894D95 /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -299,6 +306,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = tomekgrastycznen25/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = tomekgra;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "This app needs access to local network for multiplayer game";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -341,6 +349,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = tomekgrastycznen25/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = tomekgra;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "This app needs access to local network for multiplayer game";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;

@@ -16,6 +16,7 @@ struct MPPeersView: View {
     @Binding var startGame: Bool
     @Binding var visible: Bool
     @Binding var thisDevice: Int
+    var yourName : String
     var body: some View {
         VStack {
             HStack
@@ -31,13 +32,10 @@ struct MPPeersView: View {
             }
             List(connectionManager.availablePeers, id: \.self) { peer in
                 HStack {
-                    Text(peer.displayName)
+                    Text("\(hashToEmojis(peer.displayName))\n\(peer.displayName)")
                     Spacer()
                     Button("Select") {
-//                        game.gameType = .peer
                         connectionManager.nearbyServiceBrowser.invitePeer(peer, to: connectionManager.session, withContext: nil, timeout: 30)
-//                        game.player1.name = connectionManager.myPeerId.displayName
-//                        game.player2.name = peer.displayName
                     }
                     .buttonStyle(.borderedProminent)
                     .onAppear()
@@ -46,17 +44,17 @@ struct MPPeersView: View {
                         startGame = false
                     }
                 }
-                .alert("Received Invitation from \(connectionManager.receivedInviteFrom?.displayName ?? "Unknown")",
+                .alert("Received Invitation from \(hashToEmojis(connectionManager.receivedInviteFrom?.displayName ?? "Unknown"))",
                        isPresented: $connectionManager.receivedInvite) {
                     Button("Accept") {
                         if let invitationHandler = connectionManager.invitationHandler {
                             invitationHandler(true, connectionManager.session)
-                            thisDevice = 1
+                            if(thisDevice == -1)
+                            {
+                                thisDevice = 1
+                            }
                             startGame = true
                             visible = false
-//                            game.player1.name = connectionManager.receivedInviteFrom?.displayName ?? "Unknown"
-//                            game.player2.name = connectionManager.myPeerId.displayName
-//                            game.gameType = .peer
                         }
                     }
                     Button("Reject") {
@@ -66,6 +64,10 @@ struct MPPeersView: View {
                     }
                 }
             }
+            
+            Text("Your device is:\n\(hashToEmojis(yourName))\n\(yourName)")
+                .multilineTextAlignment(.center)
+                .padding()
         }
         .onAppear {
             connectionManager.isAvailableToPlay = true
@@ -90,7 +92,7 @@ struct MPPeersView: View {
 
 struct MPPeersView_Previews: PreviewProvider {
     static var previews: some View {
-        MPPeersView(startGame: .constant(false), visible: .constant(true), thisDevice: .constant(-1))
+        MPPeersView(startGame: .constant(false), visible: .constant(true), thisDevice: .constant(-1), yourName: "Jacek")
             .environmentObject(MPConnectionManager(yourName: "Sample"))
 //            .environmentObject(GameService())
     }
