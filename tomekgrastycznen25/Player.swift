@@ -7,6 +7,7 @@
 
 import SwiftUI
 import ImageIO
+import UniformTypeIdentifiers
 //import MobileCoreServices
 
 struct PlayerView: View {
@@ -17,7 +18,6 @@ struct PlayerView: View {
     
     let playerKey: String
     @Binding var gra: Dictionary<String, Any>
-    @Binding var talia: Array<Dictionary<String, Any>>
     @Binding var lastPlayed: String
     @Binding var isActive: Bool
     @Binding var activePlayer : Int
@@ -25,20 +25,74 @@ struct PlayerView: View {
     @Binding var landscape : Bool
     @Binding var playerLoose : String
     @Binding var endGame : Bool
-    
+    @Binding var selectedCard: String?
     
     @State public var showTalia: Bool = false
     @State public var showTaliaID: Int = 0
     
     @State var showBig: Bool = false
+    
+    
+    let requiredKeys = [
+        "id", "nazwa", "ilośćKart", "manaMax", "mana", "życie", "tarcza",
+        "akcjaRzucaneZaklęcie", "akcjaOdrzucaneZaklęcie",
+        "opisRzucaneZaklęcie", "opisOdrzucaneZaklęcie", "opis"
+    ]
+    
+    
+    
+    
+    
+    
     var body: some View {
         if let player = gra[playerKey] as? Dictionary<String, Any> {
                 VStack(alignment: .leading, spacing: 10) {
                     // Name
-                    Text(player["nazwa"] as? String ?? "Unknown Player")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .padding(.leading, 40)
+                    HStack
+                    {
+                        Text(player["nazwa"] as? String ?? "Unknown Player")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .padding(.leading, 90)
+                    }
+                    .frame(width: 300, height: 65)
+                    .onDrag {
+                        // Ensure the player JSON includes all required keys
+                        var completePlayer = addMissingKeys(to: player)
+                        completePlayer["karty"] = []
+                        if let data = try? JSONSerialization.data(withJSONObject: completePlayer, options: []),
+                           let jsonString = String(data: data, encoding: .utf8) {
+                            return NSItemProvider(object: jsonString as NSString)
+                        }
+                        return NSItemProvider(object: "" as NSString)
+                    }
+
+                    .onDrop(of: [UTType.plainText], isTargeted: nil) { providers in
+                        guard let provider = providers.first else { return false }
+                        
+                        provider.loadItem(forTypeIdentifier: UTType.plainText.identifier, options: nil) { (item, error) in
+                            if let data = item as? Data,
+                               let jsonString = String(data: data, encoding: .utf8),
+                               let jsonData = jsonString.data(using: .utf8) {
+                                do {
+                                    if let decodedPlayer = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [String: Any] {
+                                        // Validate the JSON structure
+                                        if validatePlayerJSON(decodedPlayer) {
+                                            // Update your SwiftUI object if valid
+                                            DispatchQueue.main.async {
+                                                gra[playerKey] = decodedPlayer
+                                            }
+                                        } else {
+                                            print("Invalid JSON structure for player.")
+                                        }
+                                    }
+                                } catch {
+                                    print("Error deserializing JSON: \(error)")
+                                }
+                            }
+                        }
+                        return true
+                    }
                     
                     // ilośćKart, mana/manaMax, życie
                     
@@ -50,11 +104,11 @@ struct PlayerView: View {
                         {
                             if(UIDevice.current.userInterfaceIdiom != .phone)
                             {
-                                TaliaView(gra: $gra, talia: $talia, nazwa: "Talia\n\(player["nazwa"] ?? playerKey)")
+                                TaliaView(gra: $gra, gameRound: $gameRound, playerID: player["id"] as! String, nazwa: "Talia\n\(player["nazwa"] ?? playerKey)")
                                     .onTapGesture(count: 1) {
                                         DispatchQueue.main.async
                                         {
-                                            showTaliaID = 2
+                                            showTaliaID = activePlayer + 1
                                             print("(showTaliaID - 1) \((showTaliaID - 1)) / \(playersList.count)  \(showTaliaID > 0 && showTaliaID < playersList.count + 1)")
                                         }
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -65,17 +119,16 @@ struct PlayerView: View {
                                         ScrollView {
                                             TaliaContainerView(
                                                 gra: $gra,
-                                                talia: $talia,
                                                 lastPlayed: $lastPlayed,
                                                 activePlayer: $activePlayer,
-                                                gameRound: $gameRound,
+                                                gameRound: $gameRound, show: $showTalia, selectedCard: $selectedCard,
                                                 containerKey: "TaliaPlayer\(showTaliaID)",
                                                 size: 5
                                             )
                                         }
                                     }
                             }
-                            KartaContainerView(gra: $gra, talia: $talia, lastPlayed: $lastPlayed, activePlayer: $activePlayer, gameRound: $gameRound, landscape: $landscape, containerKey: playerKey, isDropEnabled: false, size: max(3, min(CGFloat(integerLiteral: (player["karty"]  as? Array<Dictionary<String, Any>>)?.count ?? 3), 10)))
+                            KartaContainerView(gra: $gra, lastPlayed: $lastPlayed, activePlayer: $activePlayer, gameRound: $gameRound, landscape: $landscape, selectedCard: $selectedCard, containerKey: playerKey, isDropEnabled: false, size: max(3, min(CGFloat(integerLiteral: (player["karty"]  as? Array<Dictionary<String, Any>>)?.count ?? 3), 10)))
                         }
                     }
                     
@@ -184,8 +237,8 @@ struct PlayerView: View {
                     }
                 })
                 {
-                    PlayerBigView(playerKey: playerKey, gra: $gra, talia: $talia, lastPlayed: $lastPlayed, isActive: $isActive, activePlayer: $activePlayer, gameRound: $gameRound
-                                  , landscape: $landscape, playerLoose: $playerLoose, endGame: $endGame, onLongPress: { image in
+                    PlayerBigView(playerKey: playerKey, gra: $gra, lastPlayed: $lastPlayed, isActive: $isActive, activePlayer: $activePlayer, gameRound: $gameRound
+                                  , landscape: $landscape, playerLoose: $playerLoose, endGame: $endGame, selectedCard: $selectedCard, onLongPress: { image in
                         capturedImage = image
                         showBig = false
                     })
@@ -197,13 +250,42 @@ struct PlayerView: View {
                 .foregroundColor(.red)
         }
     }
+    
+    func addMissingKeys(to json: [String: Any]) -> [String: Any] {
+        
+        var updatedJSON = json
 
+        // Add missing keys with null value
+        for key in requiredKeys {
+            if updatedJSON[key] == nil {
+                updatedJSON[key] = NSNull() // Adds a null value
+            }
+        }
+        return updatedJSON
+    }
+    func validatePlayerJSON(_ json: [String: Any]) -> Bool {
+        
+        // Check if all required keys exist
+        for key in requiredKeys {
+            if json[key] == nil {
+                print("Missing key: \(key)")
+                return false
+            }
+        }
+        
+        // Additional validation: `id` must start with "Player"
+        if let id = json["id"] as? String, !id.starts(with: "Player") {
+            print("Invalid id: \(id). It must start with 'Player'.")
+            return false
+        }
+        
+        return true
+    }
 
 }
 struct PlayerBigView: View {
     let playerKey: String
     @Binding var gra: Dictionary<String, Any>
-    @Binding var talia: Array<Dictionary<String, Any>>
     @Binding var lastPlayed: String
     @Binding var isActive: Bool
     @Binding var activePlayer : Int
@@ -211,6 +293,7 @@ struct PlayerBigView: View {
     @Binding var landscape : Bool
     @Binding var playerLoose : String
     @Binding var endGame : Bool
+    @Binding var selectedCard: String?
     
     @State public var showTalia: Bool = false
     @State public var showTaliaID: Int = 0
@@ -332,7 +415,7 @@ struct PlayerBigView: View {
                         {
                             HStack
                             {
-                                KartaContainerView(gra: $gra, talia: $talia, lastPlayed: $lastPlayed, activePlayer: $activePlayer, gameRound: $gameRound, landscape: $landscape, containerKey: playerKey, isDropEnabled: false, size: max(1, min(CGFloat(integerLiteral: (player["karty"]  as? Array<Dictionary<String, Any>>)?.count ?? 3), 10)))
+                                KartaContainerView(gra: $gra, lastPlayed: $lastPlayed, activePlayer: $activePlayer, gameRound: $gameRound, landscape: $landscape, selectedCard: $selectedCard, containerKey: playerKey, isDropEnabled: false, size: max(1, min(CGFloat(integerLiteral: (player["karty"]  as? Array<Dictionary<String, Any>>)?.count ?? 3), 10)))
                                     .padding(.horizontal, 25)
                                     .onLongPressGesture {
                                             DispatchQueue.main.async
@@ -348,10 +431,9 @@ struct PlayerBigView: View {
                                         ScrollView {
                                             TaliaContainerView(
                                                 gra: $gra,
-                                                talia: $talia,
                                                 lastPlayed: $lastPlayed,
                                                 activePlayer: $activePlayer,
-                                                gameRound: $gameRound,
+                                                gameRound: $gameRound, show: $showTalia, selectedCard: $selectedCard,
                                                 containerKey: "TaliaPlayer\(showTaliaID)",
                                                 size: 5
                                             )

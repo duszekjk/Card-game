@@ -10,13 +10,13 @@ import SwiftUI
 
 struct StółView: View {
     @Binding var gra: Dictionary<String, Any>
-    @Binding var talie: Dictionary<String, Array<Dictionary<String, Any>>>
     @Binding var PlayerLast: String
     @Binding var activePlayer: Int
     @Binding var gameRound: Int
     @Binding var landscape : Bool
     @Binding var connectionView: Bool
     @Binding var thisDevice: Int
+    @Binding var selectedCard: String?
     var createSpell: (String, String, Array<Dictionary<String, Any>>) -> Void
     
     
@@ -32,11 +32,11 @@ struct StółView: View {
             VStack {
                 KartaContainerView(
                     gra: $gra,
-                    talia: bindingForKey(playersList[activePlayer], in: $talie),
                     lastPlayed: $PlayerLast,
                     activePlayer: $activePlayer,
                     gameRound: $gameRound,
                     landscape: $landscape,
+                    selectedCard: $selectedCard,
                     containerKey: "TablePlayer2",
                     isDragEnabled: false,
                     sizeFullAction: { tableKey, kards in
@@ -47,11 +47,11 @@ struct StółView: View {
                 
                 KartaContainerView(
                     gra: $gra,
-                    talia: bindingForKey(playersList[activePlayer], in: $talie),
                     lastPlayed: $PlayerLast,
                     activePlayer: $activePlayer,
                     gameRound: $gameRound,
                     landscape: $landscape,
+                    selectedCard: $selectedCard,
                     containerKey: "TablePlayerLast",
                     isDragEnabled: false,
                     sizeFullAction: { tableKey, kards in
@@ -62,11 +62,11 @@ struct StółView: View {
                 
                 KartaContainerView(
                     gra: $gra,
-                    talia: bindingForKey(playersList[activePlayer], in: $talie),
                     lastPlayed: $PlayerLast,
                     activePlayer: $activePlayer,
                     gameRound: $gameRound,
                     landscape: $landscape,
+                    selectedCard: $selectedCard,
                     containerKey: "TablePlayer1",
                     isDragEnabled: false,
                     sizeFullAction: { tableKey, kards in
@@ -84,11 +84,11 @@ struct StółView: View {
                     
                     KartaContainerView(
                         gra: $gra,
-                        talia: bindingForKey(playersList[activePlayer], in: $talie),
                         lastPlayed: $PlayerLast,
                         activePlayer: $activePlayer,
                         gameRound: $gameRound,
                         landscape: $landscape,
+                        selectedCard: $selectedCard,
                         containerKey: "Lingering",
                         isDragEnabled: false,
                         size: 3

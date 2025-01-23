@@ -7,48 +7,50 @@
 
 import Foundation
 
+func getData(_ gra: inout Dictionary<String, Any>, for player: String, key:String) -> Int
+{
+    guard let gracz = gra[player] as? [String: Any],
+          let value = gracz[key] as? Int else { return 0 }
+    return max(0, value)
+}
+func getTextData(_ gra: inout Dictionary<String, Any>, for player: String, key:String) -> String
+{
+    print("getTextData(for \(player), key: \(key)")
+    guard let gracz = gra[player] as? [String: Any] else { return "error 1" }
+    print(gracz)
+    guard let value = gracz[key] as? String else { return "error 2" }
+    print(value)
+    return value
+}
+func getKarty(_ gra: inout Dictionary<String, Any>, for player: String) -> [[String: Any]]
+{
+    guard let gracz = gra[player] as? [String: Any],
+          let value = gracz["karty"] as? [[String: Any]] else {
+        print("no cards for \(player)")
+        return [] }
+    return value
+}
+func setKarty(_ gra: inout Dictionary<String, Any>, for player: String, value: [[String: Any]])
+{
+    if var gracz = gra[player] as? [String: Any] {
+        gracz["karty"] = value
+        gra[player] = gracz
+    } else {
+        print("Error saving cards for \(player) in game:")
+    }
+}
+func setData(_ gra: inout Dictionary<String, Any>, for player: String, key:String, _ value: Int)
+{
+    if var gracz = gra[player] as? [String: Any] {
+        gracz[key] = max(0, value)
+        gra[player] = gracz
+    } else {
+        print("Error setting data \(key): \(value)")
+    }
+}
 extension ContentView
 {
     
-    func getData(for player: String, key:String) -> Int
-    {
-        guard let gracz = gra[player] as? [String: Any],
-              let value = gracz[key] as? Int else { return 0 }
-        return max(0, value)
-    }
-    func getTextData(for player: String, key:String) -> String
-    {
-        print("getTextData(for \(player), key: \(key)")
-        guard let gracz = gra[player] as? [String: Any] else { return "error 1" }
-        print(gracz)
-        guard let value = gracz[key] as? String else { return "error 2" }
-        print(value)
-        return value
-    }
-    func getKarty(for player: String) -> [[String: Any]]
-    {
-        guard let gracz = gra[player] as? [String: Any],
-              let value = gracz["karty"] as? [[String: Any]] else { return [] }
-        return value
-    }
-    func setKarty(for player: String, value: [[String: Any]])
-    {
-        if var gracz = gra[player] as? [String: Any] {
-            gracz["karty"] = value
-            gra[player] = gracz
-        } else {
-            print("Error saving cards")
-        }
-    }
-    func setData(for player: String, key:String, _ value: Int)
-    {
-        if var gracz = gra[player] as? [String: Any] {
-            gracz[key] = max(0, value)
-            gra[player] = gracz
-        } else {
-            print("Error setting data \(key): \(value)")
-        }
-    }
     func createSpell(for playerKey:String, from tableKey:String,  with kards: Array<Dictionary<String, Any>>)
     {
         if var playerData = gra[tableKey] as? [String: Any] {
@@ -88,7 +90,6 @@ extension ContentView
                 }
                 else
                 {
-                    gra["talie"] = talie
                     connectionManager.send(gameState: gra)
                 }
             }
@@ -191,19 +192,9 @@ extension ContentView
         for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
         {
             var player = zaklęcie["player"] as! String
-//            if(zaklęcie["lingering"] as! String == "lingering")
-//            {
-//                var lingering = gra["Lingering"] as! Dictionary<String, Any>
-//                var lingeringKarty = lingering["karty"] as! Array<Dictionary<String, Any>>
-//                lingeringKarty.append(zaklęcie)
-//                lingering["karty"] = lingeringKarty
-//                gra["Lingering"] = lingering
-//            }
-//            else
-//            {
-                var talia = talie[player] as! Array<Dictionary<String, Any>>
+            var talia = getKarty(&gra, for: "Talia\(player)")//talie[player] as! Array<Dictionary<String, Any>>
                 talia.append(zaklęcie)
-                talie[player] = talia
+                setKarty(&gra, for: "Talia\(player)", value: talia)
 //            }
         }
         if var playerData = gra["Zaklęcie"] as? [String: Any] {
@@ -255,43 +246,45 @@ extension ContentView
                             }
                         }
                     }
-                    setData(for: "Zaklęcie", key: "pacyfizmNow", 0)
+                    setData(&gra, for: "Zaklęcie", key: "pacyfizmNow", 0)
                 }
                 
                 for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
                 {
                     var zaklęcieNow = zaklęcie
-                    var player = zaklęcie["player"] as! String
+                    let player = zaklęcie["player"] as! String
                     
                     if(zaklęcie["lingeringNow"] != nil)
                     {
-                        if let ling = zaklęcie["lingeringNow"] as? String
+                        
+                        if let ling = zaklęcie["lingeringNow"] as? Int
                         {
-                            if(!ling.isEmpty)
-                            {
-                                spell(player: "Player\(activePlayer + 1)", run: ling, against: "Player\((activePlayer + 1) % 2 + 1)")
-                            }
+                            var lingering = gra["Lingering"] as! Dictionary<String, Any>
+                            var lingeringKarty = lingering["karty"] as! Array<Dictionary<String, Any>>
                             zaklęcieNow["lingeringNow"] = nil
+                            lingeringKarty.append(zaklęcieNow)
+                            lingering["karty"] = lingeringKarty
+                            gra["Lingering"] = lingering
+                            continue
                         }
                         else
                         {
-                            if let ling = zaklęcie["lingeringNow"] as? Int
+                            if let ling = zaklęcie["lingeringNow"] as? String
                             {
-                                var lingering = gra["Lingering"] as! Dictionary<String, Any>
-                                var lingeringKarty = lingering["karty"] as! Array<Dictionary<String, Any>>
                                 zaklęcieNow["lingeringNow"] = nil
-                                lingeringKarty.append(zaklęcieNow)
-                                lingering["karty"] = lingeringKarty
-                                gra["Lingering"] = lingering
+                                if(ling.count > 5)
+                                {
+                                    spell(player: "Player\(activePlayer + 1)", run: ling, against: "Player\((activePlayer + 1) % 2 + 1)")
+                                }
                             }
                         }
                     }
-                    else
-                    {
-                        var talia = talie[player] as! Array<Dictionary<String, Any>>
-                        talia.append(zaklęcieNow)
-                        talie[player] = talia
-                    }
+                    print("Karta back to Talia\(player) \(zaklęcieNow["opis"]!)")
+                    var talia = getKarty(&gra, for: "Talia\(player)")
+                    print("\(talia.count)")
+                    talia.append(zaklęcieNow)
+                    print("\(talia.count)")
+                    setKarty(&gra, for: "Talia\(player)", value: talia)
                 }
                 if var playerData = gra["Zaklęcie"] as? [String: Any] {
                     playerData["karty"] = Array<Dictionary<String, Any>>()
@@ -313,7 +306,7 @@ extension ContentView
 //        // Parse and execute the action
 //        print("---------------parsing spell---------------")
         let parsedAction = parseAction(action: action, playerMe: playerMe, playerYou: playerYou)
-        printFormatted(dictionary: (gra["Zaklęcie"] as! Dictionary<String, Any>))
+//        printFormatted(dictionary: (gra["Zaklęcie"] as! Dictionary<String, Any>))
         print("---------------running spell \(parsedAction)---------------")
         executeAction(parsedAction)
         
@@ -342,7 +335,7 @@ extension ContentView
     {
         // Split the action into left-hand side and right-hand side
         var action = actionFull
-        if action.contains(" if ") {
+        if action.contains("if ") {
             // Split the action into condition and execution parts
             let ifParts = action.split(separator: "if", maxSplits: 1).last!.split(separator: ":", maxSplits: 1)
             let conditionPart = ifParts.first!.trimmingCharacters(in: .whitespaces)
@@ -412,8 +405,8 @@ extension ContentView
             if(leftSide.contains(".życie"))
             {
                 var kto = String(leftSide.split(separator: ".").first!.dropFirst())
-                var życieNow = getData(for: kto, key: "życie")
-                var tarczaNow = getData(for: kto, key: "tarcza")
+                var życieNow = getData(&gra, for: kto, key: "życie")
+                var tarczaNow = getData(&gra, for: kto, key: "tarcza")
                 
                 var change = życieNow - value
                 print("Changing życie from \(życieNow) to \(value)")
@@ -424,21 +417,21 @@ extension ContentView
                     {
                         tarczaNow -= change
                         value = życieNow
-                        setData(for: kto, key: "tarcza", tarczaNow)
+                        setData(&gra, for: kto, key: "tarcza", tarczaNow)
                     }
                     else
                     {
                         change -= tarczaNow
-                        setData(for: kto, key: "tarcza", 0)
+                        setData(&gra, for: kto, key: "tarcza", 0)
                         value = życieNow - change
                     }
                 }
                 print("Adding pacyfizmNow \(kto) Player\(activePlayer + 1) \(value) < \(życieNow)")
                 if(value < życieNow && kto != "Player\(activePlayer + 1)")
                 {
-                    var pacyfizmNow = getData(for: kto, key: "pacyfizmNow")
+                    var pacyfizmNow = getData(&gra, for: kto, key: "pacyfizmNow")
                     pacyfizmNow += change
-                    setData(for: "Zaklęcie", key: "pacyfizmNow", pacyfizmNow)
+                    setData(&gra, for: "Zaklęcie", key: "pacyfizmNow", pacyfizmNow)
                     print("Adding pacyfizmNow \(pacyfizmNow)")
                 }
             }

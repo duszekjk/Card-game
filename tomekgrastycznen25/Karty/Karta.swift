@@ -3,6 +3,7 @@ import UniformTypeIdentifiers
 
 struct KartaView: View {
     let karta: Dictionary<String, Any>
+    @Binding var selectedCard: String?
     @State public var showBig = false
     
     @State private var capturedImage: UIImage?
@@ -40,7 +41,7 @@ struct KartaView: View {
             }
         })
         {
-            KartaBigView(karta: karta, showBig: $showBig, onLongPress: { image in
+            KartaBigView(karta: karta, showBig: $showBig, selectedCard: $selectedCard, onLongPress: { image in
                 capturedImage = image
                 showBig = false
             })
@@ -50,6 +51,7 @@ struct KartaView: View {
 struct KartaBigView: View {
     let karta: Dictionary<String, Any>
     @Binding var showBig: Bool
+    @Binding var selectedCard: String?
     let onLongPress: (UIImage) -> Void
     @State var isSharing: Bool = false
 
@@ -63,6 +65,14 @@ struct KartaBigView: View {
                         Text("\(karta["koszt"] as? Int ?? 0)")
                             .font(.footnote)
                         Spacer()
+                        Button(action:{
+                            if let data = sortedJSONData(from: karta),
+                               let jsonString = String(data: data, encoding: .utf8) {
+                                selectedCard = jsonString
+                            }
+                        }, label: {
+                            Image(systemName: "slider.horizontal.2.square.on.square")
+                        })
                     }
                     .padding()
                     Spacer()
@@ -158,11 +168,11 @@ var emptyKarty = [emptyKarta, emptyKarta, emptyKarta]
 
 struct KartaContainerView: View {
     @Binding var gra: Dictionary<String, Any>
-    @Binding var talia: Array<Dictionary<String, Any>>
     @Binding var lastPlayed: String
     @Binding var activePlayer : Int
     @Binding var gameRound : Int
     @Binding var landscape : Bool
+    @Binding var selectedCard: String?
     let containerKey: String // Key in `gra` (e.g., "Zaklęcie", "Lingering")
     var isDragEnabled: Bool = true
     var isDropEnabled: Bool = true
@@ -199,7 +209,7 @@ struct KartaContainerView: View {
                                     
                                     if(isReorderable)
                                     {
-                                        KartaView(karta: karty[index])
+                                        KartaView(karta: karty[index], selectedCard: $selectedCard)
                                             .onDrag {
                                                 draggedIndex = index
                                                 isReordering = true
@@ -207,7 +217,7 @@ struct KartaContainerView: View {
                                             }
                                     }
                                     else {
-                                        KartaView(karta: karty[index])
+                                        KartaView(karta: karty[index], selectedCard: $selectedCard)
                                             .onDrag {
                                                 NSItemProvider(object: isDragEnabled ? "\(containerKey)|\(index)" as NSString : "" as NSString)
                                             }
@@ -339,6 +349,7 @@ struct KartaContainerView: View {
     private func moveCard(from sourceKey: String, at sourceIndex: Int, to destinationKey: String) {
         var sourceCards = Array<Dictionary<String, Any>>()
         var sourceIndexCorrected = sourceIndex
+        var talia = getKarty(&gra, for: "Talia\(sourceKey)")
         if(gra[sourceKey] == nil)
         {
             sourceCards = talia

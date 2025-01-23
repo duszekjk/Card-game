@@ -8,10 +8,10 @@
 import SwiftUI
 struct OdrzucanieKartView: View {
     @Binding var gra: Dictionary<String, Any>
-    @Binding var talie: Dictionary<String, Array<Dictionary<String, Any>>>
     @Binding var activePlayer : Int
     @Binding var gameRound : Int
     @Binding var show : Bool
+    @Binding var selectedCard: String?
     
     @State var cards: CGFloat = 2.0
     @State var maxCards: CGFloat = 1.0
@@ -30,22 +30,21 @@ struct OdrzucanieKartView: View {
                     let karty = (kartyLoad.isEmpty) ? emptyKarty : kartyLoad
                     let columns = Array(repeating: GridItem(.flexible()), count: Int(max(1, min(5, karty.count))))
 
-
                     VStack {
                         LazyVGrid(columns: columns, spacing: 5) {
-                            ForEach(karty.indices, id: \.self) { index in
+                            ForEach(0..<karty.count, id: \.self) { index in
                                 let karta = karty[index]
                                 Button(action: {
                                     let player = karta["player"] as! String
-                                    var talia = talie[player] as! Array<Dictionary<String, Any>>
+                                    var talia = getKarty(&gra, for: "Talia\(player)")//talie[player] as! Array<Dictionary<String, Any>>
                                     talia.append(karta)
                                     var kartyEdit = karty
                                     kartyEdit.remove(at: index)
                                     var containerEdit = container
                                     containerEdit["karty"] = kartyEdit
                                     gra[playersList[activePlayer]] = containerEdit
-                                    talie[player] = talia
-                                }, label: { KartaView(karta: karta) })
+                                    setKarty(&gra, for: "Talia\(player)", value: talia)
+                                }, label: { KartaView(karta: karta, selectedCard: $selectedCard) })
                                 
                                     
                             }
@@ -78,9 +77,9 @@ struct OdrzucanieKartView: View {
                     let columns = Array(repeating: GridItem(.flexible()), count: Int(max(1, min(5, karty.count))))
                     VStack {
                         LazyVGrid(columns: columns, spacing: 5) {
-                            ForEach(karty.indices, id: \.self) { index in
+                            ForEach(0..<karty.count, id: \.self) { index in
                                 let karta = karty[index]
-                                KartaView(karta: karta)
+                                KartaView(karta: karta, selectedCard: $selectedCard)
                             }
                         }
                     }

@@ -11,11 +11,11 @@ import SwiftUI
 struct ZaklęcieView: View {
     
     @Binding var gra: Dictionary<String, Any>
-    @Binding var talie: Dictionary<String, Array<Dictionary<String, Any>>>
     @Binding var lastPlayed: String
     @Binding var activePlayer : Int
     @Binding var gameRound : Int
     @Binding var landscape : Bool
+    @Binding var selectedCard: String?
     
     var playerKey:String
     
@@ -101,14 +101,14 @@ struct ZaklęcieView: View {
                 
             }
             Divider()
-            KartaContainerView(gra: $gra, talia: bindingForKey(playersList[activePlayer], in: $talie), lastPlayed: $lastPlayed, activePlayer: $activePlayer, gameRound: $gameRound, landscape: $landscape, containerKey: "Zaklęcie", isReorderable: true, size: 11)
+            KartaContainerView(gra: $gra, lastPlayed: $lastPlayed, activePlayer: $activePlayer, gameRound: $gameRound, landscape: $landscape, selectedCard: $selectedCard, containerKey: "Zaklęcie", isReorderable: true, size: 11)
             
             HStack
             {
                 Button("Rzuć", action: {
-                    setData(for: "mana", manaMax - mana)
-                    setData(for: "życie", życieMax - życie)
-                    setData(for: "ilośćKart", kartyMax - karty)
+                    setData(&gra, for: playerKey, key: "mana", manaMax - mana)
+                    setData(&gra, for: playerKey, key: "życie", życieMax - życie)
+                    setData(&gra, for: playerKey, key: "ilośćKart", kartyMax - karty)
                     if var gracz = gra["Zaklęcie"] as? [String: Any] {
                         gracz["sacrifice"] = max(0, życie + karty)
                     gra["Zaklęcie"] = gracz
@@ -133,9 +133,9 @@ struct ZaklęcieView: View {
     func loadData()
     {
         cost = calculateSpellCost() ?? 0
-        manaMax = getData(for: "mana")
-        życieMax = getData(for: "życie")
-        kartyMax = getData(for: "ilośćKart")
+        manaMax = getData(&gra, for: playerKey, key: "mana")
+        życieMax = getData(&gra, for: playerKey, key: "życie")
+        kartyMax = getData(&gra, for: playerKey, key: "ilośćKart")
         
         mana = min(cost, manaMax)
         karty = 0
@@ -148,21 +148,6 @@ struct ZaklęcieView: View {
             {
                 życie = min(cost - (mana + karty), życieMax)
             }
-        }
-    }
-    func getData(for name: String) -> Int
-    {
-        guard let gracz = gra[playerKey] as? [String: Any],
-              let value = gracz[name] as? Int else { return 0 }
-        return max(0, value)
-    }
-    func setData(for name: String, _ value: Int)
-    {
-        if var gracz = gra[playerKey] as? [String: Any] {
-            gracz[name] = max(0, value)
-        gra[playerKey] = gracz
-        } else {
-            print("Zaklęcie not found!!!")
         }
     }
 }
