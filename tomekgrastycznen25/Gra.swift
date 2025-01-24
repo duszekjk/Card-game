@@ -16,7 +16,16 @@ extension ContentView
     func loadGame()
     {
         print("LOAD_START")
-        gra["Talia"] = loadDefaultDeck() ?? taliaBase
+        if(gra["TaliaNazwa"] != nil)
+        {
+            var taliaNazwa = gra["TaliaNazwa"] as! String
+            var talia = loadDeck(fromFile: taliaNazwa+".json")
+            gra["Talia"] = talia
+        }
+        else
+        {
+            gra["Talia"] = loadDefaultDeck() ?? taliaBase
+        }
         print("TALIA LOADED")
         var talia = gra["Talia"] as! Array<Dictionary<String, Any>>
         if(talia.count < 2)

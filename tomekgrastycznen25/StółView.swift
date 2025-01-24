@@ -14,7 +14,7 @@ struct StółView: View {
     @Binding var activePlayer: Int
     @Binding var gameRound: Int
     @Binding var landscape : Bool
-    @Binding var connectionView: Bool
+    @Binding var menuView: Bool
     @Binding var thisDevice: Int
     @Binding var selectedCard: String?
     var createSpell: (String, String, Array<Dictionary<String, Any>>) -> Void
@@ -104,13 +104,10 @@ struct StółView: View {
                 )
                     Text("Ruch \(gameRound - 1)")
                         .padding()
-                    if(gameRound < 3 && thisDevice == -1)
-                    {
-                        Button("Multiplayer BT") {
-                            connectionView = true
-                        }
-                        .buttonStyle(.borderedProminent)
+                    Button("Menu") {
+                        menuView = true
                     }
+                    .buttonStyle(.borderedProminent)
             }
         }
     }

@@ -13,7 +13,7 @@ let sampleCard = Card(
     akcjaRzucaneZaklęcie: "@PlayerYou.życie = @PlayerYou.życie - 1",
     akcjaOdrzuconeZaklęcie: "",
     wandering: "",
-    lingering: "",
+    lingering: .string(""),
     pacyfizm: "@PlayerYou.ilośćKart = @PlayerYou.ilośćKart + 1"
 )
 
@@ -30,8 +30,37 @@ struct Card: Identifiable, Codable {
     var akcjaRzucaneZaklęcie: String
     var akcjaOdrzuconeZaklęcie: String
     var wandering: String
-    var lingering: String
+    var lingering: LingeringType
     var pacyfizm: String
+
+    enum LingeringType: Codable {
+        case int(Int)
+        case string(String)
+        
+        init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            if let intValue = try? container.decode(Int.self) {
+                self = .int(intValue)
+            } else if let stringValue = try? container.decode(String.self) {
+                self = .string(stringValue)
+            } else {
+                throw DecodingError.typeMismatch(
+                    LingeringType.self,
+                    DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Invalid lingering value")
+                )
+            }
+        }
+        
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.singleValueContainer()
+            switch self {
+            case .int(let value):
+                try container.encode(value)
+            case .string(let value):
+                try container.encode(value)
+            }
+        }
+    }
 }
 
 
@@ -67,18 +96,23 @@ struct CardEditorView: View {
     @State private var postacie = ["Mag Światła", "Mag Krwii"]
     @State private var card: Card
     
+    @State private var showWandering: Bool = false
     @State private var showAkcjaRzucaneZaklęcie: Bool = false
+    @State private var showAkcjaOdrzuconeZaklęcie: Bool = false
+    @State private var lingeringString: Bool = false
+    @State private var showLingering: Bool = false
+    @State private var showPacyfizm: Bool = false
     init(gra:Binding<Dictionary<String, Any>>, jsonText: Binding<String?>) {
         _gra = gra
         _jsonText = jsonText
-        _card = State(initialValue: Card.load(from: jsonText.wrappedValue!) ?? Card(
+        _card = State(initialValue: Card.load(from: jsonText.wrappedValue ?? "") ?? Card(
             opis: "",
             koszt: 0,
             postacie: [],
             akcjaRzucaneZaklęcie: "",
             akcjaOdrzuconeZaklęcie: "",
             wandering: "",
-            lingering: "",
+            lingering: .string(""),
             pacyfizm: ""
         ))
     }
@@ -98,13 +132,111 @@ struct CardEditorView: View {
             }
             
             Section(header: Text("Akcje")) {
-                Button("akcjaRzucaneZaklęcie")
+                
+                HStack
                 {
-                    showAkcjaRzucaneZaklęcie = true
+                    Button("akcjaOdrzuconeZaklęcie")
+                    {
+                        showAkcjaOdrzuconeZaklęcie = true
+                    }
+                    .sheet(isPresented: $showAkcjaOdrzuconeZaklęcie)
+                    {
+                        ActionEditorView(gra: $gra, akcjaText: $card.akcjaOdrzuconeZaklęcie)
+                    }
+                    Text(card.akcjaOdrzuconeZaklęcie)
                 }
-                .sheet(isPresented: $showAkcjaRzucaneZaklęcie)
+                HStack
                 {
-                    ActionEditorView(gra: $gra)
+                    Button("pacyfizm")
+                    {
+                        showPacyfizm = true
+                    }
+                    .sheet(isPresented: $showPacyfizm)
+                    {
+                        ActionEditorView(gra: $gra, akcjaText: $card.pacyfizm)
+                    }
+                    Text(card.pacyfizm)
+                }
+                HStack
+                {
+                    Button("wandering")
+                    {
+                        showWandering = true
+                    }
+                    .sheet(isPresented: $showWandering)
+                    {
+                        ActionEditorView(gra: $gra, akcjaText: $card.wandering)
+                    }
+                    Text(card.wandering)
+                }
+                HStack
+                {
+                    Button("akcjaRzucaneZaklęcie")
+                    {
+                        showAkcjaRzucaneZaklęcie = true
+                    }
+                    .sheet(isPresented: $showAkcjaRzucaneZaklęcie)
+                    {
+                        ActionEditorView(gra: $gra, akcjaText: $card.akcjaRzucaneZaklęcie)
+                    }
+                    Text(card.akcjaRzucaneZaklęcie)
+                }
+                HStack
+                {
+                    VStack
+                    {
+                        Text("lingering")
+                            .font(.headline)
+                        Picker("Lingering Type", selection: Binding(
+                            get: {
+                                switch card.lingering {
+                                case .int:
+                                    return "Zachowaj"
+                                case .string:
+                                    return "String"
+                                }
+                            },
+                            set: { newValue in
+                                switch newValue {
+                                case "Zachowaj":
+                                    card.lingering = .int(0)
+                                case "String":
+                                    card.lingering = .string("")
+                                default:
+                                    break
+                                }
+                            }
+                        )) {
+                            Text("Zachowaj").tag("Zachowaj")
+                            Text("Akcja").tag("String")
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                        
+                        switch card.lingering {
+                        case .int(let value):
+                            Stepper(value: Binding(
+                                get: { value },
+                                set: { card.lingering = .int($0) }
+                            ), in: 0...100) {
+                                Text("Ilość kart: \(value)")
+                            }
+                        case .string(let value):
+                            HStack{
+                                Button("lingering")
+                                {
+                                    showLingering = true
+                                }
+                                .sheet(isPresented: $showLingering)
+                                {
+                                    ActionEditorView(gra: $gra, akcjaText: Binding(
+                                        get: { value },
+                                        set: { card.lingering = .string($0) }
+                                    ))
+                                }
+                                Text(value)
+                            }.padding()
+                        }
+                    }
                 }
             }
             Section(header: Text("Postacie")) {
@@ -130,11 +262,17 @@ struct CardEditorView: View {
         }
         .onAppear()
         {
-            card = Card.load(from: jsonText!)!
+            if(jsonText != nil)
+            {
+                card = Card.load(from: jsonText!)!
+            }
         }
         .onChange(of: jsonText)
         {
-            card = Card.load(from: jsonText!)!
+            if(jsonText != nil)
+            {
+                card = Card.load(from: jsonText!)!
+            }
         }
         .navigationTitle("Edit Card")
     }

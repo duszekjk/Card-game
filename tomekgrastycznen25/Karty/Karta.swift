@@ -41,7 +41,7 @@ struct KartaView: View {
             }
         })
         {
-            KartaBigView(karta: karta, showBig: $showBig, selectedCard: $selectedCard, onLongPress: { image in
+            KartaBigView(karta: karta, showBig: $showBig, onLongPress: { image in
                 capturedImage = image
                 showBig = false
             })
@@ -51,7 +51,6 @@ struct KartaView: View {
 struct KartaBigView: View {
     let karta: Dictionary<String, Any>
     @Binding var showBig: Bool
-    @Binding var selectedCard: String?
     let onLongPress: (UIImage) -> Void
     @State var isSharing: Bool = false
 
@@ -64,16 +63,7 @@ struct KartaBigView: View {
                     {
                         Text("\(karta["koszt"] as? Int ?? 0)")
                             .font(.footnote)
-                        Spacer()
-                        Button(action:{
-                            if let data = sortedJSONData(from: karta),
-                               let jsonString = String(data: data, encoding: .utf8) {
-                                selectedCard = jsonString
-                            }
-                        }, label: {
-                            Image(systemName: "slider.horizontal.2.square.on.square")
-                        })
-                    }
+                        Spacer()                    }
                     .padding()
                     Spacer()
                     Text("\(karta["opis"] as? String ?? karta["akcjaRzucaneZaklęcie"] as? String ?? "----------")")

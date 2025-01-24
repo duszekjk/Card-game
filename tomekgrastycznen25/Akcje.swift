@@ -24,11 +24,22 @@ func getTextData(_ gra: inout Dictionary<String, Any>, for player: String, key:S
 }
 func getKarty(_ gra: inout Dictionary<String, Any>, for player: String) -> [[String: Any]]
 {
-    guard let gracz = gra[player] as? [String: Any],
-          let value = gracz["karty"] as? [[String: Any]] else {
-        print("no cards for \(player)")
-        return [] }
-    return value
+    
+    if let gracz = gra[player] as? [String: Any] {
+        if let value = gracz["karty"] as? [[String: Any]]
+        {
+            return value
+        }
+        else {
+            print("no cards for \(player)")
+            return []
+        }
+    } else {
+            print("no data for \(player)")
+            print("\(gra)")
+            return []
+    }
+    return []
 }
 func setKarty(_ gra: inout Dictionary<String, Any>, for player: String, value: [[String: Any]])
 {

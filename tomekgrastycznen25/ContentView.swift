@@ -38,6 +38,7 @@ struct ContentView: View {
     @State public var showOdrzucanie = false
     @State public var odrzucanieEndMove = false
     @State public var selectedCard: String?
+    @State public var selectedTaliaFile: String?
     
     @State public var playerLoose : String = ""
     @State public var endGame : Bool = false
@@ -54,9 +55,9 @@ struct ContentView: View {
         _connectionManager = StateObject(wrappedValue: MPConnectionManager(yourName: yourName))
     }
     var body: some View {
-        if(selectedCard != nil)
+        if(showEditor)
         {
-            CardEditorView(gra: $gra, jsonText: $selectedCard)
+            TaliaEditorView(gra: $gra, lastPlayed: $PlayerLast, activePlayer: $activePlayer, gameRound: $gameRound, show: $showEditor, selectedCard: $selectedCard, selectedFile: $selectedTaliaFile, containerKey: "Talia")
         }
         else
         {
@@ -92,7 +93,7 @@ struct ContentView: View {
                                 activePlayer: $activePlayer,
                                 gameRound: $gameRound,
                                 landscape: $landscape,
-                                connectionView: $connectionView,
+                                menuView: $showMenu,
                                 thisDevice: $thisDevice,
                                 selectedCard: $selectedCard,
                                 createSpell: createSpell
@@ -130,31 +131,114 @@ struct ContentView: View {
                             Text("Menu")
                                 .font(.title)
                             Spacer()
+                            Text("Ustawienia")
+                                .font(.title2)
+                                .padding()
+                            Text("Wczytaj")
+                                .font(.headline)
+                            HStack
+                            {
+                                Text("Talię:")
+                                LoadDeckView(gra: $gra, selectedFile: $selectedTaliaFile)
+                                Spacer()
+                                Text("Postać 1")
+                                Button("Mag Światła")
+                                {
+                                    
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .disabled(true)
+                                Text("Postać 2")
+                                Button("Mag Krwi")
+                                {
+                                    
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .disabled(true)
+                            }
+                            Text("Zapisz")
+                                .font(.headline)
+                            HStack
+                            {
+                                Text("Talię: ")
+                                SaveDeckView(gra: $gra, selectedFile: $selectedTaliaFile)
+                            }
+                            Text("Edytuj")
+                                .font(.headline)
+                            HStack
+                            {
+                                Button("Talię")
+                                {
+                                    loadGame()
+                                    showEditor = true
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .padding()
+                                Button("Postacie")
+                                {
+                                    loadGame()
+                                    showEditor = true
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .padding()
+                            }
+                            Divider()
+                            
+                            Spacer()
+                            Text("Graj")
+                                .font(.title2)
                             Text("Multiplayer")
                                 .font(.headline)
-                            Button("Na urządzeniu")
+                            HStack
                             {
-                                endGame = false
-                                playerLoose = ""
-                                gameRound = 1
-                                loadGame()
-                                showMenu = false
-                                
+                                Button("Na urządzeniu")
+                                {
+                                    endGame = false
+                                    playerLoose = ""
+                                    gameRound = 1
+                                    loadGame()
+                                    showMenu = false
+                                    
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .padding()
+                                Button("Bluetooth") {
+                                    connectionView = true
+                                    showMenu = false
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .padding()
                             }
-                            .buttonStyle(.borderedProminent)
-                            .padding()
-                            Button("Bluetooth") {
-                                connectionView = true
-                                showMenu = false
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .padding()
-                            Divider()
                             Text("Singleplayer")
                                 .font(.headline)
+                            HStack
+                            {
+                                Button("Easy")
+                                {
+                                    
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .disabled(true)
+                                
+                                Button("Medium")
+                                {
+                                    
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .disabled(true)
+                                
+                                Button("Hard")
+                                {
+                                    
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .disabled(true)
+                            }
                             Spacer()
                         }
-                        .frame(minWidth: 300,  minHeight: 300)
+                        .padding()
+                        .frame(minWidth: 350,  minHeight: 600)
+                        .padding()
                         
                     }
                     .onAppear()
