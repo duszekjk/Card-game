@@ -129,207 +129,219 @@ struct CardEditorView: View {
     }
     
     var body: some View {
-        Form {
-            Section(header: Text("Opis")) {
-                TextEditor(text: $card.opis)
-                    .frame(height: 100)
-                    .border(Color.gray)
-            }
-            
-            Section(header: Text("Koszt")) {
-                Stepper(value: $card.koszt, in: 0...100) {
-                    Text("Koszt: \(card.koszt)")
+        NavigationView {
+            Form {
+                Section(header: Text("Opis")) {
+                    TextEditor(text: $card.opis)
+                        .frame(height: 100)
+                        .border(Color.gray)
                 }
-            }
-            
-            Section(header: Text("Akcje")) {
                 
-                HStack
-                {
-                    Button("akcjaOdrzuconeZaklęcie")
-                    {
-                        showAkcjaOdrzuconeZaklęcie = true
-                    }
-                    .sheet(isPresented: $showAkcjaOdrzuconeZaklęcie)
-                    {
-                        ActionEditorView(gra: $gra, akcjaText: $card.akcjaOdrzuconeZaklęcie)
-                    }
-                    Text(card.akcjaOdrzuconeZaklęcie)
-                }
-                HStack
-                {
-                    Button("pacyfizm")
-                    {
-                        showPacyfizm = true
-                    }
-                    .sheet(isPresented: $showPacyfizm)
-                    {
-                        ActionEditorView(gra: $gra, akcjaText: $card.pacyfizm)
-                    }
-                    Text(card.pacyfizm)
-                }
-                HStack
-                {
-                    VStack
-                    {
-                        Text("wandering")
-                            .font(.headline)
-                        Picker("Wandering Type", selection: Binding(
-                            get: {
-                                switch card.wandering {
-                                case .int:
-                                    return "Zachowaj"
-                                case .string:
-                                    return "String"
-                                }
-                            },
-                            set: { newValue in
-                                switch newValue {
-                                case "Zachowaj":
-                                    card.wandering = .int(0)
-                                case "String":
-                                    card.wandering = .string("")
-                                default:
-                                    break
-                                }
-                            }
-                        )) {
-                            Text("Zachowaj").tag("Zachowaj")
-                            Text("Akcja").tag("String")
-                        }
-                        .pickerStyle(SegmentedPickerStyle())
-                        
-                        switch card.wandering {
-                        case .int(let value):
-                            Stepper(value: Binding(
-                                get: { value },
-                                set: { card.wandering = .int($0) }
-                            ), in: 0...100) {
-                                Text("Ilość kart: \(value)")
-                            }
-                        case .string(let value):
-                            HStack{
-                                Button("wandering")
-                                {
-                                    showWandering = true
-                                }
-                                .sheet(isPresented: $showWandering)
-                                {
-                                    ActionEditorView(gra: $gra, akcjaText: Binding(
-                                        get: { value },
-                                        set: { card.wandering = .string($0) }
-                                    ))
-                                }
-                                Text(value)
-                            }.padding()
-                        }
+                Section(header: Text("Koszt")) {
+                    Stepper(value: $card.koszt, in: 0...100) {
+                        Text("Koszt: \(card.koszt)")
                     }
                 }
-                HStack
-                {
-                    Button("akcjaRzucaneZaklęcie")
+                
+                Section(header: Text("Akcje")) {
+                    
+                    HStack
                     {
-                        showAkcjaRzucaneZaklęcie = true
+                        Button("akcjaOdrzuconeZaklęcie")
+                        {
+                            showAkcjaOdrzuconeZaklęcie = true
+                        }
+                        .sheet(isPresented: $showAkcjaOdrzuconeZaklęcie)
+                        {
+                            ActionEditorView(gra: $gra, akcjaText: $card.akcjaOdrzuconeZaklęcie)
+                        }
+                        Text(card.akcjaOdrzuconeZaklęcie)
                     }
-                    .sheet(isPresented: $showAkcjaRzucaneZaklęcie)
+                    HStack
                     {
-                        ActionEditorView(gra: $gra, akcjaText: $card.akcjaRzucaneZaklęcie)
+                        Button("pacyfizm")
+                        {
+                            showPacyfizm = true
+                        }
+                        .sheet(isPresented: $showPacyfizm)
+                        {
+                            ActionEditorView(gra: $gra, akcjaText: $card.pacyfizm)
+                        }
+                        Text(card.pacyfizm)
                     }
-                    Text(card.akcjaRzucaneZaklęcie)
+                    HStack
+                    {
+                        VStack
+                        {
+                            Text("wandering")
+                                .font(.headline)
+                            Picker("Wandering Type", selection: Binding(
+                                get: {
+                                    switch card.wandering {
+                                    case .int:
+                                        return "Zachowaj"
+                                    case .string:
+                                        return "String"
+                                    }
+                                },
+                                set: { newValue in
+                                    switch newValue {
+                                    case "Zachowaj":
+                                        card.wandering = .int(0)
+                                    case "String":
+                                        card.wandering = .string("")
+                                    default:
+                                        break
+                                    }
+                                }
+                            )) {
+                                Text("Zachowaj").tag("Zachowaj")
+                                Text("Akcja").tag("String")
+                            }
+                            .pickerStyle(SegmentedPickerStyle())
+                            
+                            switch card.wandering {
+                            case .int(let value):
+                                Stepper(value: Binding(
+                                    get: { value },
+                                    set: { card.wandering = .int($0) }
+                                ), in: 0...100) {
+                                    Text("Ilość kart: \(value)")
+                                }
+                            case .string(let value):
+                                HStack{
+                                    Button("wandering")
+                                    {
+                                        showWandering = true
+                                    }
+                                    .sheet(isPresented: $showWandering)
+                                    {
+                                        ActionEditorView(gra: $gra, akcjaText: Binding(
+                                            get: { value },
+                                            set: { card.wandering = .string($0) }
+                                        ))
+                                    }
+                                    Text(value)
+                                }.padding()
+                            }
+                        }
+                    }
+                    HStack
+                    {
+                        Button("akcjaRzucaneZaklęcie")
+                        {
+                            showAkcjaRzucaneZaklęcie = true
+                        }
+                        .sheet(isPresented: $showAkcjaRzucaneZaklęcie)
+                        {
+                            ActionEditorView(gra: $gra, akcjaText: $card.akcjaRzucaneZaklęcie)
+                        }
+                        Text(card.akcjaRzucaneZaklęcie)
+                    }
+                    HStack
+                    {
+                        VStack
+                        {
+                            Text("lingering")
+                                .font(.headline)
+                            Picker("Lingering Type", selection: Binding(
+                                get: {
+                                    switch card.lingering {
+                                    case .int:
+                                        return "Zachowaj"
+                                    case .string:
+                                        return "String"
+                                    }
+                                },
+                                set: { newValue in
+                                    switch newValue {
+                                    case "Zachowaj":
+                                        card.lingering = .int(0)
+                                    case "String":
+                                        card.lingering = .string("")
+                                    default:
+                                        break
+                                    }
+                                }
+                            )) {
+                                Text("Zachowaj").tag("Zachowaj")
+                                Text("Akcja").tag("String")
+                            }
+                            .pickerStyle(SegmentedPickerStyle())
+                            
+                            switch card.lingering {
+                            case .int(let value):
+                                Stepper(value: Binding(
+                                    get: { value },
+                                    set: { card.lingering = .int($0) }
+                                ), in: 0...100) {
+                                    Text("Ilość kart: \(value)")
+                                }
+                            case .string(let value):
+                                HStack{
+                                    Button("lingering")
+                                    {
+                                        showLingering = true
+                                    }
+                                    .sheet(isPresented: $showLingering)
+                                    {
+                                        ActionEditorView(gra: $gra, akcjaText: Binding(
+                                            get: { value },
+                                            set: { card.lingering = .string($0) }
+                                        ))
+                                    }
+                                    Text(value)
+                                }.padding()
+                            }
+                        }
+                    }
                 }
-                HStack
-                {
-                    VStack
-                    {
-                        Text("lingering")
-                            .font(.headline)
-                        Picker("Lingering Type", selection: Binding(
-                            get: {
-                                switch card.lingering {
-                                case .int:
-                                    return "Zachowaj"
-                                case .string:
-                                    return "String"
-                                }
-                            },
-                            set: { newValue in
-                                switch newValue {
-                                case "Zachowaj":
-                                    card.lingering = .int(0)
-                                case "String":
-                                    card.lingering = .string("")
-                                default:
-                                    break
+                Section(header: Text("Postacie")) {
+                    ForEach(postacie, id: \.self) { postać in
+                        Toggle(postać, isOn: Binding(
+                            get: { card.postacie.contains(postać) },
+                            set: { isSelected in
+                                if isSelected {
+                                    card.postacie.append(postać)
+                                } else {
+                                    card.postacie.removeAll { $0 == postać }
                                 }
                             }
-                        )) {
-                            Text("Zachowaj").tag("Zachowaj")
-                            Text("Akcja").tag("String")
-                        }
-                        .pickerStyle(SegmentedPickerStyle())
-                        
-                        switch card.lingering {
-                        case .int(let value):
-                            Stepper(value: Binding(
-                                get: { value },
-                                set: { card.lingering = .int($0) }
-                            ), in: 0...100) {
-                                Text("Ilość kart: \(value)")
-                            }
-                        case .string(let value):
-                            HStack{
-                                Button("lingering")
-                                {
-                                    showLingering = true
-                                }
-                                .sheet(isPresented: $showLingering)
-                                {
-                                    ActionEditorView(gra: $gra, akcjaText: Binding(
-                                        get: { value },
-                                        set: { card.lingering = .string($0) }
-                                    ))
-                                }
-                                Text(value)
-                            }.padding()
-                        }
+                        ))
+                    }
+                }
+                
+                Button("Zapisz") {
+                    if let updatedJSON = card.save() {
+                        jsonText = updatedJSON
                     }
                 }
             }
-            Section(header: Text("Postacie")) {
-                ForEach(postacie, id: \.self) { postać in
-                    Toggle(postać, isOn: Binding(
-                        get: { card.postacie.contains(postać) },
-                        set: { isSelected in
-                            if isSelected {
-                                card.postacie.append(postać)
-                            } else {
-                                card.postacie.removeAll { $0 == postać }
-                            }
-                        }
-                    ))
+            .navigationTitle("Edytuj kartę")
+            .navigationBarItems(
+//                leading: Button("Cancel") {
+//                    jsonText
+//                },
+                trailing: Button("Zapisz") {
+                    if let updatedJSON = card.save() {
+                        jsonText = updatedJSON
+                    }
                 }
-            }
-            
-            Button("Save") {
-                if let updatedJSON = card.save() {
-                    jsonText = updatedJSON
-                }
-            }
-        }
-        .onAppear()
-        {
-            if(jsonText != nil)
+            )
+            .onAppear()
             {
-                card = Card.load(from: jsonText!)!
+                if(jsonText != nil)
+                {
+                    card = Card.load(from: jsonText!)!
+                }
             }
-        }
-        .onChange(of: jsonText)
-        {
-            if(jsonText != nil)
+            .onChange(of: jsonText)
             {
-                card = Card.load(from: jsonText!)!
+                if(jsonText != nil)
+                {
+                    card = Card.load(from: jsonText!)!
+                }
             }
         }
-        .navigationTitle("Edit Card")
     }
 }

@@ -98,18 +98,39 @@ struct ActionEditorView: View {
         HStack {
             Text("Szybkie akcje")
                 .font(.headline)
-            
-            HStack
+            if(UIDevice.current.userInterfaceIdiom == .phone)
             {
-                Stepper("Ile (\(quickActionNumber))", value: $quickActionNumber)
-                Spacer()
-                ForEach(Array(quickActionList.keys), id: \.self) { subKey in
-                    Button("\(subKey)") {
-                        appendToAction("\(quickActionList[subKey]!)\(quickActionNumber)")
+                VStack
+                {
+                    Stepper("Ile (\(quickActionNumber))", value: $quickActionNumber)
+                    HStack{
+                        
+                        ForEach(Array(quickActionList.keys), id: \.self) { subKey in
+                            Button("\(subKey)") {
+                                appendToAction("\(quickActionList[subKey]!)\(quickActionNumber)")
+                            }
+                            .padding()
+                            .background(Color.gray.opacity(0.2))
+                            .cornerRadius(8)
+                        }
                     }
-                    .padding()
-                    .background(Color.gray.opacity(0.2))
-                    .cornerRadius(8)
+                }
+                
+            }
+            else
+            {
+                HStack
+                {
+                    Stepper("Ile (\(quickActionNumber))", value: $quickActionNumber)
+                    Spacer()
+                    ForEach(Array(quickActionList.keys), id: \.self) { subKey in
+                        Button("\(subKey)") {
+                            appendToAction("\(quickActionList[subKey]!)\(quickActionNumber)")
+                        }
+                        .padding()
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(8)
+                    }
                 }
             }
             

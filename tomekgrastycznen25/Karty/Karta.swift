@@ -184,7 +184,7 @@ struct KartaContainerView: View {
                 if let container = gra[containerKey] as? Dictionary<String, Any>
                 {
                     let kartyLoad = container["karty"] as? Array<Dictionary<String, Any>> ?? emptyKarty
-                    let karty = (kartyLoad.isEmpty) ? emptyKarty : kartyLoad
+                    let karty = (kartyLoad.count < 1) ? emptyKarty : kartyLoad
                     let columns = Array(repeating: GridItem(.flexible()), count: Int(max(1, min(Int(size), karty.count * 2 + 1))))
 
 

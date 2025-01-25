@@ -566,8 +566,8 @@ struct TaliaEditorView: View {
                             }
                         }, label: {
                             Image(systemName: "slider.horizontal.2.square.on.square")
-                                .padding(10)
-                                .scaleEffect(2.0)
+                                .resizable()
+                                .frame(width: 25, height: 25)
                         })
                         Divider()
                             .padding()
@@ -578,19 +578,31 @@ struct TaliaEditorView: View {
                         CardEditorView(gra: $gra, jsonText: $selectedCard)
                     }
                 }
-                Button(action:
+                VStack
                 {
-                    talia.append(sampleCardDictionary)
-                    gra["Talia"] = talia
-                }, label:
+                    Button(action:
+                            {
+                        talia.append(sampleCardDictionary)
+                        gra["Talia"] = talia
+                    }, label:
+                            {
+                        VStack
                         {
-                    Image(systemName: "plus.rectangle.portrait")
-                        .padding(1)
-                        .frame(minWidth: 96, idealWidth: 97, maxWidth: 98, minHeight: 124, idealHeight: 125, maxHeight: 135)
-                        .background(RoundedRectangle(cornerRadius: 10).fill(Color.blue))
-                        .foregroundColor(.white)
-                        .shadow(radius: 5)
-                })
+                            Image(systemName: "plus.rectangle.portrait")
+                                .padding(1)
+                                .frame(minWidth: 96, idealWidth: 97, maxWidth: 98, minHeight: 124, idealHeight: 125, maxHeight: 135)
+                                .background(RoundedRectangle(cornerRadius: 10).fill(Color.blue))
+                                .foregroundColor(.white)
+                                .shadow(radius: 5)
+                            Image(systemName: "ellipsis")
+                                .resizable()
+                                .frame(width: 75, height: 25)
+                                .scaleEffect(0.3)
+                        }
+                    })
+                    Divider()
+                        .padding()
+                }
             }
             .frame(minWidth: size * 100)
             .padding(.bottom, 50)
@@ -602,72 +614,11 @@ struct TaliaEditorView: View {
                 talia = gra["Talia"] as! Array<Dictionary<String, Any>>
                 kartyCount = newValue
             }
-            .onDrop(of: [UTType.text], isTargeted: nil) { providers in
-                guard isDropEnabled else { return false }
-                return handleDrop(providers: providers)
-            }
+//            .onDrop(of: [UTType.text], isTargeted: nil) { providers in
+//                guard isDropEnabled else { return false }
+//                return handleDrop(providers: providers)
+//            }
         }
     }
-    private func handleDrop(providers: [NSItemProvider]) -> Bool {
-        for provider in providers {
-            provider.loadItem(forTypeIdentifier: UTType.text.identifier, options: nil) { (data, error) in
-                guard error == nil, let data = data as? Data, let identifier = String(data: data, encoding: .utf8) else {
-                    return
-                }
 
-                DispatchQueue.main.async {
-                    let parts = identifier.split(separator: "|")
-                    guard parts.count == 2,
-                          let sourceKey = parts.first,
-                          let sourceIndex = Int(parts.last ?? "") else { return }
-
-                    moveCard(from: String(sourceKey), at: sourceIndex, to: containerKey)
-                    lastPlayed = String(sourceKey)
-                    if let container = gra[containerKey] as? Dictionary<String, Any>
-                    {
-                        let kartyLoad = container["karty"] as? Array<Dictionary<String, Any>> ?? []
-                        if(CGFloat(kartyLoad.count) == size)
-                        {
-                            print("Running spell bc \(CGFloat(kartyLoad.count)) == \(size)")
-                            sizeFullAction(containerKey, kartyLoad)
-                        }
-                        else {
-                            gameRound += 1
-                            activePlayer = gameRound % playersList.count
-                        }
-                    }
-                }
-            }
-        }
-        return true
-    }
-
-    private func moveCard(from sourceKey: String, at sourceIndex: Int, to destinationKey: String) {
-        var sourceCards = Array<Dictionary<String, Any>>()
-        var sourceIndexCorrected = sourceIndex
-        var talia = getKarty(&gra, for: "Talia\(sourceKey)")
-        if(gra[sourceKey] == nil)
-        {
-            sourceCards = talia
-            sourceIndexCorrected = Int.random(in: 0..<talia.count)
-        }
-        else
-        {
-            sourceCards = (gra[sourceKey] as! Dictionary<String, Any>)["karty"] as? Array<Dictionary<String, Any>> ?? []
-        }
-        guard sourceIndexCorrected >= 0, sourceIndexCorrected < sourceCards.count else { return }
-
-        let card = sourceCards.remove(at: sourceIndexCorrected)
-        if var playerData = gra[sourceKey] as? [String: Any] {
-            playerData["karty"] = sourceCards
-            gra[sourceKey] = playerData
-        }
-
-        var destinationCards = (gra[destinationKey] as! Dictionary<String, Any>)["karty"] as? Array<Dictionary<String, Any>> ?? []
-        destinationCards.append(card)
-        if var playerData = gra[destinationKey] as? [String: Any] {
-            playerData["karty"] = destinationCards
-            gra[destinationKey] = playerData
-        }
-    }
 }

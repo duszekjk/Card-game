@@ -98,6 +98,7 @@ struct ContentView: View {
                                 selectedCard: $selectedCard,
                                 createSpell: createSpell
                             )
+                            .scaleEffect(UIDevice.current.userInterfaceIdiom == .phone ? 0.9 : 1.0)
                             PlayerView(playerKey: "Player1", gra: $gra,
                                        lastPlayed: $PlayerLast,
                                        isActive: Binding<Bool>(
@@ -128,12 +129,31 @@ struct ContentView: View {
                     {
                         VStack
                         {
-                            Text("Menu")
-                                .font(.title)
+                            HStack
+                            {
+                                Spacer()
+                                Text("Menu")
+                                    .font(.title)
+                                Spacer()
+                                Menu {
+                                        Button("Talii")
+                                        {
+                                            loadGame()
+                                            showEditor = true
+                                        }
+                                        Button("Postaci")
+                                        {
+                                            loadGame()
+                                            showEditor = true
+                                        }
+                                } label: {
+                                        Image(systemName: "gear")
+                                            .resizable()
+                                            .frame(width: 25, height: 25)
+                                }
+
+                            }
                             Spacer()
-                            Text("Ustawienia")
-                                .font(.title2)
-                                .padding()
                             Text("Wczytaj")
                                 .font(.headline)
                                 .padding(.top, 6)
@@ -196,26 +216,6 @@ struct ContentView: View {
 //                                Text("Talię: ")
 //                                SaveDeckView(gra: $gra, selectedFile: $selectedTaliaFile)
 //                            }
-                            Text("Edytuj")
-                                .font(.headline)
-                                .padding(.top, 6)
-                            HStack
-                            {
-                                Button("Talię")
-                                {
-                                    loadGame()
-                                    showEditor = true
-                                }
-                                .buttonStyle(.borderedProminent)
-                                .padding()
-                                Button("Postacie")
-                                {
-                                    loadGame()
-                                    showEditor = true
-                                }
-                                .buttonStyle(.borderedProminent)
-                                .padding()
-                            }
                             Divider()
                             
                             Spacer()

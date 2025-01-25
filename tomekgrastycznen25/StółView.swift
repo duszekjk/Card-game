@@ -48,17 +48,25 @@ struct StółView: View {
                 .scaleEffect(UIDevice.current.userInterfaceIdiom == .phone ? 0.7 : 0.8)
                 .padding(UIDevice.current.userInterfaceIdiom == .phone ? 1 : 8)
                 .rotationEffect(Angle(degrees: -90))
+                .padding(.top, 50)
+                
+                Text("\(gameRound - 1)")
+                    .padding(.top, 50)
+                    .padding()
+                    .frame(width: UIDevice.current.userInterfaceIdiom == .phone ? 70 : 240)
+                    .scaleEffect(UIDevice.current.userInterfaceIdiom == .phone ? 0.7 : 0.8)
+                
+                Button(action: {
+                        menuView = true
+                    }, label: {
+                        Image(systemName: "gear")
+                    })
+                    .buttonStyle(.borderedProminent)
             }
             .frame(
-                width: UIDevice.current.userInterfaceIdiom == .phone ? 120 : 240,
-                height: UIDevice.current.userInterfaceIdiom == .phone ? 180 : 290
+                width: UIDevice.current.userInterfaceIdiom == .phone ? 70 : 240,
+                height: 340
             )
-                Text("Ruch \(gameRound - 1)")
-                    .padding()
-                Button("Menu") {
-                    menuView = true
-                }
-                .buttonStyle(.borderedProminent)
         }
             VStack {
                 KartaContainerView(
@@ -123,7 +131,10 @@ struct StółView: View {
                         containerKey: "Lingering",
                         isDragEnabled: false,
                         isLingering: true,
-                        size: 3
+                        size: 4,
+                        sizeFullAction: { tableKey, kards in
+                            gameRound += 1
+                        }
                     )
                     .scaleEffect(UIDevice.current.userInterfaceIdiom == .phone ? 0.7 : 0.8)
                     .padding(UIDevice.current.userInterfaceIdiom == .phone ? 1 : 8)
@@ -131,15 +142,9 @@ struct StółView: View {
                     
                 }
                 .frame(
-                    width: UIDevice.current.userInterfaceIdiom == .phone ? 120 : 240,
-                    height: UIDevice.current.userInterfaceIdiom == .phone ? 180 : 290
+                    width: UIDevice.current.userInterfaceIdiom == .phone ? 70 : 240,
+                    height: 340
                 )
-                    Text("Ruch \(gameRound - 1)")
-                        .padding()
-                    Button("Menu") {
-                        menuView = true
-                    }
-                    .buttonStyle(.borderedProminent)
             }
         }
     }

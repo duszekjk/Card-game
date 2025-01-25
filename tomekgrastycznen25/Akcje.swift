@@ -64,10 +64,13 @@ extension ContentView
     
     func createSpell(for playerKey:String, from tableKey:String,  with kards: Array<Dictionary<String, Any>>)
     {
+        print("createingSpell")
         if var playerData = gra[tableKey] as? [String: Any] {
+            print("for \(tableKey)")
             if var zaklęcieData = gra["Zaklęcie"] as? [String: Any] {
                 var kartyZaklęte = [[String: Any]]()
                 let stareKarty = (playerData["karty"] as? [[String: Any]] ?? [[String: Any]]())
+                print("with \(stareKarty.count) karty")
                 for kartaZaklęta in stareKarty
                 {
                     var kartaNowa = kartaZaklęta
@@ -99,8 +102,10 @@ extension ContentView
                 playerData["karty"] = []
                 gra[String(tableKey)] = playerData
                 activePlayer = playersList.firstIndex(of: playerKey) ?? activePlayer
+                print(" Zaklęcie ready")
                 if(activePlayer == thisDevice || thisDevice == -1)
                 {
+                    print(" Zaklęcie showing")
                     showZaklęcie = true
                 }
                 else
@@ -335,6 +340,13 @@ extension ContentView
                     print("\(talia.count)")
                     setKarty(&gra, for: "Talia\(player)", value: talia)
                 }
+                if var playerData = gra["Zaklęcie"] as? [String: Any] {
+                    playerData["karty"] = Array<Dictionary<String, Any>>()
+                    gra["Zaklęcie"] = playerData
+                } else {
+                    print("Zaklęcie not found!!!")
+                }
+                showZaklęcie = false
                 if var lingeringData = gra["Lingering"] as? [String: Any] {
                     if(lingeringData["karty"] != nil)
                     {
@@ -347,30 +359,28 @@ extension ContentView
                             print("stareKarty \(stareKarty)")
                             for _ in 0..<ligeringKartySize
                             {
+                                let kartal = ligeringKarty.removeFirst()
+                                stareKarty.append(kartal)
+                                print("append \(stareKarty)")
                                 if(stareKarty.count >= 3)
                                 {
                                     setKarty(&gra, for: "TablePlayerLast", value: stareKarty)
-                                    print("setKarty \(stareKarty)")
-                                }
-                                else
-                                {
-                                    let kartal = ligeringKarty.removeFirst()
-                                    stareKarty.append(kartal)
-                                    print("append \(stareKarty)")
+                                    DispatchQueue.global().asyncAfter(deadline: .now() + 2.0) {
+                                        createSpell(for: "Player\(activePlayer + 1)", from: "TablePlayerLast", with: stareKarty)
+                                        print("setKarty \(stareKarty)")
+                                        setKarty(&gra, for: "TablePlayerLast", value: [[String: Any]]())
+                                        setKarty(&gra, for: "Lingering", value: ligeringKarty)
+                                    }
+                                    return
                                 }
                             }
                             setKarty(&gra, for: "TablePlayerLast", value: stareKarty)
-                            gra["Lingering"] = ligeringKarty
+                            setKarty(&gra, for: "Lingering", value: ligeringKarty)
+                            print("gra[\"Lingering\"] = \(ligeringKarty)")
+                            
                         }
                     }
                 }
-                if var playerData = gra["Zaklęcie"] as? [String: Any] {
-                    playerData["karty"] = Array<Dictionary<String, Any>>()
-                    gra["Zaklęcie"] = playerData
-                } else {
-                    print("Zaklęcie not found!!!")
-                }
-                showZaklęcie = false
                 checkumberOfCards(endMove: true)
             } else {
                 print("Failed to calculate spell cost")

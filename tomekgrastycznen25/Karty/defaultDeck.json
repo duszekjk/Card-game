@@ -1,25 +1,183 @@
-[{
-    "akcjaRzucaneZaklęcie":"@PlayerYou.życie = @PlayerYou.życie - 1","lingering":"","opis":"1 ❤️‍🔥, \nPacyfizm: Przeciwnik 🃏","postacie":["Mag Światła","Mag Krwii"],"koszt":0,"akcjaOdrzuconeZaklęcie":"","wandering":"","pacyfizm":"@PlayerYou.ilośćKart = @PlayerYou.ilośćKart + 1"
-},{
-    "postacie":["Mag Światła","Mag Krwii"],"koszt":3,"akcjaRzucaneZaklęcie":"@PlayerMe.ilośćKart = @PlayerMe.ilośćKart + 3","opis":"3 🃏, \nPacyfizm: Przeciwnik 🃏","lingering":"","akcjaOdrzuconeZaklęcie":"","pacyfizm":"@PlayerYou.ilośćKart = @PlayerYou.ilośćKart + 1","wandering":""
-},{
-    "opis":"1 ❤️‍🔥 za każde 4 many, które kosztuje to zaklęcie","akcjaOdrzuconeZaklęcie":"","postacie":["Mag Światła","Mag Krwii"],"lingering":"","koszt":4,"akcjaRzucaneZaklęcie":"@PlayerYou.życie = @PlayerYou.życie - ( @Zaklęcie.koszt \/ 4 )","wandering":"","pacyfizm":""
-},{
-    "pacyfizm":"","akcjaOdrzuconeZaklęcie":"","akcjaRzucaneZaklęcie":"@PlayerYou.ilośćKart = 0 & @PlayerMe.ilośćKart = 0","lingering":"","koszt":4,"postacie":["Mag Światła"],"opis":"Wszyscy gracze wszystkie 🎇","wandering":""
-},{
-    "wandering":"","pacyfizm":"","opis":"Przeciwnik 3 🎇, następnie jeśli nie ma on kart 1 ❤️‍🔥","akcjaOdrzuconeZaklęcie":"","postacie":["Mag Światła","Mag Krwii"],"lingering":"","koszt":5,"akcjaRzucaneZaklęcie":"@PlayerYou.ilośćKart = @PlayerYou.ilośćKart - 3 & if @PlayerYou.ilośćKart == 0 : @PlayerYou.życie = @PlayerYou.życie - 1"
-},{
-    "postacie":["Mag Światła","Mag Krwii"],"pacyfizm":"@PlayerYou.ilośćKart = @PlayerYou.ilośćKart + 1 & @PlayerYou.mana = @PlayerYou.mana + 2","akcjaRzucaneZaklęcie":"@PlayerYou.życie = @PlayerYou.życie - 2","wandering":"","akcjaOdrzuconeZaklęcie":"","opis":"2 ❤️‍🔥, \nPacyfizm: Przeciwnik 1 🃏 i 2 🔋","koszt":1,"lingering":""
-},{
-    "lingering":"","akcjaRzucaneZaklęcie":"@PlayerMe.tarcza = @PlayerMe.tarcza + 5 & @PlayerYou.tarcza = @PlayerYou.tarcza + 3","pacyfizm":"","opis":"5 🛡️, \nPrzeciwnik 3 🛡️","koszt":4,"akcjaOdrzuconeZaklęcie":"","postacie":["Mag Światła"],"wandering":""
-},{
-    "opis":"3 ❤️‍🔥, 3 🛡️","akcjaOdrzuconeZaklęcie":"","lingering":"","postacie":["Mag Światła"],"akcjaRzucaneZaklęcie":"@PlayerYou.życie = @PlayerYou.życie - 3 & @PlayerMe.tarcza = @PlayerMe.tarcza + 3","pacyfizm":"","wandering":"","koszt":8
-},{
-    "akcjaRzucaneZaklęcie":"@PlayerMe.mana = @PlayerMe.mana + 1","akcjaOdrzuconeZaklęcie":"","lingering":"","wandering":"","pacyfizm":"@PlayerYou.mana = @PlayerYou.mana + 1","koszt":0,"opis":"1 🔋,\nPacyfizm: Przeciwnik 1 🔋","postacie":["Mag Światła","Mag Krwii"]
-},{
-    "wandering":"","akcjaRzucaneZaklęcie":"@PlayerYou.życie = @PlayerYou.życie - 3 & @PlayerMe.mana = @PlayerMe.mana + @Zaklęcie.sacrifice","opis":"Pustka 1\n3 ❤️‍🔥,\nSacrifice: 2 🔋","akcjaOdrzuconeZaklęcie":"@PlayerMe.ilośćKart = @PlayerMe.ilośćKart - 1","lingering":"","koszt":3,"pacyfizm":"","postacie":["Mag Światła","Mag Krwii"]
-},{
-    "koszt":5,"akcjaRzucaneZaklęcie":"@PlayerYou.życie = @PlayerYou.życie - 3 & @PlayerYou.tarcza = @PlayerYou.tarcza + 3","akcjaOdrzuconeZaklęcie":"","wandering":"","opis":"3 ❤️‍🔥,\nPrzeciwnik: 3 🛡️","pacyfizm":"","lingering":1,"postacie":["Mag Światła","Mag Krwii"]
-},{
-    "opis":"Pustka 2\n Sacrifice: 3 🔋","akcjaOdrzuconeZaklęcie":"@PlayerMe.ilośćKart = @PlayerMe.ilośćKart - 2","pacyfizm":"","lingering":1,"koszt":2,"akcjaRzucaneZaklęcie":"@PlayerMe.mana = @PlayerMe.mana + ( 3 * @Zaklęcie.sacrifice )","postacie":["Mag Światła","Mag Krwii"],"wandering":""
-}]
+[
+  {
+    "pacyfizm" : "@PlayerYou.ilośćKart = @PlayerYou.ilośćKart + 1",
+    "wandering" : "",
+    "opis" : "1 ❤️‍🔥, \nPacyfizm: Przeciwnik 🃏",
+    "akcjaRzucaneZaklęcie" : "@PlayerYou.życie = @PlayerYou.życie - 1",
+    "postacie" : [
+      "Mag Światła",
+      "Mag Krwii"
+    ],
+    "lingering" : "",
+    "akcjaOdrzuconeZaklęcie" : "",
+    "koszt" : 0
+  },
+  {
+    "pacyfizm" : "@PlayerYou.ilośćKart = @PlayerYou.ilośćKart + 1",
+    "akcjaRzucaneZaklęcie" : "@PlayerMe.ilośćKart = @PlayerMe.ilośćKart + 3",
+    "opis" : "3 🃏, \nPacyfizm: Przeciwnik 🃏",
+    "wandering" : "",
+    "koszt" : 3,
+    "postacie" : [
+      "Mag Światła",
+      "Mag Krwii"
+    ],
+    "lingering" : "",
+    "akcjaOdrzuconeZaklęcie" : ""
+  },
+  {
+    "akcjaOdrzuconeZaklęcie" : "",
+    "opis" : "1 ❤️‍🔥 za każde 4 many, które kosztuje to zaklęcie",
+    "pacyfizm" : "",
+    "akcjaRzucaneZaklęcie" : "@PlayerYou.życie = @PlayerYou.życie - ( @Zaklęcie.koszt \/ 4 )",
+    "wandering" : "",
+    "lingering" : "",
+    "koszt" : 4,
+    "postacie" : [
+      "Mag Światła",
+      "Mag Krwii"
+    ]
+  },
+  {
+    "wandering" : "",
+    "akcjaRzucaneZaklęcie" : "@PlayerYou.ilośćKart = 0 & @PlayerMe.ilośćKart = 0",
+    "opis" : "Wszyscy gracze wszystkie 🎇",
+    "koszt" : 4,
+    "pacyfizm" : "",
+    "akcjaOdrzuconeZaklęcie" : "",
+    "lingering" : "",
+    "postacie" : [
+      "Mag Światła"
+    ]
+  },
+  {
+    "opis" : "Przeciwnik 3 🎇, następnie jeśli nie ma on kart 1 ❤️‍🔥",
+    "pacyfizm" : "",
+    "postacie" : [
+      "Mag Światła",
+      "Mag Krwii"
+    ],
+    "wandering" : "",
+    "lingering" : "",
+    "akcjaOdrzuconeZaklęcie" : "",
+    "akcjaRzucaneZaklęcie" : "@PlayerYou.ilośćKart = @PlayerYou.ilośćKart - 3 & if @PlayerYou.ilośćKart == 0 : @PlayerYou.życie = @PlayerYou.życie - 1",
+    "koszt" : 5
+  },
+  {
+    "opis" : "2 ❤️‍🔥, \nPacyfizm: Przeciwnik 1 🃏 i 2 🔋",
+    "akcjaRzucaneZaklęcie" : "@PlayerYou.życie = @PlayerYou.życie - 2",
+    "wandering" : "",
+    "akcjaOdrzuconeZaklęcie" : "",
+    "lingering" : "",
+    "postacie" : [
+      "Mag Światła",
+      "Mag Krwii"
+    ],
+    "pacyfizm" : "@PlayerYou.ilośćKart = @PlayerYou.ilośćKart + 1 & @PlayerYou.mana = @PlayerYou.mana + 2",
+    "koszt" : 1
+  },
+  {
+    "opis" : "5 🛡️, \nPrzeciwnik 3 🛡️",
+    "lingering" : "",
+    "koszt" : 4,
+    "akcjaRzucaneZaklęcie" : "@PlayerMe.tarcza = @PlayerMe.tarcza + 5 & @PlayerYou.tarcza = @PlayerYou.tarcza + 3",
+    "akcjaOdrzuconeZaklęcie" : "",
+    "pacyfizm" : "",
+    "postacie" : [
+      "Mag Światła"
+    ],
+    "wandering" : ""
+  },
+  {
+    "koszt" : 8,
+    "akcjaOdrzuconeZaklęcie" : "",
+    "opis" : "3 ❤️‍🔥, 3 🛡️",
+    "postacie" : [
+      "Mag Światła"
+    ],
+    "wandering" : "",
+    "lingering" : "",
+    "akcjaRzucaneZaklęcie" : "@PlayerYou.życie = @PlayerYou.życie - 3 & @PlayerMe.tarcza = @PlayerMe.tarcza + 3",
+    "pacyfizm" : ""
+  },
+  {
+    "akcjaRzucaneZaklęcie" : "@PlayerMe.mana = @PlayerMe.mana + 1",
+    "pacyfizm" : "@PlayerYou.mana = @PlayerYou.mana + 1",
+    "koszt" : 0,
+    "akcjaOdrzuconeZaklęcie" : "",
+    "wandering" : "",
+    "lingering" : "",
+    "opis" : "1 🔋,\nPacyfizm: Przeciwnik 1 🔋",
+    "postacie" : [
+      "Mag Światła",
+      "Mag Krwii"
+    ]
+  },
+  {
+    "akcjaRzucaneZaklęcie" : "@PlayerYou.życie = @PlayerYou.życie - 3 & @PlayerMe.mana = @PlayerMe.mana + @Zaklęcie.sacrifice",
+    "koszt" : 3,
+    "postacie" : [
+      "Mag Światła",
+      "Mag Krwii"
+    ],
+    "wandering" : "",
+    "akcjaOdrzuconeZaklęcie" : "@PlayerMe.ilośćKart = @PlayerMe.ilośćKart - 1",
+    "opis" : "Pustka 1\n3 ❤️‍🔥,\nSacrifice: 2 🔋",
+    "pacyfizm" : "",
+    "lingering" : ""
+  },
+  {
+    "akcjaOdrzuconeZaklęcie" : "",
+    "wandering" : "",
+    "postacie" : [
+      "Mag Światła",
+      "Mag Krwii"
+    ],
+    "pacyfizm" : "",
+    "lingering" : 1,
+    "akcjaRzucaneZaklęcie" : "@PlayerYou.życie = @PlayerYou.życie - 3 & @PlayerYou.tarcza = @PlayerYou.tarcza + 3",
+    "koszt" : 5,
+    "opis" : "3 ❤️‍🔥,\nPrzeciwnik: 3 🛡️\nLingering"
+  },
+  {
+    "koszt" : 2,
+    "lingering" : 1,
+    "akcjaRzucaneZaklęcie" : "@PlayerMe.mana = @PlayerMe.mana + ( 3 * @Zaklęcie.sacrifice )",
+    "pacyfizm" : "",
+    "postacie" : [
+      "Mag Światła",
+      "Mag Krwii"
+    ],
+    "wandering" : "",
+    "akcjaOdrzuconeZaklęcie" : "@PlayerMe.ilośćKart = @PlayerMe.ilośćKart - 2",
+    "opis" : "Pustka 2\n Sacrifice: 3 🔋\nLingering"
+  },
+  {
+    "akcjaOdrzuconeZaklęcie" : "",
+    "koszt" : 1,
+    "akcjaRzucaneZaklęcie" : "@PlayerYou.życie = @PlayerYou.życie - 1",
+    "pacyfizm" : "",
+    "lingering" : 1,
+    "wandering" : "",
+    "id" : "845E1AD9-19FE-4A78-BE20-7BE5B9D2107E",
+    "postacie" : [
+      "Mag Światła",
+      "Mag Krwii"
+    ],
+    "opis" : "1❤️‍🔥\nLingering"
+  },
+  {
+    "postacie" : [
+      "Mag Światła",
+      "Mag Krwii"
+    ],
+    "lingering" : "",
+    "akcjaRzucaneZaklęcie" : "@PlayerYou.życie = @PlayerYou.życie - 1",
+    "koszt" : 1,
+    "opis" : "1❤️‍🔥\nWandering",
+    "wandering" : 1,
+    "pacyfizm" : "",
+    "akcjaOdrzuconeZaklęcie" : "",
+    "id" : "FCD98525-F776-44AB-BDC9-697885B9A259"
+  }
+]
