@@ -136,35 +136,69 @@ struct ContentView: View {
                                 .padding()
                             Text("Wczytaj")
                                 .font(.headline)
-                            HStack
+                                .padding(.top, 6)
+                            if(UIDevice.current.userInterfaceIdiom == .phone)
                             {
-                                Text("Talię:")
-                                LoadDeckView(gra: $gra, selectedFile: $selectedTaliaFile)
-                                Spacer()
-                                Text("Postać 1")
-                                Button("Mag Światła")
+                                VStack
                                 {
-                                    
+                                    HStack
+                                    {
+                                        Text("Talię:")
+                                        LoadDeckView(gra: $gra, selectedFile: $selectedTaliaFile)
+                                    }
+                                    HStack
+                                    {
+                                        Text("Postać 1")
+                                        Button("Mag Światła")
+                                        {
+                                            
+                                        }
+                                        .buttonStyle(.borderedProminent)
+                                        .disabled(true)
+                                        Text("Postać 2")
+                                        Button("Mag Krwi")
+                                        {
+                                            
+                                        }
+                                        .buttonStyle(.borderedProminent)
+                                        .disabled(true)
+                                    }
                                 }
-                                .buttonStyle(.borderedProminent)
-                                .disabled(true)
-                                Text("Postać 2")
-                                Button("Mag Krwi")
-                                {
-                                    
-                                }
-                                .buttonStyle(.borderedProminent)
-                                .disabled(true)
                             }
-                            Text("Zapisz")
-                                .font(.headline)
-                            HStack
+                            else
                             {
-                                Text("Talię: ")
-                                SaveDeckView(gra: $gra, selectedFile: $selectedTaliaFile)
+                                HStack
+                                {
+                                    Text("Talię:")
+                                    LoadDeckView(gra: $gra, selectedFile: $selectedTaliaFile)
+                                    Spacer()
+                                    Text("Postać 1")
+                                    Button("Mag Światła")
+                                    {
+                                        
+                                    }
+                                    .buttonStyle(.borderedProminent)
+                                    .disabled(true)
+                                    Text("Postać 2")
+                                    Button("Mag Krwi")
+                                    {
+                                        
+                                    }
+                                    .buttonStyle(.borderedProminent)
+                                    .disabled(true)
+                                }
                             }
+//                            Text("Zapisz")
+//                                .font(.headline)
+//                                .padding(.top, 6)
+//                            HStack
+//                            {
+//                                Text("Talię: ")
+//                                SaveDeckView(gra: $gra, selectedFile: $selectedTaliaFile)
+//                            }
                             Text("Edytuj")
                                 .font(.headline)
+                                .padding(.top, 6)
                             HStack
                             {
                                 Button("Talię")
@@ -187,8 +221,10 @@ struct ContentView: View {
                             Spacer()
                             Text("Graj")
                                 .font(.title2)
+                                .padding()
                             Text("Multiplayer")
                                 .font(.headline)
+                                .padding(.top, 6)
                             HStack
                             {
                                 Button("Na urządzeniu")
@@ -211,6 +247,7 @@ struct ContentView: View {
                             }
                             Text("Singleplayer")
                                 .font(.headline)
+                                .padding(.top, 6)
                             HStack
                             {
                                 Button("Easy")

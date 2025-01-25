@@ -42,7 +42,7 @@ extension ContentView
         gra["TablePlayerLast"] = loadTable()
         gra["TablePlayer2"] = loadTable()
         gra["Lingering"] = loadTable()
-        gra["Extra"] = loadTable()
+        gra["Wandering"] = loadTable()
         gra["Zaklęcie"] = loadSpell()
     }
     func loadTable() -> Dictionary<String, Any>

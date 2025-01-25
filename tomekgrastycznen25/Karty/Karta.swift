@@ -167,6 +167,7 @@ struct KartaContainerView: View {
     var isDragEnabled: Bool = true
     var isDropEnabled: Bool = true
     var isReorderable: Bool = false
+    var isLingering: Bool = false
     var size:CGFloat = 3
     var sizeFullAction : (String, Array<Dictionary<String, Any>>) -> Void = { selectedContainerKey, kards in
         
@@ -311,7 +312,10 @@ struct KartaContainerView: View {
                                   let sourceKey = parts.first,
                                   let sourceIndex = Int(parts.last ?? "") else { return }
 
-                            moveCard(from: String(sourceKey), at: sourceIndex, to: containerKey)
+                            if(!moveCard(from: String(sourceKey), at: sourceIndex, to: containerKey))
+                            {
+                                return
+                            }
                             lastPlayed = String(sourceKey)
                             if let container = gra[containerKey] as? Dictionary<String, Any>
                             {
@@ -336,7 +340,7 @@ struct KartaContainerView: View {
 
 
 
-    private func moveCard(from sourceKey: String, at sourceIndex: Int, to destinationKey: String) {
+    private func moveCard(from sourceKey: String, at sourceIndex: Int, to destinationKey: String) -> Bool {
         var sourceCards = Array<Dictionary<String, Any>>()
         var sourceIndexCorrected = sourceIndex
         var talia = getKarty(&gra, for: "Talia\(sourceKey)")
@@ -349,8 +353,30 @@ struct KartaContainerView: View {
         {
             sourceCards = (gra[sourceKey] as! Dictionary<String, Any>)["karty"] as? Array<Dictionary<String, Any>> ?? []
         }
-        guard sourceIndexCorrected >= 0, sourceIndexCorrected < sourceCards.count else { return }
-
+        guard sourceIndexCorrected >= 0, sourceIndexCorrected < sourceCards.count else { return false }
+        let cardTMP = sourceCards[sourceIndexCorrected]
+        print("lingering: \(cardTMP["lingering"]) \(isLingering)")
+        
+        if let lingeringString = cardTMP["lingering"] as? String
+        {
+            print(lingeringString)
+            if((!(lingeringString.count > 3) && isLingering) || ((lingeringString.count > 3) && !isLingering))
+            {
+                print("false A")
+                return false
+            }
+            print("true B")
+        }
+        else
+        {
+            if let lingeringString = cardTMP["lingering"] as? Int, !isLingering
+            {
+                print(cardTMP["lingering"])
+                print("false B")
+                return false
+            }
+        }
+        print("true A")
         let card = sourceCards.remove(at: sourceIndexCorrected)
         if var playerData = gra[sourceKey] as? [String: Any] {
             playerData["karty"] = sourceCards
@@ -363,6 +389,7 @@ struct KartaContainerView: View {
             playerData["karty"] = destinationCards
             gra[destinationKey] = playerData
         }
+        return true
     }
 }
 struct DropBoxView: View {

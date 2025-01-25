@@ -75,19 +75,23 @@ extension ContentView
                     {
                         kartaNowa["lingeringNow"] = kartaNowa["lingering"]
                     }
+                    if(kartaNowa["wandering"] != nil)
+                    {
+                        kartaNowa["wanderingNow"] = kartaNowa["wandering"]
+                    }
                     kartyZaklęte.append(kartaNowa)
                 }
                 
-                if var lingeringData = gra["Lingering"] as? [String: Any] {
-                    if(lingeringData["karty"] != nil)
+                if var wanderingData = gra["Wandering"] as? [String: Any] {
+                    if(wanderingData["karty"] != nil)
                     {
-                        var ligeringKarty = (lingeringData["karty"] as? [[String: Any]] ?? [[String: Any]]())
-                        if(ligeringKarty.count > 0)
+                        var wanderingKarty = (wanderingData["karty"] as? [[String: Any]] ?? [[String: Any]]())
+                        if(wanderingKarty.count > 0)
                         {
-                            kartyZaklęte.append(contentsOf: ligeringKarty)
+                            kartyZaklęte.append(contentsOf: wanderingKarty)
                         }
-                        lingeringData["karty"] = [[String: Any]]()
-                        gra["Lingering"] = lingeringData
+                        wanderingData["karty"] = [[String: Any]]()
+                        gra["Wandering"] = wanderingData
                     }
                 }
                 zaklęcieData["karty"] = kartyZaklęte
@@ -230,6 +234,26 @@ extension ContentView
                 }
                 printFormatted(dictionary: (gra["Zaklęcie"] as! Dictionary<String, Any>))
                 var playerNow = gra["Player\(activePlayer + 1)"] as! [String: Any]
+                
+                for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
+                {
+                    var zaklęcieNow = zaklęcie
+                    if(zaklęcie["wanderingNow"] != nil)
+                    {
+                        if let wander = zaklęcie["wanderingNow"] as? Int
+                        {
+                        }else {
+                            if let wander = zaklęcie["wanderingNow"] as? String
+                            {
+                                zaklęcieNow["wanderingNow"] = nil
+                                if(wander.count > 5)
+                                {
+                                    spell(player: "Player\(activePlayer + 1)", run: wander, against: "Player\((activePlayer + 1) % 2 + 1)")
+                                }
+                            }
+                        }
+                    }
+                }
                 if(playerNow["akcjaRzucaneZaklęcie"] != nil)
                 {
                     if((playerNow["akcjaRzucaneZaklęcie"] as? String ?? "") != "")
@@ -237,10 +261,10 @@ extension ContentView
                         spell(player: "Player\(activePlayer + 1)", run: playerNow["akcjaRzucaneZaklęcie"] as! String, against: "Player\((activePlayer + 1) % 2 + 1)")
                     }
                 }
-                for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
-                {
-                    spell(player: "Player\(activePlayer + 1)", run: zaklęcie["wandering"] as! String, against: "Player\((activePlayer + 1) % 2 + 1)")
-                }
+//                for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
+//                {
+//                    spell(player: "Player\(activePlayer + 1)", run: zaklęcie["wandering"] as! String, against: "Player\((activePlayer + 1) % 2 + 1)")
+//                }
                 for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
                 {
                     spell(player: "Player\(activePlayer + 1)", run: zaklęcie["akcjaRzucaneZaklęcie"] as! String, against: "Player\((activePlayer + 1) % 2 + 1)")
@@ -265,18 +289,32 @@ extension ContentView
                     var zaklęcieNow = zaklęcie
                     let player = zaklęcie["player"] as! String
                     
+                    if(zaklęcie["wanderingNow"] != nil)
+                    {
+                        
+                        if let wander = zaklęcie["wanderingNow"] as? Int
+                        {
+                            var wandering = gra["Wandering"] as! Dictionary<String, Any>
+                            var wanderingKarty = wandering["karty"] as! Array<Dictionary<String, Any>>
+                            zaklęcieNow["wanderingNow"] = nil
+                            wanderingKarty.append(zaklęcieNow)
+                            wandering["karty"] = wanderingKarty
+                            gra["Wandering"] = wandering
+                            continue
+                        }
+                    }
                     if(zaklęcie["lingeringNow"] != nil)
                     {
                         
-                        if let ling = zaklęcie["lingeringNow"] as? Int
+                        if let _ = zaklęcie["lingeringNow"] as? Int
                         {
-                            var lingering = gra["Lingering"] as! Dictionary<String, Any>
-                            var lingeringKarty = lingering["karty"] as! Array<Dictionary<String, Any>>
-                            zaklęcieNow["lingeringNow"] = nil
-                            lingeringKarty.append(zaklęcieNow)
-                            lingering["karty"] = lingeringKarty
-                            gra["Lingering"] = lingering
-                            continue
+//                            var lingering = gra["Lingering"] as! Dictionary<String, Any>
+//                            var lingeringKarty = lingering["karty"] as! Array<Dictionary<String, Any>>
+//                            zaklęcieNow["lingeringNow"] = nil
+//                            lingeringKarty.append(zaklęcieNow)
+//                            lingering["karty"] = lingeringKarty
+//                            gra["Lingering"] = lingering
+//                            continue
                         }
                         else
                         {
@@ -296,6 +334,35 @@ extension ContentView
                     talia.append(zaklęcieNow)
                     print("\(talia.count)")
                     setKarty(&gra, for: "Talia\(player)", value: talia)
+                }
+                if var lingeringData = gra["Lingering"] as? [String: Any] {
+                    if(lingeringData["karty"] != nil)
+                    {
+                        var ligeringKarty = (lingeringData["karty"] as? [[String: Any]] ?? [[String: Any]]())
+                        var ligeringKartySize = ligeringKarty.count
+                        print("ligeringKartySize \(ligeringKartySize)")
+                        if(ligeringKarty.count > 0)
+                        {
+                            var stareKarty = getKarty(&gra, for: "TablePlayerLast")//(gra["karty"] as? [[String: Any]] ?? [[String: Any]]())
+                            print("stareKarty \(stareKarty)")
+                            for _ in 0..<ligeringKartySize
+                            {
+                                if(stareKarty.count >= 3)
+                                {
+                                    setKarty(&gra, for: "TablePlayerLast", value: stareKarty)
+                                    print("setKarty \(stareKarty)")
+                                }
+                                else
+                                {
+                                    let kartal = ligeringKarty.removeFirst()
+                                    stareKarty.append(kartal)
+                                    print("append \(stareKarty)")
+                                }
+                            }
+                            setKarty(&gra, for: "TablePlayerLast", value: stareKarty)
+                            gra["Lingering"] = ligeringKarty
+                        }
+                    }
                 }
                 if var playerData = gra["Zaklęcie"] as? [String: Any] {
                     playerData["karty"] = Array<Dictionary<String, Any>>()

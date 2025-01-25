@@ -124,7 +124,7 @@ struct ActionEditorView: View {
         HStack {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
-                    ForEach(["=", "+", "-", "&", "if", ":"], id: \.self) { operatorSymbol in
+                    ForEach(["=", "+", "-", "*", "/", "&", "if", "(", ")", ":"], id: \.self) { operatorSymbol in
                         Button(operatorSymbol) {
                             appendOperator(operatorSymbol)
                         }
@@ -259,6 +259,7 @@ struct ActionEditorView: View {
     private func clearAction() {
         currentAction = []
         selectedDirectory = nil
+        akcjaText = ""
     }
     
     private func resolveSpecialKeys(_ key: String) -> String {
@@ -285,6 +286,6 @@ struct ActionEditorView: View {
     
     private func isLastOperator() -> Bool {
         guard let last = currentAction.last else { return false }
-        return ["=", "+", "-", "&", "if", ":"].contains(last.trimmingCharacters(in: .whitespaces))
+        return ["=", "+", "-", "*", "/", "&", "if", "(", ")", ":"].contains(last.trimmingCharacters(in: .whitespaces))
     }
 }

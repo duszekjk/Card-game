@@ -578,6 +578,19 @@ struct TaliaEditorView: View {
                         CardEditorView(gra: $gra, jsonText: $selectedCard)
                     }
                 }
+                Button(action:
+                {
+                    talia.append(sampleCardDictionary)
+                    gra["Talia"] = talia
+                }, label:
+                        {
+                    Image(systemName: "plus.rectangle.portrait")
+                        .padding(1)
+                        .frame(minWidth: 96, idealWidth: 97, maxWidth: 98, minHeight: 124, idealHeight: 125, maxHeight: 135)
+                        .background(RoundedRectangle(cornerRadius: 10).fill(Color.blue))
+                        .foregroundColor(.white)
+                        .shadow(radius: 5)
+                })
             }
             .frame(minWidth: size * 100)
             .padding(.bottom, 50)

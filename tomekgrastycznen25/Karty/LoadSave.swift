@@ -139,7 +139,6 @@ struct SaveDeckView: View {
             }
             .disabled(deckName.isEmpty)
         }
-        .padding()
     }
 }
 func listDeckFiles(failed: Bool = false, completion: @escaping ([String]) -> Void) {
@@ -200,7 +199,7 @@ struct LoadDeckView: View {
                 }
                 .labelsHidden() // Hide the Picker's label inside the Menu
             } label: {
-                Text(selectedFile ?? "Wybierz talię")
+                Text(selectedFile ?? "Wybierz")
                     .padding()
                     .frame(maxWidth: .infinity) // Full-width clickable area
                     .background(Color.gray.opacity(0.2))

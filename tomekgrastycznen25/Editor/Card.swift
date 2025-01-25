@@ -12,11 +12,20 @@ let sampleCard = Card(
     postacie: ["Mag Światła", "Mag Krwii"],
     akcjaRzucaneZaklęcie: "@PlayerYou.życie = @PlayerYou.życie - 1",
     akcjaOdrzuconeZaklęcie: "",
-    wandering: "",
+    wandering: .string(""),
     lingering: .string(""),
     pacyfizm: "@PlayerYou.ilośćKart = @PlayerYou.ilośćKart + 1"
 )
-
+let sampleCardDictionary: [String:Any] = [
+    "opis": "NOWA\nPUSTA\nKARTA",
+    "koszt": 0,
+    "postacie": ["Mag Światła", "Mag Krwii"],
+    "akcjaRzucaneZaklęcie": "",
+    "akcjaOdrzuconeZaklęcie": "",
+    "wandering": "",
+    "lingering": "",
+    "pacyfizm": ""
+]
 
 import SwiftUI
 
@@ -29,7 +38,7 @@ struct Card: Identifiable, Codable {
     var postacie: [String]
     var akcjaRzucaneZaklęcie: String
     var akcjaOdrzuconeZaklęcie: String
-    var wandering: String
+    var wandering: LingeringType
     var lingering: LingeringType
     var pacyfizm: String
 
@@ -96,11 +105,13 @@ struct CardEditorView: View {
     @State private var postacie = ["Mag Światła", "Mag Krwii"]
     @State private var card: Card
     
+    @State private var wanderingString: Bool = false
     @State private var showWandering: Bool = false
     @State private var showAkcjaRzucaneZaklęcie: Bool = false
     @State private var showAkcjaOdrzuconeZaklęcie: Bool = false
     @State private var lingeringString: Bool = false
     @State private var showLingering: Bool = false
+    
     @State private var showPacyfizm: Bool = false
     init(gra:Binding<Dictionary<String, Any>>, jsonText: Binding<String?>) {
         _gra = gra
@@ -111,7 +122,7 @@ struct CardEditorView: View {
             postacie: [],
             akcjaRzucaneZaklęcie: "",
             akcjaOdrzuconeZaklęcie: "",
-            wandering: "",
+            wandering: .string(""),
             lingering: .string(""),
             pacyfizm: ""
         ))
@@ -159,15 +170,60 @@ struct CardEditorView: View {
                 }
                 HStack
                 {
-                    Button("wandering")
+                    VStack
                     {
-                        showWandering = true
+                        Text("wandering")
+                            .font(.headline)
+                        Picker("Wandering Type", selection: Binding(
+                            get: {
+                                switch card.wandering {
+                                case .int:
+                                    return "Zachowaj"
+                                case .string:
+                                    return "String"
+                                }
+                            },
+                            set: { newValue in
+                                switch newValue {
+                                case "Zachowaj":
+                                    card.wandering = .int(0)
+                                case "String":
+                                    card.wandering = .string("")
+                                default:
+                                    break
+                                }
+                            }
+                        )) {
+                            Text("Zachowaj").tag("Zachowaj")
+                            Text("Akcja").tag("String")
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                        
+                        switch card.wandering {
+                        case .int(let value):
+                            Stepper(value: Binding(
+                                get: { value },
+                                set: { card.wandering = .int($0) }
+                            ), in: 0...100) {
+                                Text("Ilość kart: \(value)")
+                            }
+                        case .string(let value):
+                            HStack{
+                                Button("wandering")
+                                {
+                                    showWandering = true
+                                }
+                                .sheet(isPresented: $showWandering)
+                                {
+                                    ActionEditorView(gra: $gra, akcjaText: Binding(
+                                        get: { value },
+                                        set: { card.wandering = .string($0) }
+                                    ))
+                                }
+                                Text(value)
+                            }.padding()
+                        }
                     }
-                    .sheet(isPresented: $showWandering)
-                    {
-                        ActionEditorView(gra: $gra, akcjaText: $card.wandering)
-                    }
-                    Text(card.wandering)
                 }
                 HStack
                 {

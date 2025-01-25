@@ -28,7 +28,38 @@ struct StółView: View {
         UIDevice.current.userInterfaceIdiom == .phone ? 94 : 140
     }
     var body: some View {
-        HStack {
+        HStack {            VStack {
+            Text("Wandering")
+                .font(.footnote)
+            VStack {
+                
+                KartaContainerView(
+                    gra: $gra,
+                    lastPlayed: $PlayerLast,
+                    activePlayer: $activePlayer,
+                    gameRound: $gameRound,
+                    landscape: $landscape,
+                    selectedCard: $selectedCard,
+                    containerKey: "Wandering",
+                    isDragEnabled: false,
+                    isDropEnabled: false,
+                    size: 3
+                )
+                .scaleEffect(UIDevice.current.userInterfaceIdiom == .phone ? 0.7 : 0.8)
+                .padding(UIDevice.current.userInterfaceIdiom == .phone ? 1 : 8)
+                .rotationEffect(Angle(degrees: -90))
+            }
+            .frame(
+                width: UIDevice.current.userInterfaceIdiom == .phone ? 120 : 240,
+                height: UIDevice.current.userInterfaceIdiom == .phone ? 180 : 290
+            )
+                Text("Ruch \(gameRound - 1)")
+                    .padding()
+                Button("Menu") {
+                    menuView = true
+                }
+                .buttonStyle(.borderedProminent)
+        }
             VStack {
                 KartaContainerView(
                     gra: $gra,
@@ -91,6 +122,7 @@ struct StółView: View {
                         selectedCard: $selectedCard,
                         containerKey: "Lingering",
                         isDragEnabled: false,
+                        isLingering: true,
                         size: 3
                     )
                     .scaleEffect(UIDevice.current.userInterfaceIdiom == .phone ? 0.7 : 0.8)
