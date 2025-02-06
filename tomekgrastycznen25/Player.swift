@@ -33,6 +33,8 @@ struct PlayerView: View {
     @State var showBig: Bool = false
     
     
+    @State public var backgroundImage: UIImage = generateFilmGrain(size: CGSize(width: 24, height: 15))!
+    
     let requiredKeys = [
         "id", "nazwa", "ilośćKart", "manaMax", "mana", "życie", "tarcza",
         "akcjaRzucaneZaklęcie", "akcjaOdrzucaneZaklęcie",
@@ -51,7 +53,7 @@ struct PlayerView: View {
                     HStack
                     {
                         Text(player["nazwa"] as? String ?? "Unknown Player")
-                            .font(.title2)
+                            .font(.custom("Cinzel", size: 36))
                             .fontWeight(.bold)
                             .padding(.leading, 90)
                     }
@@ -214,8 +216,15 @@ struct PlayerView: View {
                     .scaleEffect(UIDevice.current.userInterfaceIdiom == .phone ? 0.75 : 1.0)
                 }
                 .padding()
+                .background(
+                    Image(uiImage: backgroundImage)
+                        .resizable()
+                        .aspectRatio(12.0, contentMode: .fill)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                )
                 //            .padding(.vertical, 40)
-                .background(RoundedRectangle(cornerRadius: 10).fill(isActive ? Color(PlatformColor.secondarySystemGroupedBackground) : Color(PlatformColor.systemGroupedBackground)))
+                .background(RoundedRectangle(cornerRadius: 10).fill(isActive ? Color("PlayerColor") : Color("PlayerColor")))
+                .clipped()
                 .shadow(radius: isActive ? 6 : 1)
                 .frame(minWidth: UIScreen.main.bounds.size.width/2, idealWidth: UIScreen.main.bounds.size.width - 65.0, maxWidth: UIScreen.main.bounds.size.width - 55.0)
                 .onTapGesture(count: 1) {

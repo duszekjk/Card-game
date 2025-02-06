@@ -74,10 +74,11 @@ extension ContentView
                 for kartaZaklęta in stareKarty
                 {
                     var kartaNowa = kartaZaklęta
-                    if(kartaNowa["lingering"] != nil)
-                    {
-                        kartaNowa["lingeringNow"] = kartaNowa["lingering"]
-                    }
+//                    if(kartaNowa["lingering"] != nil)
+//                    {
+                    kartaNowa["lingeringNow"] = ""
+//                    }
+                    kartaNowa["wanderingNow"] = ""
                     if(kartaNowa["wandering"] != nil)
                     {
                         kartaNowa["wanderingNow"] = kartaNowa["wandering"]
@@ -313,13 +314,13 @@ extension ContentView
                         
                         if let _ = zaklęcie["lingeringNow"] as? Int
                         {
-//                            var lingering = gra["Lingering"] as! Dictionary<String, Any>
-//                            var lingeringKarty = lingering["karty"] as! Array<Dictionary<String, Any>>
-//                            zaklęcieNow["lingeringNow"] = nil
-//                            lingeringKarty.append(zaklęcieNow)
-//                            lingering["karty"] = lingeringKarty
-//                            gra["Lingering"] = lingering
-//                            continue
+                            var lingering = gra["Lingering"] as! Dictionary<String, Any>
+                            var lingeringKarty = lingering["karty"] as! Array<Dictionary<String, Any>>
+                            zaklęcieNow["lingeringNow"] = nil
+                            lingeringKarty.append(zaklęcieNow)
+                            lingering["karty"] = lingeringKarty
+                            gra["Lingering"] = lingering
+                            continue
                         }
                         else
                         {
@@ -662,7 +663,12 @@ extension ContentView
                     current = next
                 } else {
                     print("Key \(key) not found in \(current ?? "nil")")
-                    return nil
+                    if let dict = current as? [String: Any]
+                    {
+                        print("Creating new key \(key)")
+                        return dict[key]
+                    }
+                    return current
                 }
             }
         }

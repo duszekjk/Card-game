@@ -7,26 +7,73 @@ struct KartaView: View {
     @State public var showBig = false
     
     @State private var capturedImage: UIImage?
+    @State private var noiseImage: UIImage = generateFilmGrain(size: CGSize(width: 100, height: 135))!
     var body: some View {
         VStack {
             if((karta["opis"] as? String ?? "") != "Placeholder")
             {
                 HStack
                 {
-                    Text("\(karta["koszt"] as? Int ?? 0)")
-                        .font(.footnote)
+                    VStack
+                    {
+                        VStack
+                        {
+                            Text("\(karta["koszt"] as? Int ?? 0)")
+                                .font(.footnote)
+                                .padding(4)
+                        }
+                        .background(
+                            Image("TextureCardBackSM")
+                                .resizable()
+                                .scaledToFill()
+                                .blur(radius: 2)
+                                .brightness(0.4)
+                        )
+                        .clipped()
+                        .border(.yellow, width: 1.0)
+                        .cornerRadius(6)
+                        .padding(2)
+                        Spacer()
+                    }
+                    Spacer()
+                    AnimatedShapesView(shapes: (karta["opis"] as? String ?? "").getShapes(), noiseImage: $noiseImage)
+                        .scaleEffect(0.1)
+                        .frame(width: 40, height: 35)
+                        .clipped()
+                        .padding(-5)
                     Spacer()
                 }
-                .padding()
-                Text("\(karta["opis"] as? String ?? "")")
-                    .font(.caption)
-                    .lineLimit(6)
+                VStack
+                {
+                    TextWithSymbols(text: "\(karta["opis"] as? String ?? "")", font: .caption, foregroundColor: .black)
+                        .lineLimit(6)
+                        .padding(3)
+                }
+                .frame(width: 92, height: 70)
+                    .background(
+                            Image("TextureCardBackSM")
+                                .resizable()
+                                .scaledToFill()
+                                .blur(radius: 3)
+                                .brightness(0.4)
+                    )
+                    .clipped()
+                    .cornerRadius(8)
             }
         }
         .padding(1)
         .frame(minWidth: 96, idealWidth: 97, maxWidth: 98, minHeight: 124, idealHeight: 125, maxHeight: 135)
-        .background(RoundedRectangle(cornerRadius: 10).fill(((karta["opis"] as? String ?? "") != "Placeholder") ? Color.blue : Color.gray))
-        .foregroundColor(.white)
+        .background(
+            Image("TextureCardBackSM")
+                .resizable()
+                .scaledToFill()
+                .blur(radius: ((karta["opis"] as? String ?? "") != "Placeholder") ? 2 : 0)
+                .brightness(((karta["opis"] as? String ?? "") != "Placeholder") ? -0.2 : 0)
+        )
+        .foregroundColor(.black)
+        .overlay(content: {Image(uiImage: noiseImage)})
+        .clipped()
+        .cornerRadius(10)
         .shadow(radius: 5)
         .onTapGesture(count: 2) {
             showBig.toggle()
@@ -45,7 +92,17 @@ struct KartaView: View {
                 capturedImage = image
                 showBig = false
             })
+            .presentationDetents([.height(idealSheetHeight())])
         }
+    }
+    func idealSheetHeight() -> CGFloat {
+        let screenSize = UIScreen.main.bounds
+        let screenWidth = screenSize.width
+        let screenHeight = screenSize.height
+        
+        let aspectRatio: CGFloat = 0.55 // Change this based on your iPad aspect ratio
+
+        return min(screenHeight * 0.8, screenWidth / aspectRatio) // Limit max height
     }
 }
 struct KartaBigView: View {
@@ -53,6 +110,7 @@ struct KartaBigView: View {
     @Binding var showBig: Bool
     let onLongPress: (UIImage) -> Void
     @State var isSharing: Bool = false
+    @State private var noiseImage: UIImage = generateFilmGrain(size: CGSize(width: 1024, height: 2048))!
 
     var body: some View {
         GeometryReader { geometry in
@@ -61,34 +119,83 @@ struct KartaBigView: View {
                 {
                     HStack
                     {
-                        Text("\(karta["koszt"] as? Int ?? 0)")
-                            .font(.footnote)
-                        Spacer()                    }
-                    .padding()
-                    Spacer()
-                    Text("\(karta["opis"] as? String ?? karta["akcjaRzucaneZaklęcie"] as? String ?? "----------")")
-                        .font(.caption)
-                        .lineLimit(6)
-                        .padding()
-                        .onLongPressGesture {
-                            
-                            isSharing = true
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                                captureView(size: geometry.size)
+                        VStack
+                        {
+                            VStack
+                            {
+                                Text("\(karta["koszt"] as? Int ?? 0)")
+                                    .font(.title)
+                                    .padding()
                             }
+                            .background(
+                                Image("TextureCardBackSM")
+                                    .resizable()
+                                    .scaledToFill()
+                                    .blur(radius: 5)
+                                    .brightness(0.4)
+                            )
+                            .clipped()
+                            .border(.yellow, width: 2.0)
+                            .cornerRadius(15)
+                            Spacer()
                         }
+                        Spacer()
+                        AnimatedShapesView(shapes: (karta["opis"] as? String ?? "").getShapes(), noiseImage: $noiseImage)
+                            .padding(15)
+                    }
+                    .padding()
+                    .overlay(FilmGrain())
                     Spacer()
+                    VStack
+                    {
+                        TextWithSymbols(text: "\(karta["opis"] as? String ?? karta["akcjaRzucaneZaklęcie"] as? String ?? "----------")", font: .custom("Papyrus", size: 40), foregroundColor: .black)
+                            .lineLimit(6)
+                            .padding(25)
+                    }
+//                    .frame(maxWidth: .infinity)
+                        .background(
+                                Image("TextureCardBackSM")
+                                    .resizable()
+                                    .scaledToFill()
+                                    .blur(radius: 10)
+                                    .brightness(0.4)
+                        )
+                        .clipped()
+                        .cornerRadius(15)
+                    Spacer()
+                }
+                else
+                {
+                    VStack
+                    {
+                        Spacer()
+                    }
                 }
             }
             .padding(15)
-            .background(RoundedRectangle(cornerRadius: 10).fill(((karta["opis"] as? String ?? "") != "Placeholder") ? Color.blue : Color.gray))
-            .foregroundColor(.white)
+            .background(
+                Image("TextureCardBackSM")
+                    .resizable()
+                    .scaledToFill()
+                    .blur(radius: ((karta["opis"] as? String ?? "") != "Placeholder") ? 5 : 0)
+                    .brightness(((karta["opis"] as? String ?? "") != "Placeholder") ? -0.2 : 0)
+            )
+            .foregroundColor(.black)
             .shadow(radius: 5)
             .onTapGesture(count: 2) {
                 showBig.toggle()
             }
+            .overlay(content: {Image(uiImage: noiseImage)})
+            .onLongPressGesture {
+                
+                isSharing = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    captureView(size: geometry.size)
+                }
+            }
         }
         .frame(maxWidth: .infinity ,minHeight: UIScreen.main.bounds.size.height*0.85)
+        .clipped()
     }
     
 #if os(iOS)

@@ -12,6 +12,7 @@ import SwiftData
 @main
 struct tomekgrastycznen25App: App {
     @AppStorage("yourName") var yourName = randomString(length: 8)
+    @State public var backgroundImage: UIImage = generateFilmGrain(size: CGSize(width: 1024, height: 1024))!
 
     init() {
         #if os(macOS)
@@ -21,7 +22,16 @@ struct tomekgrastycznen25App: App {
     var body: some Scene {
 
         WindowGroup {
-            ContentView(yourName: yourName)
+            ZStack {
+                Image(uiImage: backgroundImage)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(maxWidth: UIScreen.main.bounds.size.width, maxHeight: UIScreen.main.bounds.size.height) // Ensures full coverage
+                    .ignoresSafeArea() // Extends beyond safe area
+                
+                ContentView(yourName: yourName)
+            }
+            .background(Color("TableColor"))
         }
     }
 }

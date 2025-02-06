@@ -28,7 +28,8 @@ struct StółView: View {
         UIDevice.current.userInterfaceIdiom == .phone ? 94 : 140
     }
     var body: some View {
-        HStack {            VStack {
+        HStack {
+            VStack {
             Text("Wandering")
                 .font(.footnote)
             VStack {
@@ -147,5 +148,6 @@ struct StółView: View {
                 )
             }
         }
+        .foregroundStyle(.white)
     }
 }

@@ -46,6 +46,7 @@ struct ContentView: View {
     
     @State public var landscape = false
     
+    
     @State public var actionUserIntpuKartaShow: Bool = false
     @State public var actionUserIntpuKartaOptions: Array<Dictionary<String, Any>> = Array<Dictionary<String, Any>>()
     @State public var actionUserIntpuKartaOnSelected: ((Int) -> Void)? = nil
@@ -134,6 +135,8 @@ struct ContentView: View {
                                 Spacer()
                                 Text("Menu")
                                     .font(.title)
+                                
+                                
                                 Spacer()
                                 Menu {
                                         Button("Talii")
@@ -152,6 +155,36 @@ struct ContentView: View {
                                             .frame(width: 25, height: 25)
                                 }
 
+                            }
+                            HStack
+                            {
+                                Spacer()
+                                
+                                CardsIn()
+                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
+                                    .frame(width: 40, height: 40)
+                                CardsOut()
+                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
+                                    .frame(width: 40, height: 40)
+                                FlamingHeart()
+                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
+                                    .frame(width: 40, height: 40)
+                                Heart()
+                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
+                                    .frame(width: 40, height: 40)
+                                ManaIn()
+                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
+                                    .frame(width: 40, height: 40)
+                                ManaOut()
+                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
+                                    .frame(width: 40, height: 40)
+                                ShieldIn()
+                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
+                                    .frame(width: 40, height: 40)
+                                ShieldOut()
+                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
+                                    .frame(width: 40, height: 40)
+                                Spacer()
                             }
                             Spacer()
                             Text("Wczytaj")

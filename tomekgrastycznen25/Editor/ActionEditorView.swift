@@ -43,7 +43,6 @@ struct ActionEditorView: View {
     
     var previewView: some View {
         HStack {
-            
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
                     ForEach(currentAction, id: \.self) { part in
