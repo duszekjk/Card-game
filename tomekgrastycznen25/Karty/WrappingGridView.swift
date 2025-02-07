@@ -66,13 +66,18 @@ struct WrappingHStack: View {
         .transition(.opacity.combined(with: .scale))  // Fade & scale animation
     }
     
-    /// Estimates width and height of a view
     private func viewSize(for view: AnyView, sizeDef: CGFloat) -> CGSize {
+        #if os(iOS)
         let hosting = UIHostingController(rootView: view)
         let size = hosting.view.intrinsicContentSize
-        print("size \(size)")
+        #elseif os(macOS)
+        let hosting = NSHostingView(rootView: view)
+        let size = hosting.fittingSize
+        #endif
+
         return (size == .zero || size.height > 70) ? CGSize(width: sizeDef, height: sizeDef) : size
     }
+
 }
 import SwiftUI
 

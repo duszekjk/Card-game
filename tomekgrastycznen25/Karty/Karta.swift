@@ -36,7 +36,7 @@ struct KartaView: View {
                         Spacer()
                     }
                     Spacer()
-                    AnimatedShapesView(shapes: (karta["opis"] as? String ?? "").getShapes(), noiseImage: $noiseImage)
+                    AnimatedShapesView(shapes: (karta["opis"] as? String ?? "").getShapes(), noiseImage: $noiseImage, animate: false)
                         .scaleEffect(0.1)
                         .frame(width: 40, height: 35)
                         .clipped()
@@ -140,7 +140,7 @@ struct KartaBigView: View {
                             Spacer()
                         }
                         Spacer()
-                        AnimatedShapesView(shapes: (karta["opis"] as? String ?? "").getShapes(), noiseImage: $noiseImage)
+                        AnimatedShapesView(shapes: (karta["opis"] as? String ?? "").getShapes(), noiseImage: $noiseImage, animate: true)
                             .padding(15)
                     }
                     .padding()

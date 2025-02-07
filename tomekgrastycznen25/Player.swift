@@ -12,6 +12,7 @@ import UniformTypeIdentifiers
 
 struct PlayerView: View {
     @EnvironmentObject var connectionManager: MPConnectionManager
+    @Environment(\.colorScheme) var colorScheme
     
     @State private var capturedImage: UIImage?
     
@@ -34,12 +35,9 @@ struct PlayerView: View {
     
     
     @State public var backgroundImage: UIImage = generateFilmGrain(size: CGSize(width: 24, height: 15))!
+    @State public var backgroundImage2: UIImage = generateFilmGrain(size: CGSize(width: 240, height: 150))!
     
-    let requiredKeys = [
-        "id", "nazwa", "ilośćKart", "manaMax", "mana", "życie", "tarcza",
-        "akcjaRzucaneZaklęcie", "akcjaOdrzucaneZaklęcie",
-        "opisRzucaneZaklęcie", "opisOdrzucaneZaklęcie", "opis"
-    ]
+    let requiredKeys = requiredKeysForPostacie
     
     
     
@@ -53,7 +51,7 @@ struct PlayerView: View {
                     HStack
                     {
                         Text(player["nazwa"] as? String ?? "Unknown Player")
-                            .font(.custom("Cinzel", size: 36))
+                            .font(.custom("Cinzel", size: 20))
                             .fontWeight(.bold)
                             .padding(.leading, 90)
                     }
@@ -96,10 +94,6 @@ struct PlayerView: View {
                         return true
                     }
                     
-                    // ilośćKart, mana/manaMax, życie
-                    
-                    
-                    // karty
                     if(isActive)
                     {
                         HStack
@@ -134,11 +128,9 @@ struct PlayerView: View {
                         }
                     }
                     
-                    // akcjaRzucaneZaklęcie
                     HStack
                     {
                         HStack {
-                            // ilośćKart
                             HStack {
                                 Image(systemName: "doc.on.doc")
                                 Text("\(player["ilośćKart"] as? Int ?? 0)")
@@ -146,7 +138,6 @@ struct PlayerView: View {
                             
                             Spacer()
                             
-                            // mana/manaMax
                             HStack {
                                 Image(systemName: "bolt.fill")
                                 Text("\(player["mana"] as? Int ?? 0) /\(player["manaMax"] as? Int ?? 0)")
@@ -164,7 +155,6 @@ struct PlayerView: View {
                             
                             Spacer()
                             
-                            // tarcza
                             HStack {
                                 Image(systemName: "shield.pattern.checkered")
                                     .foregroundColor(.red)
@@ -173,7 +163,6 @@ struct PlayerView: View {
                             
                             Spacer()
                             
-                            // życie
                             HStack {
                                 Image(systemName: "heart.fill")
                                     .foregroundColor(.red)
@@ -181,9 +170,9 @@ struct PlayerView: View {
                             }
                             .onChange(of: player["życie"] as? Int ?? 0) { newValue in
                                 if let life = newValue as? Int, life == 0 {
-                                    playerLoose = playerKey // Set the player who lost
+                                    playerLoose = playerKey
                                     connectionManager.send(gameState: gra)
-                                    endGame = true          // Trigger the end of the game
+                                    endGame = true
                                 }
                             }
                             
@@ -203,7 +192,6 @@ struct PlayerView: View {
                                 
                             }
                             
-                            // akcjaOdrzucaneZaklęcie
                             HStack(alignment: .firstTextBaseline) {
                                 Image(systemName: "trash.fill")
                                 Text(player["opisOdrzucaneZaklęcie"] as? String ?? "Brak akcji")
@@ -217,16 +205,47 @@ struct PlayerView: View {
                 }
                 .padding()
                 .background(
-                    Image(uiImage: backgroundImage)
-                        .resizable()
-                        .aspectRatio(12.0, contentMode: .fill)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    ZStack
+                    {
+                        if let playerName = player["nazwa"] as? String,
+                           UIImage(named: playerName) != nil {
+                            Image(playerName)
+                                .resizable(resizingMode: .tile)
+                                .aspectRatio(12.0, contentMode: .fill)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .blur(radius: 40)
+                                .saturation(1.4)
+                                .brightness(colorScheme == .dark ? -0.3 : 0.2)
+                                .cornerRadius(10)
+                            Image(playerName)
+                                .resizable()
+                                .aspectRatio(12.0, contentMode: .fill)
+                                .saturation(1.4)
+                                .opacity(0.8)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .blur(radius: 60)
+                                .cornerRadius(10)
+                        }
+                        Image(uiImage: backgroundImage)
+                            .resizable()
+                            .aspectRatio(12.0, contentMode: .fill)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .cornerRadius(10)
+                        Image(uiImage: backgroundImage2)
+                            .resizable(resizingMode: .tile)
+                            .aspectRatio(12.0, contentMode: .fill)
+                            .opacity(0.5)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .cornerRadius(10)
+                        
+                    }
+                        .cornerRadius(10)
                 )
-                //            .padding(.vertical, 40)
-                .background(RoundedRectangle(cornerRadius: 10).fill(isActive ? Color("PlayerColor") : Color("PlayerColor")))
                 .clipped()
+                .background(RoundedRectangle(cornerRadius: 10).fill(isActive ? Color("PlayerColor") : Color("PlayerColor")))
                 .shadow(radius: isActive ? 6 : 1)
                 .frame(minWidth: UIScreen.main.bounds.size.width/2, idealWidth: UIScreen.main.bounds.size.width - 65.0, maxWidth: UIScreen.main.bounds.size.width - 55.0)
+                .cornerRadius(10)
                 .onTapGesture(count: 1) {
                     DispatchQueue.main.async
                     {
@@ -234,7 +253,6 @@ struct PlayerView: View {
                     }
                 }
                 .sheet(isPresented: $showBig, onDismiss: {
-                    // Trigger share after dismissing the sheet
                     if let image = capturedImage {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                             if let player = gra[playerKey] as? Dictionary<String, Any>,

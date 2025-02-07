@@ -184,7 +184,7 @@ struct CardEditorView: View {
                                         return "String"
                                     }
                                 },
-                                set: { newValue in
+                                set: { (newValue: String) in
                                     switch newValue {
                                     case "Zachowaj":
                                         card.wandering = .int(0)
@@ -253,7 +253,7 @@ struct CardEditorView: View {
                                         return "String"
                                     }
                                 },
-                                set: { newValue in
+                                set: { (newValue: String) in
                                     switch newValue {
                                     case "Zachowaj":
                                         card.lingering = .int(0)
@@ -318,16 +318,6 @@ struct CardEditorView: View {
                 }
             }
             .navigationTitle("Edytuj kartę")
-            .navigationBarItems(
-//                leading: Button("Cancel") {
-//                    jsonText
-//                },
-                trailing: Button("Zapisz") {
-                    if let updatedJSON = card.save() {
-                        jsonText = updatedJSON
-                    }
-                }
-            )
             .onAppear()
             {
                 if(jsonText != nil)
@@ -342,6 +332,17 @@ struct CardEditorView: View {
                     card = Card.load(from: jsonText!)!
                 }
             }
+//            #if os(macOS)
+//            
+//            #else
+            .navigationBarItems(
+                trailing: Button("Zapisz") {
+                    if let updatedJSON = card.save() {
+                        jsonText = updatedJSON
+                    }
+                }
+            )
+//            #endif
         }
     }
 }

@@ -6,6 +6,7 @@
     "akcjaRzucaneZaklęcie" : "@PlayerYou.życie = @PlayerYou.życie - 1",
     "postacie" : [
       "Mag Światła",
+      "Pijawka Magii",
       "Mag Krwii"
     ],
     "lingering" : "",
@@ -35,6 +36,8 @@
     "koszt" : 4,
     "postacie" : [
       "Mag Światła",
+      "Pijawka Magii",
+      "Mag Ognia",
       "Mag Krwii"
     ]
   },
@@ -47,7 +50,8 @@
     "akcjaOdrzuconeZaklęcie" : "",
     "lingering" : "",
     "postacie" : [
-      "Mag Światła"
+      "Mag Światła",
+      "Pijawka Magii"
     ]
   },
   {
@@ -55,6 +59,8 @@
     "pacyfizm" : "",
     "postacie" : [
       "Mag Światła",
+      "Pijawka Magii",
+      "Mag Ognia",
       "Mag Krwii"
     ],
     "wandering" : "",
@@ -71,6 +77,8 @@
     "lingering" : "",
     "postacie" : [
       "Mag Światła",
+      "Pijawka Magii",
+      "Mag Ognia",
       "Mag Krwii"
     ],
     "pacyfizm" : "@PlayerYou.ilośćKart = @PlayerYou.ilośćKart + 1 & @PlayerYou.mana = @PlayerYou.mana + 2",
@@ -84,7 +92,9 @@
     "akcjaOdrzuconeZaklęcie" : "",
     "pacyfizm" : "",
     "postacie" : [
-      "Mag Światła"
+      "Mag Światła",
+      "Mag Ognia",
+      "Pijawka Magii"
     ],
     "wandering" : ""
   },
@@ -93,7 +103,9 @@
     "akcjaOdrzuconeZaklęcie" : "",
     "opis" : "3 ❤️‍🔥, 3 🛡️",
     "postacie" : [
-      "Mag Światła"
+      "Mag Światła",
+      "Mag Ognia",
+      "Pijawka Magii"
     ],
     "wandering" : "",
     "lingering" : "",
@@ -110,6 +122,7 @@
     "opis" : "1 🔋,\nPacyfizm: Przeciwnik 1 🔋",
     "postacie" : [
       "Mag Światła",
+      "Mag Ognia",
       "Mag Krwii"
     ]
   },
@@ -118,7 +131,9 @@
     "koszt" : 3,
     "postacie" : [
       "Mag Światła",
-      "Mag Krwii"
+      "Mag Krwii",
+      "Mag Ognia",
+      "Pijawka Magii"
     ],
     "wandering" : "",
     "akcjaOdrzuconeZaklęcie" : "@PlayerMe.ilośćKart = @PlayerMe.ilośćKart - 1",
@@ -169,6 +184,7 @@
   {
     "postacie" : [
       "Mag Światła",
+      "Pijawka Magii",
       "Mag Krwii"
     ],
     "lingering" : "",
@@ -179,5 +195,31 @@
     "pacyfizm" : "",
     "akcjaOdrzuconeZaklęcie" : "",
     "id" : "FCD98525-F776-44AB-BDC9-697885B9A259"
+  },
+  {
+    "postacie" : [
+      "Mag Ognia"
+    ],
+    "lingering" : "",
+    "akcjaRzucaneZaklęcie" : "@PlayerYou.życie = @PlayerYou.życie - 2 & @PlayerMe.mana = @PlayerMe.mana + 4",
+    "koszt" : 6,
+    "opis" : "Pustka 1\n2❤️‍🔥, 4🔋",
+    "wandering" : "",
+    "pacyfizm" : "",
+    "akcjaOdrzuconeZaklęcie" : "@PlayerMe.ilośćKart = @PlayerMe.ilośćKart - 1",
+    "id" : "FCD98525-F776-44AB-BDC9-0000001"
+  },
+  {
+    "postacie" : [
+      "Mag Ognia"
+    ],
+    "lingering" : "",
+    "akcjaRzucaneZaklęcie" : "@PlayerYou.życie = @PlayerYou.życie - 3 & @PlayerMe.tarcza = @PlayerMe.tarcza + 3",
+    "koszt" : 8,
+    "opis" : "3❤️‍🔥, 3🛡️",
+    "wandering" : "",
+    "pacyfizm" : "",
+    "akcjaOdrzuconeZaklęcie" : "",
+    "id" : "FCD98525-F776-44AB-BDC9-0000002"
   }
 ]

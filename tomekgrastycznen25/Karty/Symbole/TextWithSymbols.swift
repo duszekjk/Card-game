@@ -94,7 +94,9 @@ extension String {
         return components
     }
 }
+
 func fontSize(for font: Font) -> CGFloat {
+    #if os(iOS)
     let textStyle: UIFont.TextStyle? = {
         switch font {
         case .largeTitle: return .largeTitle
@@ -111,12 +113,37 @@ func fontSize(for font: Font) -> CGFloat {
         default: return nil
         }
     }()
-    if textStyle != nil
-    {
-        return UIFont.preferredFont(forTextStyle: textStyle!).pointSize
+    
+    if let textStyle = textStyle {
+        return UIFont.preferredFont(forTextStyle: textStyle).pointSize
     }
-    return 40
+    
+    #elseif os(macOS)
+    let nsFontSize: CGFloat? = {
+        switch font {
+        case .largeTitle: return NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .regular) + 10).pointSize
+        case .title: return NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .large)).pointSize
+//        case .title2: return NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .large))
+//        case .title3: return NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .large))
+//        case .headline: return NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .headline))
+//        case .subheadline: return NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .subheadline))
+//        case .body: return NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .body))
+//        case .callout: return NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .callout))
+//        case .footnote: return NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .footnote))
+        case .caption: return 20.0
+//        case .caption2: return NSFont.systemFont(ofSize: NSFont.systemFontSize(for: .caption2))
+        default: return nil
+        }
+    }()
+    
+    if let nsFont = nsFontSize {
+        return nsFont
+    }
+    #endif
+    
+    return 40 // Default fallback size
 }
+
 struct NewLineView: View {
     
     var body: some View {

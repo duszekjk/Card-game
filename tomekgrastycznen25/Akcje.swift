@@ -199,8 +199,10 @@ extension ContentView
     {
         
         var playerNow = gra["Player\(activePlayer + 1)"] as! [String: Any]
+        print(playerNow)
         if(playerNow["akcjaOdrzuconeZaklęcie"] != nil)
         {
+            print("cancelSpell player action \(playerNow["akcjaOdrzuconeZaklęcie"])")
             if((playerNow["akcjaOdrzuconeZaklęcie"] as? String ?? "") != "")
             {
                 spell(player: "Player\(activePlayer + 1)", run: playerNow["akcjaOdrzuconeZaklęcie"] as! String, against: "Player\((activePlayer + 1) % 2 + 1)")
@@ -208,6 +210,7 @@ extension ContentView
         }
         for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
         {
+            print("cancelSpell kard action")
             spell(player: "Player\(activePlayer + 1)", run: zaklęcie["akcjaOdrzuconeZaklęcie"] as! String, against: "Player\((activePlayer + 1) % 2 + 1)")
         }
         for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)

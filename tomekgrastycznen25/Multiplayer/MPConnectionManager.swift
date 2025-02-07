@@ -144,6 +144,7 @@ extension MPConnectionManager: MCSessionDelegate {
         print("Peer \(peerID.displayName) changed state to \(state)")
         switch state {
         case .notConnected:
+            print("Not Connected")
             DispatchQueue.main.async {
                 self.availablePeers.removeAll()
                 self.paired = false
@@ -157,10 +158,11 @@ extension MPConnectionManager: MCSessionDelegate {
                 self.isAvailableToPlay = false
             }
         default:
-            DispatchQueue.main.async {
-                self.paired = false
-                self.isAvailableToPlay = true
-            }
+            print("default")
+//            DispatchQueue.main.async {
+//                self.paired = false
+//                self.isAvailableToPlay = true
+//            }
         }
     }
     

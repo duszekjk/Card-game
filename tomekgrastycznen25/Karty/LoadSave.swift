@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 let requiredKeysForCard = [
     "koszt", "akcjaRzucaneZaklęcie", "akcjaOdrzuconeZaklęcie", "pacyfizm",
     "wandering", "lingering", "opis", "postacie"
@@ -52,7 +53,7 @@ func loadDeck(fromFile name: String) -> [[String: Any]]? {
         let data = try Data(contentsOf: fileURL)
         if let deck = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
             print("loading \(name)")
-            return completeDeck(deck) // Validate and complete the deck
+            return completeDeck(deck)
         }
     } catch {
         print("Failed to load deck: \(error)")
@@ -63,13 +64,10 @@ func loadDefaultDeck() -> [[String: Any]]? {
     if let fileURL = Bundle.main.url(forResource: "defaultDeck", withExtension: "json"),
        let data = try? Data(contentsOf: fileURL),
        let deck = try? JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
-        return completeDeck(deck) // Validate and complete the default deck
+        return completeDeck(deck)
     }
     return nil
 }
-
-
-
 
 func validateAndCompleteCard(_ card: [String: Any]) -> ([String: Any], [String]) {
     
@@ -91,25 +89,17 @@ func completeCard(_ card: [String: Any]) -> [String: Any] {
 
     for key in requiredKeysForCard {
         if updatedCard[key] == nil {
-            // Add missing key with default value (null for JSON, empty for arrays)
             updatedCard[key] = key == "postacie" ? [] : NSNull()
         }
     }
     return updatedCard
 }
 
-// Function to process the entire deck
 func completeDeck(_ deck: [[String: Any]]) -> [[String: Any]] {
     return deck.map { completeCard($0) }
 }
-
-
-
-import SwiftUI
-
 struct SaveDeckView: View {
     @State private var deckName: String = ""
-//    @Binding var deck: [[String: Any]] // Pass the current deck
     @Binding var gra: Dictionary<String, Any>
     @Binding var selectedFile: String?
 
@@ -291,9 +281,7 @@ struct ManageDecksView: View {
                             .lineLimit(1)
                             .foregroundColor(file == selectedFile ? .blue : .primary)
                     }
-
                     Spacer()
-
                     Button(action: { prepareRename(file) }) {
                         Image(systemName: "pencil")
                     }
@@ -359,13 +347,11 @@ struct ManageDecksView: View {
             .padding()
         }
     }
-
     private func refreshDeckFiles() {
         listDeckFiles { files in
             deckFiles = files
         }
     }
-
     private func selectFile(_ file: String) {
         selectedFile = file
         if let loadedDeck = loadDeck(fromFile: file) {
@@ -373,13 +359,11 @@ struct ManageDecksView: View {
             gra["TaliaNazwa"] = file.replacingOccurrences(of: ".json", with: "")
         }
     }
-
     private func prepareRename(_ file: String) {
         editingFile = file
         newFileName = file // Pre-fill the text field with the current file name
         showRenameSheet = true
     }
-
     private func renameFile() {
         guard let selectedFile = editingFile else { return }
         let directory = getDecksDirectory()
@@ -398,7 +382,6 @@ struct ManageDecksView: View {
         }
         showAlert = true
     }
-
     private func removeFile(_ file: String) {
         let directory = getDecksDirectory()
         let filePath = directory.appendingPathComponent(file)
@@ -412,7 +395,6 @@ struct ManageDecksView: View {
         }
         showAlert = true
     }
-
     private func duplicateFile(_ file: String) {
         let newName = file.replacingOccurrences(of: ".json", with: "_copy.json")
         let directory = getDecksDirectory()

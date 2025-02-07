@@ -39,6 +39,8 @@ struct ContentView: View {
     @State public var odrzucanieEndMove = false
     @State public var selectedCard: String?
     @State public var selectedTaliaFile: String?
+    @State public var selectedPlayer1File: String?
+    @State public var selectedPlayer2File: String?
     
     @State public var playerLoose : String = ""
     @State public var endGame : Bool = false
@@ -201,20 +203,16 @@ struct ContentView: View {
                                     }
                                     HStack
                                     {
-                                        Text("Postać 1")
-                                        Button("Mag Światła")
+                                        VStack
                                         {
-                                            
+                                            Text("Postać 1")
+                                            LoadPostacieView(gra: $gra, selectedFile: $selectedPlayer1File, playerId: 1)
                                         }
-                                        .buttonStyle(.borderedProminent)
-                                        .disabled(true)
-                                        Text("Postać 2")
-                                        Button("Mag Krwi")
+                                        VStack
                                         {
-                                            
+                                            Text("Postać 2")
+                                            LoadPostacieView(gra: $gra, selectedFile: $selectedPlayer2File, playerId: 2)
                                         }
-                                        .buttonStyle(.borderedProminent)
-                                        .disabled(true)
                                     }
                                 }
                             }
@@ -222,33 +220,24 @@ struct ContentView: View {
                             {
                                 HStack
                                 {
-                                    Text("Talię:")
-                                    LoadDeckView(gra: $gra, selectedFile: $selectedTaliaFile)
+                                    VStack
+                                    {
+                                        Text("Talię:")
+                                        LoadDeckView(gra: $gra, selectedFile: $selectedTaliaFile)
+                                    }
                                     Spacer()
-                                    Text("Postać 1")
-                                    Button("Mag Światła")
+                                    VStack
                                     {
-                                        
+                                        Text("Postać 1")
+                                        LoadPostacieView(gra: $gra, selectedFile: $selectedPlayer1File, playerId: 1)
                                     }
-                                    .buttonStyle(.borderedProminent)
-                                    .disabled(true)
-                                    Text("Postać 2")
-                                    Button("Mag Krwi")
+                                    VStack
                                     {
-                                        
+                                        Text("Postać 2")
+                                        LoadPostacieView(gra: $gra, selectedFile: $selectedPlayer2File, playerId: 2)
                                     }
-                                    .buttonStyle(.borderedProminent)
-                                    .disabled(true)
                                 }
                             }
-//                            Text("Zapisz")
-//                                .font(.headline)
-//                                .padding(.top, 6)
-//                            HStack
-//                            {
-//                                Text("Talię: ")
-//                                SaveDeckView(gra: $gra, selectedFile: $selectedTaliaFile)
-//                            }
                             Divider()
                             
                             Spacer()

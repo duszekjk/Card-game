@@ -5,6 +5,7 @@ struct AnimatedShapesView: View {
     let viewSize: CGSize = CGSize(width: min(400, UIScreen.main.bounds.size.width-160), height: min(350, (UIScreen.main.bounds.size.width-160) * 0.875))
     let stepsBetweenFrames = 10  // Extra steps for smooth transitions
     @Binding var noiseImage: UIImage
+    var animate: Bool
     @State private var shapeParameters: [[ShapeParams]] = []
     @State private var animationStep = 0
     @State private var isAnimating = false
@@ -45,8 +46,11 @@ struct AnimatedShapesView: View {
         }
         .frame(width: viewSize.width, height: viewSize.height)
         .onAppear {
-            generateSmoothAnimationFrames()
-            startContinuousAnimation()
+            if(animate)
+            {
+                generateSmoothAnimationFrames()
+                startContinuousAnimation()
+            }
         }
     }
 

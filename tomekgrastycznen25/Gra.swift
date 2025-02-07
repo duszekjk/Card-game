@@ -35,15 +35,34 @@ extension ContentView
             gra["Talia"] =  taliaBase
             print(taliaBase)
         }
+        var graczLoad = (selectedPlayer1File != nil ? loadPlayer(jsonPath: getPostacieDirectory().appendingPathComponent(selectedPlayer1File!), id: 0) : loadPlayerDef(id:1))!
+        print("graczLoad: \(graczLoad)")
+        if(graczLoad.isEmpty)
+        {
+            graczLoad = loadPlayerDef(id:0)
+            print("graczLoad: \(graczLoad)")
+        }
+        gra["Player1"] = graczLoad
+        loadTalia(taliaName: "Player1", characterName: getTextData(&gra, for: "Player1", key: "nazwa"))
         
-        gra["Player1"] = loadPlayer(id:1)
-        gra["Player2"] = loadPlayer(id:2)
+        graczLoad = (selectedPlayer1File != nil ? loadPlayer(jsonPath: getPostacieDirectory().appendingPathComponent(selectedPlayer2File!), id: 1) : loadPlayerDef(id:2))!
+        print("graczLoad: \(graczLoad)")
+        if(graczLoad.isEmpty)
+        {
+            graczLoad = loadPlayerDef(id:1)
+            print("graczLoad: \(graczLoad)")
+        }
+        gra["Player2"] = graczLoad
+        loadTalia(taliaName: "Player2", characterName: getTextData(&gra, for: "Player2", key: "nazwa"))
+        
         gra["TablePlayer1"] = loadTable()
         gra["TablePlayerLast"] = loadTable()
         gra["TablePlayer2"] = loadTable()
         gra["Lingering"] = loadTable()
         gra["Wandering"] = loadTable()
         gra["Zaklęcie"] = loadSpell()
+        setKarty(&gra, for: "Player1", value: loadCards(conut: getData(&gra, for: "Player1", key: "ilośćKart"), for: "Player1"))
+        setKarty(&gra, for: "Player2", value: loadCards(conut: getData(&gra, for: "Player2", key: "ilośćKart"), for: "Player2"))
     }
     func loadTable() -> Dictionary<String, Any>
     {
@@ -61,30 +80,34 @@ extension ContentView
         zaklęcie["karty"] = Array<Dictionary<String, Any>>()
         return zaklęcie
     }
-    func loadPlayer(id: Int = 0) -> Dictionary<String, Any>
+    func loadTalia(taliaName: String, characterName: String)
+    {
+        let taliaAll = Array(repeating: gra["Talia"] as! [[String:Any]], count: taliaRepeat).flatMap { $0 }
+        var karty = Dictionary<String, Any>()
+        karty["karty"] = taliaAll
+        gra["Talia\(taliaName)"] = karty
+        print("gra[Player] -> making talia")
+        var taliaGracz = taliaAll.filter { card in
+            guard let postacie = card["postacie"] as? [String] else {
+                return false
+            }
+            return postacie.contains(characterName)
+        }.map { card in
+            var modifiedCard = card
+            modifiedCard["player"] = taliaName
+            return modifiedCard
+        }
+        print("talia \(taliaName) with \(taliaGracz.count) cards")
+        setKarty(&gra, for: "Talia\(taliaName)", value: taliaGracz)
+    }
+    func loadPlayerDef(id: Int = 0) -> Dictionary<String, Any>
     {
         var gracz: Dictionary<String, Any> = Dictionary<String, Any>()
-        let taliaAll = Array(repeating: gra["Talia"] as! [[String:Any]], count: taliaRepeat).flatMap { $0 }
         if(id == 1)
         {
             gracz["id"] = "Player1"
             gracz["nazwa"] = "Mag Światła"
             
-            var karty = Dictionary<String, Any>()
-            karty["karty"] = taliaAll
-            gra["Talia\(gracz["id"]!)"] = karty
-            print("gra[Player] -> making talia")
-            var taliaGracz = taliaAll.filter { card in
-                guard let postacie = card["postacie"] as? [String] else {
-                    return false
-                }
-                return postacie.contains(gracz["nazwa"] as! String)
-            }.map { card in
-                var modifiedCard = card
-                modifiedCard["player"] = gracz["id"]!
-                return modifiedCard
-            }
-            setKarty(&gra, for: "Talia\(gracz["id"]!)", value: taliaGracz)
             print("gra[Player] ->  talia ok")
             gracz["ilośćKart"] = Int(3)
             gracz["manaMax"] = Int(10)
@@ -97,28 +120,14 @@ extension ContentView
             gracz["opisOdrzucaneZaklęcie"] = nil
             gracz["opis"] = "Mistyczny czarodziej władający mocą czystej energii światła. Jego zaklęcia nie tylko ranią przeciwników, ale także pozostawiają świetliste echa, które utrzymują się na polu walki, wzmacniając jego sojuszników. Przemierza krainy, by szerzyć blask nadziei i obnażać ukryte cienie."
             print("gra[Player] ->  cards")
-            gracz["karty"] = loadCards(conut: gracz["ilośćKart"] as! Int, for: gracz["id"] as! String)
-            print("gra[Player] ->  cards  ok")
+            print("gra[Player] ->  cards  ok 1")
         }
         if(id == 2)
         {
             gracz["id"] = "Player2"
             gracz["nazwa"] = "Mag Krwii"
             
-            var karty = Dictionary<String, Any>()
-            karty["karty"] = taliaAll
-            gra["Talia\(gracz["id"]!)"] = karty
-            var taliaGracz = taliaAll.filter { card in
-                guard let postacie = card["postacie"] as? [String] else {
-                    return false
-                }
-                return postacie.contains(gracz["nazwa"] as! String)
-            }.map { card in
-                var modifiedCard = card
-                modifiedCard["player"] = gracz["id"]!
-                return modifiedCard
-            }
-            setKarty(&gra, for: "Talia\(gracz["id"]!)", value: taliaGracz)
+            
             gracz["ilośćKart"] = Int(2)
             gracz["manaMax"] = Int(6)
             gracz["mana"] = Int(3)
@@ -129,7 +138,8 @@ extension ContentView
             gracz["opisRzucaneZaklęcie"] = "Tracisz 1 ❤️ i staniasz to zaklęcie o 3."
             gracz["opisOdrzucaneZaklęcie"] = nil
             gracz["opis"] = "Mroczny mag, który czerpie siłę z własnej żywotności, aby tworzyć potężne zaklęcia. Każde użycie magii to dla niego akt poświęcenia, lecz w zamian zyskuje przerażającą przewagę nad wrogami. Jego krew płynie nie tylko w żyłach, ale także w ogniu jego czarów, które niszczą i wyczerpują każdego, kto odważy się go wyzwać."
-            gracz["karty"] = loadCards(conut: gracz["ilośćKart"] as! Int, for: gracz["id"] as! String)
+//            gracz["karty"] = loadCards(conut: gracz["ilośćKart"] as! Int, for: gracz["id"] as! String)
+            print("gra[Player] ->  cards  ok 2")
         }
         
         return gracz
