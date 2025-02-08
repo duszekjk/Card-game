@@ -44,7 +44,7 @@ struct OdrzucanieKartView: View {
                                     containerEdit["karty"] = kartyEdit
                                     gra[playersList[activePlayer]] = containerEdit
                                     setKarty(&gra, for: "Talia\(player)", value: talia)
-                                }, label: { KartaView(karta: karta, selectedCard: $selectedCard) })
+                                }, label: { KartaView(karta: karta, showPostacie: false, selectedCard: $selectedCard) })
                                 
                                     
                             }
@@ -79,7 +79,7 @@ struct OdrzucanieKartView: View {
                         LazyVGrid(columns: columns, spacing: 5) {
                             ForEach(0..<karty.count, id: \.self) { index in
                                 let karta = karty[index]
-                                KartaView(karta: karta, selectedCard: $selectedCard)
+                                KartaView(karta: karta, showPostacie: false, selectedCard: $selectedCard)
                             }
                         }
                     }

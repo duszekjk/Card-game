@@ -142,6 +142,7 @@ struct TaliaView: View {
     
     
     @State private var alertMessage: String = ""
+    @State private var kartyCount: Int = 0
     @State private var showAlert: Bool = false
     @State var talia:[[String: Any]] = [[String: Any]]()
     
@@ -163,7 +164,7 @@ struct TaliaView: View {
                             .padding()
                             .padding(.top, 15)
                             .padding(.bottom, -15)
-                        Text("\(talia.count) kart")
+                        Text("\(kartyCount) kart")
                             .foregroundColor(.white)
                             .padding()
                         
@@ -174,6 +175,7 @@ struct TaliaView: View {
                 DispatchQueue.main.async {
                     print("gameRound \(gameRound) Talia\(playerID)")
                     talia = getKarty(&gra, for: "Talia\(playerID)")
+                    kartyCount = talia.count
                 }
             }
             .onDrag {
@@ -319,11 +321,14 @@ struct TaliaContainerView: View {
     @Binding var show: Bool
     @Binding var selectedCard: String?
     let containerKey: String
-    var isDragEnabled: Bool = true
+    var isDragEnabled: Bool = false
     var isDropEnabled: Bool = true
     var size: CGFloat = 3
     var sizeFullAction: (String, Array<Dictionary<String, Any>>) -> Void = { _, _ in }
-    @State private var kartyCount = 3
+    
+    @State private var alertMessage: String = ""
+    @State private var kartyCount: Int = 0
+    @State private var showAlert: Bool = false
 
     var body: some View {
         VStack {
@@ -356,12 +361,9 @@ struct TaliaContainerView: View {
         let columns = Array(repeating: GridItem(.flexible()), count: Int(max(1, min(5, talia.count))))
 
         return LazyVGrid(columns: columns, spacing: 5) {
-            ForEach(0..<talia.count, id: \.self) { index in
+            ForEach(0..<talia.count, id: \.self) { (index:Int) in
                 let karta = talia[index]
-                KartaView(karta: karta, selectedCard: $selectedCard)
-                    .onDrag {
-                        NSItemProvider(object: isDragEnabled ? "\(containerKey)|\(index)" as NSString : "" as NSString)
-                    }
+                KartaView(karta: karta, showPostacie: false, selectedCard: $selectedCard)
             }
         }
         .frame(minWidth: size * 100)
@@ -372,71 +374,75 @@ struct TaliaContainerView: View {
         .onChange(of: talia.count) { newValue in
             kartyCount = newValue
         }
-        .onDrop(of: [UTType.text], isTargeted: nil) { providers in
-            guard isDropEnabled else { return false }
-            return handleDrop(providers: providers)
+        .onDrag {
+            // Ensure all cards in `taliaBase` are complete before exporting
+            let completeDeck = completeDeck(gra["Talia"] as! [[String:Any]])
+
+            if let data = sortedJSONData(fromArray: completeDeck),
+               let jsonString = String(data: data, encoding: .utf8) {
+                return NSItemProvider(object: jsonString as NSString)
+            }
+            return NSItemProvider(object: "" as NSString)
         }
-    }
-    private func handleDrop(providers: [NSItemProvider]) -> Bool {
-        for provider in providers {
-            provider.loadItem(forTypeIdentifier: UTType.text.identifier, options: nil) { (data, error) in
-                guard error == nil, let data = data as? Data, let identifier = String(data: data, encoding: .utf8) else {
-                    return
-                }
-
-                DispatchQueue.main.async {
-                    let parts = identifier.split(separator: "|")
-                    guard parts.count == 2,
-                          let sourceKey = parts.first,
-                          let sourceIndex = Int(parts.last ?? "") else { return }
-
-                    moveCard(from: String(sourceKey), at: sourceIndex, to: containerKey)
-                    lastPlayed = String(sourceKey)
-                    if let container = gra[containerKey] as? Dictionary<String, Any>
-                    {
-                        let kartyLoad = container["karty"] as? Array<Dictionary<String, Any>> ?? []
-                        if(CGFloat(kartyLoad.count) == size)
-                        {
-                            print("Running spell bc \(CGFloat(kartyLoad.count)) == \(size)")
-                            sizeFullAction(containerKey, kartyLoad)
+        .onDrop(of: [UTType.plainText], isTargeted: nil) { providers in
+            guard let provider = providers.first else { return false }
+            
+            provider.loadItem(forTypeIdentifier: UTType.plainText.identifier, options: nil) { (item, error) in
+                if let data = item as? Data,
+                   let jsonString = String(data: data, encoding: .utf8),
+                   let jsonData = jsonString.data(using: .utf8) {
+                    do {
+                        if let decodedDeck = try JSONSerialization.jsonObject(with: jsonData, options: []) as? [[String: Any]] {
+                            // Validate the deck and collect missing key information
+                            var missingKeysInfo = ""
+                            var validatedDeck: [[String: Any]] = []
+                            
+                            for (index, card) in decodedDeck.enumerated() {
+                                let (validatedCard, missingKeys) = validateAndCompleteCard(card)
+                                validatedDeck.append(validatedCard)
+                                
+                                if !missingKeys.isEmpty {
+                                    missingKeysInfo += "Karta \(index + 1): Brakujące cechy: \(missingKeys.joined(separator: ", "))\n"
+                                }
+                            }
+                            
+                            // Show alert if there are missing keys
+                            if !missingKeysInfo.isEmpty {
+                                DispatchQueue.main.async {
+                                    alertMessage = missingKeysInfo
+                                    showAlert = true
+                                }
+                            }
+                            
+                            // Update the deck
+                            DispatchQueue.main.async {
+                                gra["Talia"] = validatedDeck
+//                                    let taliaAll = Array(repeating: taliaBase, count: taliaRepeat).flatMap { $0 }
+                                let taliaAll = gra["Talia"] as! [[String:Any]]
+                                for playerNew in playersList
+                                {
+                                    if let gracz = gra[playerNew] as? Dictionary<String, Any>{
+                                        var playerKarty = taliaAll.filter { card in
+                                            guard let postacie = card["postacie"] as? [String] else {
+                                                return false
+                                            }
+                                            return postacie.contains(gracz["nazwa"] as! String)
+                                        }.map { card in
+                                            var modifiedCard = card
+                                            modifiedCard["player"] = playerNew
+                                            return modifiedCard
+                                        }
+                                        setKarty(&gra, for: "Talia\(playerNew)", value: playerKarty)
+                                    }
+                                }
+                            }
                         }
-                        else {
-                            gameRound += 1
-                            activePlayer = gameRound % playersList.count
-                        }
+                    } catch {
+                        print("Error deserializing JSON: \(error)")
                     }
                 }
             }
-        }
-        return true
-    }
-
-    private func moveCard(from sourceKey: String, at sourceIndex: Int, to destinationKey: String) {
-        var sourceCards = Array<Dictionary<String, Any>>()
-        var sourceIndexCorrected = sourceIndex
-        var talia = getKarty(&gra, for: "Talia\(sourceKey)")
-        if(gra[sourceKey] == nil)
-        {
-            sourceCards = talia
-            sourceIndexCorrected = Int.random(in: 0..<talia.count)
-        }
-        else
-        {
-            sourceCards = (gra[sourceKey] as! Dictionary<String, Any>)["karty"] as? Array<Dictionary<String, Any>> ?? []
-        }
-        guard sourceIndexCorrected >= 0, sourceIndexCorrected < sourceCards.count else { return }
-
-        let card = sourceCards.remove(at: sourceIndexCorrected)
-        if var playerData = gra[sourceKey] as? [String: Any] {
-            playerData["karty"] = sourceCards
-            gra[sourceKey] = playerData
-        }
-
-        var destinationCards = (gra[destinationKey] as! Dictionary<String, Any>)["karty"] as? Array<Dictionary<String, Any>> ?? []
-        destinationCards.append(card)
-        if var playerData = gra[destinationKey] as? [String: Any] {
-            playerData["karty"] = destinationCards
-            gra[destinationKey] = playerData
+            return true
         }
     }
 }
@@ -533,6 +539,7 @@ struct TaliaEditorView: View {
             Spacer()
             Text(editDecks ? "Lista talii": "Karty z talii \((gra["TaliaNazwa"] as? String) ?? "")")
                 .font(.headline)
+                .foregroundStyle(.white)
                 .padding()
             Text("\(talia.count)")
             Spacer()
@@ -549,14 +556,14 @@ struct TaliaEditorView: View {
 
         return ScrollView {
             LazyVGrid(columns: columns, spacing: 5) {
-                ForEach(0..<talia.count, id: \.self) { index in
+                ForEach(0..<talia.count, id: \.self) { (index: Int) in
                     let karta = talia[index]
                     VStack
                     {
-                        KartaView(karta: karta, selectedCard: $selectedCard)
-                            .onDrag {
-                                NSItemProvider(object: isDragEnabled ? "\(containerKey)|\(index)" as NSString : "" as NSString)
-                            }
+                        KartaView(karta: karta, showPostacie: true, selectedCard: $selectedCard)
+//                            .onDrag {
+//                                NSItemProvider(object: isDragEnabled ? "\(containerKey)|\(index)" as NSString : "" as NSString)
+//                            }
                         
                         Button(action:{
                             if let data = sortedJSONData(from: karta),
@@ -591,7 +598,7 @@ struct TaliaEditorView: View {
                             Image(systemName: "plus.rectangle.portrait")
                                 .padding(1)
                                 .frame(minWidth: 96, idealWidth: 97, maxWidth: 98, minHeight: 124, idealHeight: 125, maxHeight: 135)
-                                .background(RoundedRectangle(cornerRadius: 10).fill(Color.blue))
+                                .background(RoundedRectangle(cornerRadius: 10).fill(Color.accentColor))
                                 .foregroundColor(.white)
                                 .shadow(radius: 5)
                             Image(systemName: "ellipsis")

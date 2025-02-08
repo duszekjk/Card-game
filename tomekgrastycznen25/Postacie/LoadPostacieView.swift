@@ -38,7 +38,7 @@ struct LoadPostacieView: View {
             }
             .onChange(of: selectedFile) { newValue in
                 if let file = newValue {
-                    let fileURL = getPostacieDirectory().appendingPathComponent(file)
+                    let fileURL = getPostacieDirectory().appendingPathComponent(file).appendingPathExtension("json")
                     if let loadedCharacter = loadPlayer(jsonPath: fileURL, id: playerId) {
                         if(!loadedCharacter.isEmpty)
                         {
@@ -53,7 +53,19 @@ struct LoadPostacieView: View {
                                 gra["\(key)Nazwa"] = fileName
                             }
                         }
+                        else
+                        {
+                            print("Loaded character \(fileURL) for \(playerId) is empty")
+                        }
                     }
+                    else
+                    {
+                        print("Can't load character \(fileURL) for \(playerId)")
+                    }
+                }
+                else
+                {
+                    print("No selected character")
                 }
                 refreshPostacieFiles()
             }

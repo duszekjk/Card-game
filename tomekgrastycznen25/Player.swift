@@ -34,6 +34,9 @@ struct PlayerView: View {
     @State var showBig: Bool = false
     
     
+    @State private var timer: Timer?
+    
+    
     @State public var backgroundImage: UIImage = generateFilmGrain(size: CGSize(width: 24, height: 15))!
     @State public var backgroundImage2: UIImage = generateFilmGrain(size: CGSize(width: 240, height: 150))!
     
@@ -46,7 +49,7 @@ struct PlayerView: View {
     
     var body: some View {
         if let player = gra[playerKey] as? Dictionary<String, Any> {
-                VStack(alignment: .leading, spacing: 10) {
+                VStack(alignment: .leading, spacing: 7) {
                     // Name
                     HStack
                     {
@@ -55,7 +58,7 @@ struct PlayerView: View {
                             .fontWeight(.bold)
                             .padding(.leading, 90)
                     }
-                    .frame(width: 300, height: 65)
+                    .frame(width: 300, height: 15)
                     .onDrag {
                         // Ensure the player JSON includes all required keys
                         var completePlayer = addMissingKeys(to: player)
@@ -142,16 +145,16 @@ struct PlayerView: View {
                                 Image(systemName: "bolt.fill")
                                 Text("\(player["mana"] as? Int ?? 0) /\(player["manaMax"] as? Int ?? 0)")
                             }
-                            .onChange(of: player["mana"] as? Int ?? 0)
-                            { newValue in
-                                var manaMax = player["manaMax"] as? Int ?? 0
-                                if(newValue > manaMax)
-                                {
-                                    var updatedPlayer = player
-                                    updatedPlayer["mana"] = manaMax
-                                    gra[playerKey] = updatedPlayer
-                                }
-                            }
+//                            .onChange(of: player["mana"] as? Int ?? 0)
+//                            { newValue in
+//                                var manaMax = player["manaMax"] as? Int ?? 0
+//                                if(newValue > manaMax)
+//                                {
+//                                    var updatedPlayer = player
+//                                    updatedPlayer["mana"] = manaMax
+//                                    gra[playerKey] = updatedPlayer
+//                                }
+//                            }
                             
                             Spacer()
                             
@@ -168,13 +171,13 @@ struct PlayerView: View {
                                     .foregroundColor(.red)
                                 Text("\(player["życie"] as? Int ?? 0)")
                             }
-                            .onChange(of: player["życie"] as? Int ?? 0) { newValue in
-                                if let life = newValue as? Int, life == 0 {
-                                    playerLoose = playerKey
-                                    connectionManager.send(gameState: gra)
-                                    endGame = true
-                                }
-                            }
+//                            .onChange(of: player["życie"] as? Int ?? 0) { newValue in
+//                                if let life = newValue as? Int, life == 0 {
+//                                    playerLoose = playerKey
+//                                    connectionManager.send(gameState: gra)
+//                                    endGame = true
+//                                }
+//                            }
                             
                             Spacer()
                         }
@@ -241,16 +244,22 @@ struct PlayerView: View {
                     }
                         .cornerRadius(10)
                 )
-                .clipped()
                 .background(RoundedRectangle(cornerRadius: 10).fill(isActive ? Color("PlayerColor") : Color("PlayerColor")))
                 .shadow(radius: isActive ? 6 : 1)
-                .frame(minWidth: UIScreen.main.bounds.size.width/2, idealWidth: UIScreen.main.bounds.size.width - 65.0, maxWidth: UIScreen.main.bounds.size.width - 55.0)
+                .frame(minWidth: UIScreen.main.bounds.size.width/2, idealWidth: UIScreen.main.bounds.size.width - 15.0, maxWidth: UIScreen.main.bounds.size.width - 5.0)
+                .clipped()
                 .cornerRadius(10)
                 .onTapGesture(count: 1) {
                     DispatchQueue.main.async
                     {
                         showBig = true
                     }
+                }
+                .onAppear {
+                    startPolling()
+                }
+                .onDisappear {
+                    stopPolling()
                 }
                 .sheet(isPresented: $showBig, onDismiss: {
                     if let image = capturedImage {
@@ -277,7 +286,45 @@ struct PlayerView: View {
                 .foregroundColor(.red)
         }
     }
+    private func startPolling() {
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            checkAndFixValues()
+        }
+    }
     
+    private func stopPolling() {
+        timer?.invalidate()
+        timer = nil
+    }
+    private func checkAndFixValues() {
+        graLock.sync {
+            // Ensure player data exists
+            guard var player = gra[playerKey] as? [String: Any] else { return }
+            
+            // ✅ Mana Correction
+            let mana = player["mana"] as? Int ?? 0
+            let manaMax = player["manaMax"] as? Int ?? 0
+            if mana > manaMax {
+                player["mana"] = manaMax
+            }
+            
+            // ✅ Life Check
+            var life = player["życie"] as? Int ?? 0
+            
+            if life < 0 {
+                life = 0
+                player["życie"] = life
+            }
+            
+            // ✅ Update dictionary
+            gra[playerKey] = player
+            if life == 0 {
+                playerLoose = playerKey
+                connectionManager.send(gameState: gra)
+                endGame = true
+            }
+        }
+    }
     func addMissingKeys(to json: [String: Any]) -> [String: Any] {
         
         var updatedJSON = json

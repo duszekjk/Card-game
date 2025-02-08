@@ -139,10 +139,10 @@ func listDeckFiles(failed: Bool = false, completion: @escaping ([String]) -> Voi
         
         let filteredFiles = files.filter { $0.hasSuffix(".json") || $0.hasSuffix(".JSON") }
         
-        if filteredFiles.isEmpty, !failed {
+        if !filteredFiles.contains(where: {$0 == "Default4"}), !failed {
             print("No JSON files found. Creating Default deck.")
             var df = loadDefaultDeck()!
-            saveDeck(df, withName: "Default")
+            saveDeck(df, withName: "Default4")
             DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
                 listDeckFiles(failed: true, completion: completion)
             }

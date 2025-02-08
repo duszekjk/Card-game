@@ -102,7 +102,7 @@ extension Card {
 struct CardEditorView: View {
     @Binding var gra: Dictionary<String, Any>
     @Binding var jsonText: String?
-    @State private var postacie = ["Mag Światła", "Mag Krwii"]
+    @State private var postacie = listPostacieFiles()
     @State private var card: Card
     
     @State private var wanderingString: Bool = false

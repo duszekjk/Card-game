@@ -9,6 +9,7 @@ import SwiftUI
 
 var playersList = ["Player1", "Player2"]
 
+let graLock = DispatchQueue(label: "gra.lock")
 
 
 extension ContentView
@@ -35,7 +36,7 @@ extension ContentView
             gra["Talia"] =  taliaBase
             print(taliaBase)
         }
-        var graczLoad = (selectedPlayer1File != nil ? loadPlayer(jsonPath: getPostacieDirectory().appendingPathComponent(selectedPlayer1File!), id: 0) : loadPlayerDef(id:1))!
+        var graczLoad = (selectedPlayer1File != nil ? loadPlayer(jsonPath: getPostacieDirectory().appendingPathComponent(selectedPlayer1File!).appendingPathExtension("json"), id: 0) : loadPlayerDef(id:1))!
         print("graczLoad: \(graczLoad)")
         if(graczLoad.isEmpty)
         {
@@ -45,7 +46,7 @@ extension ContentView
         gra["Player1"] = graczLoad
         loadTalia(taliaName: "Player1", characterName: getTextData(&gra, for: "Player1", key: "nazwa"))
         
-        graczLoad = (selectedPlayer1File != nil ? loadPlayer(jsonPath: getPostacieDirectory().appendingPathComponent(selectedPlayer2File!), id: 1) : loadPlayerDef(id:2))!
+        graczLoad = (selectedPlayer1File != nil ? loadPlayer(jsonPath: getPostacieDirectory().appendingPathComponent(selectedPlayer2File!).appendingPathExtension("json"), id: 1) : loadPlayerDef(id:2))!
         print("graczLoad: \(graczLoad)")
         if(graczLoad.isEmpty)
         {

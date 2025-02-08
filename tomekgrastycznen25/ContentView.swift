@@ -29,6 +29,10 @@ struct ContentView: View {
     @State public var taliaRepeat : Int = 2
     
     
+    @State public var botLevel : Int = 0
+    @State public var botPlayers : [String] = []
+    
+    
     @State public var showZaklęcie = false
     @State public var showZaklęcieMini = false
     
@@ -101,7 +105,8 @@ struct ContentView: View {
                                 selectedCard: $selectedCard,
                                 createSpell: createSpell
                             )
-                            .scaleEffect(UIDevice.current.userInterfaceIdiom == .phone ? 0.9 : 1.0)
+                            .scaleEffect(UIDevice.current.userInterfaceIdiom == .phone ? 0.85 : 1.0)
+                            .padding(.vertical,UIDevice.current.userInterfaceIdiom == .phone ? -20.0 : 1.0)
                             PlayerView(playerKey: "Player1", gra: $gra,
                                        lastPlayed: $PlayerLast,
                                        isActive: Binding<Bool>(
@@ -274,10 +279,16 @@ struct ContentView: View {
                             {
                                 Button("Easy")
                                 {
-                                    
+                                    botLevel = 1
+                                    botPlayers = ["Player2"]
+                                    endGame = false
+                                    playerLoose = ""
+                                    gameRound = 1
+                                    loadGame()
+                                    showMenu = false
                                 }
                                 .buttonStyle(.borderedProminent)
-                                .disabled(true)
+//                                .disabled(true)
                                 
                                 Button("Medium")
                                 {
@@ -374,6 +385,32 @@ struct ContentView: View {
                                             setKarty(&gra, for: playersList[activePlayer], value: karty)
                                         }
                                         
+                                        if(botLevel > 0)
+                                        {
+                                            if(botPlayers.contains("Player\((activePlayer + 1))"))
+                                            {
+                                                if(botLevel == 1)
+                                                {
+                                                    var kartaID = -1
+                                                    var containerKey = ""
+                                                    var activePlayerNow = -1
+                                                    var gameRoundNow = -1
+                                                    (kartaID, containerKey, activePlayerNow, gameRoundNow) = makeRandomMove(&gra, for: "Player\((activePlayer + 1))", activePlayer: activePlayer, gameRound: gameRound, botPlayers: botPlayers, createSpell: createSpell)
+                                                    
+                                                    DispatchQueue.main.async {
+                                                        activePlayer = activePlayerNow
+                                                        gameRound = gameRoundNow
+                                                    }
+                                                }
+                                            }
+                                        
+                                        }
+                                        DispatchQueue.main.async {
+                                            graLock.sync {
+                                                var gameNow = gra
+                                                gra = gameNow
+                                            }
+                                        }
                                     }
                                 }
                             }

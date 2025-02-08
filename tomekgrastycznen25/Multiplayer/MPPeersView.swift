@@ -23,11 +23,13 @@ struct MPPeersView: View {
             {
                 Spacer()
                 Text("Available Players")
+                    .foregroundStyle(.white)
                 Spacer()
                 Button("Done")
                 {
                     visible = false
                 }
+                .foregroundStyle(.white)
                 .padding()
             }
             List(connectionManager.availablePeers, id: \.self) { peer in
@@ -67,8 +69,10 @@ struct MPPeersView: View {
             
             Text("Your device is:\n\(hashToEmojis(yourName))\n\(yourName)")
                 .multilineTextAlignment(.center)
+                .foregroundStyle(.white)
                 .padding()
         }
+        .padding(.top, 44)
         .onAppear {
             connectionManager.isAvailableToPlay = true
             connectionManager.startBrowsing()

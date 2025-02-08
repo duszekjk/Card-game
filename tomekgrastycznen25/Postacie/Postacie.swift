@@ -74,13 +74,15 @@ func listPostacieFiles() -> [String] {
     
     do {
         let files = try FileManager.default.contentsOfDirectory(atPath: postacieDirectory.path)
-        let jsonFiles = files.filter { $0.hasSuffix(".json") || $0.hasSuffix(".JSON") }
-        return jsonFiles
+        let jsonFiles = files.filter { $0.lowercased().hasSuffix(".json") }
+        let filenamesWithoutExtension = jsonFiles.map { URL(fileURLWithPath: $0).deletingPathExtension().lastPathComponent }
+        return filenamesWithoutExtension
     } catch {
         print("Failed to list Postacie files: \(error)")
         return []
     }
 }
+
 
 func loadPlayer(jsonPath: URL, id: Int = 0) -> Dictionary<String, Any>? {
     do {

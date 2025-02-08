@@ -51,6 +51,11 @@ struct AnimatedShapesView: View {
                 generateSmoothAnimationFrames()
                 startContinuousAnimation()
             }
+            else
+            {
+                shapeParameters = generateRandomParameters()
+                animationStep += 1
+            }
         }
     }
 
