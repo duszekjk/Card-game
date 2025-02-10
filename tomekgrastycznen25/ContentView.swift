@@ -22,11 +22,16 @@ struct ContentView: View {
     @AppStorage("yourName") var yourName = randomString(length: 8)
     
     @State public var gra: Dictionary<String, Any> = Dictionary<String, Any>()
+    @State public var graLast: Dictionary<String, Any> = Dictionary<String, Any>()
     @State public var activePlayer : Int = 0
     @State public var thisDevice : Int = -1
     @State public var PlayerLast : String = ""
     @State public var gameRound : Int = 1
     @State public var taliaRepeat : Int = 2
+    
+    
+    @State private var pendingActivePlayer : Int?
+    @State private var pendingGameRound: Int?
     
     
     @State public var botLevel : Int = 0
@@ -40,6 +45,7 @@ struct ContentView: View {
     @State public var showMenu = true
     @State public var showEditor = false
     @State public var showOdrzucanie = false
+    @State public var showMoveSummary = false
     @State public var odrzucanieEndMove = false
     @State public var selectedCard: String?
     @State public var selectedTaliaFile: String?
@@ -47,6 +53,9 @@ struct ContentView: View {
     @State public var selectedPlayer2File: String?
     
     @State public var playerLoose : String = ""
+    @State public var playerWin = ""//playersList.first { $0 != playerLoose } ?? "Unknown"
+    @State public var nameWin = ""//getTextData(&gra, for: playerWin, key: "nazwa")
+    @State public var nameLoose = ""//getTextData(&gra, for: playerLoose, key: "nazwa")
     @State public var endGame : Bool = false
     @State public var startGame : Bool = false
     
@@ -84,54 +93,62 @@ struct ContentView: View {
                 }
                 else
                 {
-                    HStack {
-                        VStack {
-                            PlayerView(playerKey: "Player2", gra: $gra, lastPlayed: $PlayerLast, isActive: Binding<Bool>(
-                                get: { activePlayer == 1 && (thisDevice == 1 || thisDevice == -1) },
-                                set: { newValue in
-                                    activePlayer = newValue ? 1 : 0 // Update activePlayer accordingly
-                                }
-                            ), activePlayer: $activePlayer, gameRound: $gameRound, landscape: $landscape, playerLoose: $playerLoose, endGame: $endGame,
-                                       selectedCard: $selectedCard)
-                            .environmentObject(connectionManager)
-                            StółView(
-                                gra: $gra,
-                                PlayerLast: $PlayerLast,
-                                activePlayer: $activePlayer,
-                                gameRound: $gameRound,
-                                landscape: $landscape,
-                                menuView: $showMenu,
-                                thisDevice: $thisDevice,
-                                selectedCard: $selectedCard,
-                                createSpell: createSpell
-                            )
-                            .scaleEffect(UIDevice.current.userInterfaceIdiom == .phone ? 0.85 : 1.0)
-                            .padding(.vertical,UIDevice.current.userInterfaceIdiom == .phone ? -20.0 : 1.0)
-                            PlayerView(playerKey: "Player1", gra: $gra,
-                                       lastPlayed: $PlayerLast,
-                                       isActive: Binding<Bool>(
-                                        get: { activePlayer == 0  && (thisDevice == 0 || thisDevice == -1) },
-                                        set: { newValue in
-                                            activePlayer = newValue ? 0 : 1 // Update activePlayer accordingly
-                                        }
-                                       ),
-                                       activePlayer: $activePlayer, gameRound: $gameRound, landscape: $landscape, playerLoose: $playerLoose, endGame: $endGame, selectedCard: $selectedCard)
-                            .environmentObject(connectionManager)
+                    ZStack
+                    {
+                        HStack {
+                            VStack {
+                                PlayerView(playerKey: "Player2", gra: $gra, lastPlayed: $PlayerLast, isActive: Binding<Bool>(
+                                    get: { activePlayer == 1 && (thisDevice == 1 || thisDevice == -1) },
+                                    set: { newValue in
+                                        activePlayer = newValue ? 1 : 0 // Update activePlayer accordingly
+                                    }
+                                ), activePlayer: $activePlayer, gameRound: $gameRound, landscape: $landscape, playerLoose: $playerLoose, playerWin: $playerWin, nameWin: $nameWin, nameLoose:$nameLoose,endGame: $endGame,
+                                           selectedCard: $selectedCard)
+                                .environmentObject(connectionManager)
+                                StółView(
+                                    gra: $gra,
+                                    PlayerLast: $PlayerLast,
+                                    activePlayer: $activePlayer,
+                                    gameRound: $gameRound,
+                                    landscape: $landscape,
+                                    menuView: $showMenu,
+                                    thisDevice: $thisDevice,
+                                    selectedCard: $selectedCard,
+                                    createSpell: createSpell
+                                )
+                                .scaleEffect(UIDevice.current.userInterfaceIdiom == .phone ? 0.85 : 1.0)
+                                .padding(.vertical,UIDevice.current.userInterfaceIdiom == .phone ? -20.0 : 1.0)
+                                PlayerView(playerKey: "Player1", gra: $gra,
+                                           lastPlayed: $PlayerLast,
+                                           isActive: Binding<Bool>(
+                                            get: { activePlayer == 0  && (thisDevice == 0 || thisDevice == -1) },
+                                            set: { newValue in
+                                                activePlayer = newValue ? 0 : 1 // Update activePlayer accordingly
+                                            }
+                                           ),
+                                           activePlayer: $activePlayer, gameRound: $gameRound, landscape: $landscape, playerLoose: $playerLoose, playerWin: $playerWin, nameWin: $nameWin, nameLoose:$nameLoose, endGame: $endGame, selectedCard: $selectedCard)
+                                .environmentObject(connectionManager)
+                                
+                            }
+                            .sheet(isPresented: $showZaklęcie, onDismiss: {
+                                showZaklęcieMini = true
+                            })
+                            {
+                                ZaklęcieView(gra: $gra, lastPlayed: $PlayerLast, activePlayer: $activePlayer, gameRound: $gameRound, landscape: $landscape, selectedCard: $selectedCard, playerKey: playersList[activePlayer], calculateSpellCost: calculateSpellCost, allSpells: allSpells, cancelSpell: cancelSpell)
+                            }
+                            .sheet(isPresented: $showOdrzucanie) {
+                                checkumberOfCards(endMove: odrzucanieEndMove)
+                            } content: {
+                                OdrzucanieKartView(gra: $gra, activePlayer: $activePlayer, gameRound: $gameRound, show: $showOdrzucanie, selectedCard: $selectedCard)
+                            }
+                            
                             
                         }
-                        .sheet(isPresented: $showZaklęcie, onDismiss: {
-                            showZaklęcieMini = true
-                        })
+                        if(showMoveSummary)
                         {
-                            ZaklęcieView(gra: $gra, lastPlayed: $PlayerLast, activePlayer: $activePlayer, gameRound: $gameRound, landscape: $landscape, selectedCard: $selectedCard, playerKey: playersList[activePlayer], calculateSpellCost: calculateSpellCost, allSpells: allSpells, cancelSpell: cancelSpell)
+                            MoveSummary(graBefore: graLast, graAfter: gra, show: $showMoveSummary)
                         }
-                        .sheet(isPresented: $showOdrzucanie) {
-                            checkumberOfCards(endMove: odrzucanieEndMove)
-                        } content: {
-                            OdrzucanieKartView(gra: $gra, activePlayer: $activePlayer, gameRound: $gameRound, show: $showOdrzucanie, selectedCard: $selectedCard)
-                        }
-                        
-                        
+                            
                     }
                     .sheet(isPresented: $showMenu)
                     {
@@ -355,39 +372,50 @@ struct ContentView: View {
                     }
                     .onChange(of: gameRound)
                     {
-                        
-                        activePlayer = gameRound % playersList.count
-                        print("Next MOVE \(thisDevice), \(activePlayer), \(gameRound)")
-                        if (activePlayer != thisDevice && thisDevice != -1) {
-                            //                        gra["Talie"] = talie
-                            connectionManager.send(gameState: gra)
-                            print("Sent gra to peers")
-                        }
-                        else
+                        if(!botPlayers.contains("Player\((activePlayer + 1))"))
                         {
-                            if(!endGame)
+                            DispatchQueue.main.async {
+                                print("showMoveSummary \(gra["ZaklęcieCast"]) \(gra["ZaklęcieLast"])")
+                                if let _ = gra["ZaklęcieCast"], let _ = gra["ZaklęcieLast"]
+                                {
+                                    showMoveSummary = true
+                                }
+                                print("showMoveSummary = \(showMoveSummary)")
+                            }
+                        }
+                        waitForMoveEndToBeFalse
+                        {
+                            graLast = gra
+                            activePlayer = gameRound % playersList.count
+                            print("Next MOVE \(thisDevice), \(activePlayer), \(gameRound)")
+                            if (activePlayer != thisDevice && thisDevice != -1) {
+                                //                        gra["Talie"] = talie
+                                connectionManager.send(gameState: gra)
+                                print("Sent gra to peers")
+                            }
+                            else
                             {
-                                checkumberOfCards(endMove: false)
-                                waitForOdrzucanieToBeFalse {
-                                    setData(&gra, for: playersList[activePlayer], key: "mana", getData(&gra, for: playersList[activePlayer], key: "mana") + 1)
-                                    setData(&gra, for: playersList[activePlayer], key: "tarcza", max(0, getData(&gra, for: playersList[activePlayer], key: "tarcza") - 1))
-                                    var maxKart = getData(&gra, for: playersList[activePlayer], key: "ilośćKart")  + 1
-                                    var karty = getKarty(&gra, for: playersList[activePlayer])
-                                    karty.append(contentsOf: loadCards(conut: max(1, maxKart - karty.count), for: playersList[activePlayer]))
-                                    setKarty(&gra, for: playersList[activePlayer], value: karty)
-                                    
-                                    DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
+                                if(!endGame)
+                                {
+                                    checkumberOfCards(endMove: false)
+                                    waitForOdrzucanieToBeFalse {
+                                        setData(&gra, for: playersList[activePlayer], key: "mana", getData(&gra, for: playersList[activePlayer], key: "mana") + 1)
+                                        setData(&gra, for: playersList[activePlayer], key: "tarcza", max(0, getData(&gra, for: playersList[activePlayer], key: "tarcza") - 1))
                                         var maxKart = getData(&gra, for: playersList[activePlayer], key: "ilośćKart")  + 1
                                         var karty = getKarty(&gra, for: playersList[activePlayer])
-                                        if(maxKart > karty.count)
-                                        {
-                                            karty.append(contentsOf: loadCards(conut: max(0, maxKart - karty.count), for: playersList[activePlayer]))
-                                            setKarty(&gra, for: playersList[activePlayer], value: karty)
-                                        }
+                                        karty.append(contentsOf: loadCards(conut: max(1, maxKart - karty.count), for: playersList[activePlayer]))
+                                        setKarty(&gra, for: playersList[activePlayer], value: karty)
                                         
-                                        if(botLevel > 0)
-                                        {
-                                            if(botPlayers.contains("Player\((activePlayer + 1))"))
+                                        DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
+                                            var maxKart = getData(&gra, for: playersList[activePlayer], key: "ilośćKart")  + 1
+                                            var karty = getKarty(&gra, for: playersList[activePlayer])
+                                            if(maxKart > karty.count)
+                                            {
+                                                karty.append(contentsOf: loadCards(conut: max(0, maxKart - karty.count), for: playersList[activePlayer]))
+                                                setKarty(&gra, for: playersList[activePlayer], value: karty)
+                                            }
+                                            
+                                            if(botLevel > 0 && botPlayers.contains("Player\((activePlayer + 1))"))
                                             {
                                                 if(botLevel == 1)
                                                 {
@@ -395,25 +423,65 @@ struct ContentView: View {
                                                     var containerKey = ""
                                                     var activePlayerNow = -1
                                                     var gameRoundNow = -1
-                                                    (kartaID, containerKey, activePlayerNow, gameRoundNow) = makeRandomMove(&gra, for: "Player\((activePlayer + 1))", activePlayer: activePlayer, gameRound: gameRound, botPlayers: botPlayers, createSpell: createSpell)
+                                                    (kartaID, containerKey, activePlayerNow, gameRoundNow) = makeRandomMove(&gra, for: "Player\((activePlayer + 1))", activePlayer: &activePlayer, gameRound: gameRound, botPlayers: botPlayers, createSpell: createSpell)
                                                     
                                                     DispatchQueue.main.async {
-                                                        activePlayer = activePlayerNow
-                                                        gameRound = gameRoundNow
+                                                        graLock.sync {
+                                                            var gameNow = gra
+                                                            gra = gameNow
+                                                        }
+                                                    }
+                                                    DispatchQueue.main.async {
+                                                        print("showMoveSummary \(gra["ZaklęcieCast"]) \(gra["ZaklęcieLast"])")
+                                                        if let _ = gra["ZaklęcieCast"], let _ = gra["ZaklęcieLast"]
+                                                        {
+                                                            showMoveSummary = true
+                                                        }
+                                                        print("showMoveSummary = \(showMoveSummary)")
+                                                    }
+                                                    DispatchQueue.main.async {
+                                                        if(showMoveSummary)
+                                                        {
+                                                            pendingActivePlayer = activePlayerNow
+                                                            pendingGameRound = gameRoundNow
+                                                        }
+                                                        else
+                                                        {
+                                                            activePlayer = activePlayerNow
+                                                            gameRound = gameRoundNow
+                                                        }
                                                     }
                                                 }
                                             }
-                                        
-                                        }
-                                        DispatchQueue.main.async {
-                                            graLock.sync {
-                                                var gameNow = gra
-                                                gra = gameNow
+                                            DispatchQueue.main.async {
+                                                graLock.sync {
+                                                    var gameNow = gra
+                                                    gra = gameNow
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
+                        }
+                    }
+                    .onChange(of: showMoveSummary) { newValue in
+                        if !newValue {
+                            if let pendingPlayer = pendingActivePlayer,
+                               let pendingRound = pendingGameRound {
+                                DispatchQueue.main.async {
+//                                    graLast = nil
+                                    gra["ZaklęcieCast"] = nil
+                                    gra["ZaklęcieLast"] = nil
+                                    activePlayer = pendingPlayer
+                                    gameRound = pendingRound
+                                    pendingActivePlayer = nil
+                                    pendingGameRound = nil
+                                }
+                            }
+//                            else {
+//                                gameRound += 1
+//                            }
                         }
                     }
                     .onChange(of: connectionManager.move) { newGra in
@@ -456,9 +524,6 @@ struct ContentView: View {
                                 .font(.largeTitle)
                                 .padding()
                             
-                            let playerWin = playersList.first { $0 != playerLoose } ?? "Unknown"
-                            let nameWin = getTextData(&gra, for: playerWin, key: "nazwa")
-                            let nameLoose = getTextData(&gra, for: playerLoose, key: "nazwa")
                             Text("\(nameWin) (\(playerWin)) wins!")
                                 .font(.title2)
                                 .padding()
@@ -470,6 +535,9 @@ struct ContentView: View {
                             Button("Restart Game") {
                                 endGame = false
                                 playerLoose = ""
+                                playerWin = ""
+                                nameWin = ""
+                                nameLoose = ""
                                 gameRound = 1
                                 loadGame()
                                 if(UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight)
@@ -542,6 +610,24 @@ struct ContentView: View {
         }
     }
 
+    func waitForMoveEndToBeFalse(completion: @escaping () -> Void) {
+        DispatchQueue.global().async {
+            var counter = 4
+            while counter > 0
+            {
+                counter -= 1
+                while self.showMoveSummary {
+                    // Wait for a short period before checking again
+                    counter = 7
+                    Thread.sleep(forTimeInterval: 0.1)
+                }
+                Thread.sleep(forTimeInterval: 0.1)
+            }
+            DispatchQueue.main.async {
+                completion()
+            }
+        }
+    }
 }
 func bindingForKey<T>(_ key: String, in dictionary: Binding<[String: [T]]>) -> Binding<[T]> {
     Binding(

@@ -17,7 +17,7 @@ struct ZaklęcieView: View {
     @Binding var landscape : Bool
     @Binding var selectedCard: String?
     
-    var playerKey:String
+    var playerKey:String = ""
     
     var calculateSpellCost: () -> Int?
     var allSpells: () -> Void
@@ -39,7 +39,9 @@ struct ZaklęcieView: View {
             Text("Cena zaklęcia \(cost)")
                 .onAppear()
             {
-                loadData()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    loadData()
+                }
             }
             HStack
             {
@@ -132,6 +134,9 @@ struct ZaklęcieView: View {
     }
     func loadData()
     {
+//        playerKey = playersList[activePlayer]
+//        
+//        print("zaklęcie countig \(playerKey)")
         cost = calculateSpellCost() ?? 0
         manaMax = getData(&gra, for: playerKey, key: "mana")
         życieMax = getData(&gra, for: playerKey, key: "życie")

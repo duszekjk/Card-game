@@ -8,11 +8,11 @@
 import Foundation
 
 
-func makeRandomMove(_ gra: inout Dictionary<String, Any>, for player: String, activePlayer aP: Int, gameRound gR: Int, botPlayers : [String] = [], createSpell: (String, String, Array<Dictionary<String, Any>>) -> Void) -> (Int, String, Int, Int)
+func makeRandomMove(_ gra: inout Dictionary<String, Any>, for player: String, activePlayer: inout Int, gameRound gR: Int, botPlayers : [String] = [], createSpell: (String, String, Array<Dictionary<String, Any>>) -> Void) -> (Int, String, Int, Int)
 {
     var tablePlaceholders = ["TablePlayer1", "TablePlayerLast", "TablePlayer2"]
     var moveOk = false
-    var activePlayer = aP
+//    var activePlayer = aP
     var gameRound = gR
     
     var lastPlayed = ""

@@ -25,6 +25,9 @@ struct PlayerView: View {
     @Binding var gameRound : Int
     @Binding var landscape : Bool
     @Binding var playerLoose : String
+    @Binding var playerWin : String// = ""//playersList.first { $0 != playerLoose } ?? "Unknown"
+    @Binding var nameWin : String// = ""//getTextData(&gra, for: playerWin, key: "nazwa")
+    @Binding var nameLoose : String// = ""//getTextData(&gra, for: playerLoose, key: "nazwa")
     @Binding var endGame : Bool
     @Binding var selectedCard: String?
     
@@ -297,6 +300,7 @@ struct PlayerView: View {
         timer = nil
     }
     private func checkAndFixValues() {
+        var life = 0
         graLock.sync {
             // Ensure player data exists
             guard var player = gra[playerKey] as? [String: Any] else { return }
@@ -309,7 +313,7 @@ struct PlayerView: View {
             }
             
             // ✅ Life Check
-            var life = player["życie"] as? Int ?? 0
+            life = player["życie"] as? Int ?? 0
             
             if life < 0 {
                 life = 0
@@ -318,8 +322,14 @@ struct PlayerView: View {
             
             // ✅ Update dictionary
             gra[playerKey] = player
-            if life == 0 {
+        }
+        if life == 0 {
+            
+            DispatchQueue.main.async {
                 playerLoose = playerKey
+                playerWin = playersList.first { $0 != playerLoose } ?? "Unknown"
+                nameWin = getTextData(&gra, for: playerWin, key: "nazwa")
+                nameLoose = getTextData(&gra, for: playerLoose, key: "nazwa")
                 connectionManager.send(gameState: gra)
                 endGame = true
             }

@@ -63,6 +63,11 @@ extension ContentView
 {
     func createSpellLong(_ gra: inout Dictionary<String, Any>, for playerKey:String, from tableKey:String,  with kards: Array<Dictionary<String, Any>>, activePlayer: inout Int)
     {
+        
+        var plr = activePlayer
+        DispatchQueue.main.async {
+            self.activePlayer = plr
+        }
         createSpell(for: playerKey, from: tableKey,  with: kards)
     }
     func createSpell(for playerKey:String, from tableKey:String,  with kards: Array<Dictionary<String, Any>>)
@@ -71,26 +76,28 @@ extension ContentView
         
         var spellState = false
         DispatchQueue.main.async {
-        graLock.sync {
-                spellState = createSpellBase(&gra, for: playerKey, from: tableKey,  with: kards, activePlayer: activePlayer)
-        }
-        print(" Zaklęcie ready \(((gra["Zaklęcie"] as! [String:Any])["karty"] as! [Any]).count)")
-        if(spellState)
-        {
-            if(activePlayer == thisDevice || thisDevice == -1)
+            graLock.sync {
+                    spellState = createSpellBase(&gra, for: playerKey, from: tableKey,  with: kards, activePlayer: activePlayer)
+            }
+            var playerSpell = tableKey.replacingOccurrences(of: "Table", with: "").replacingOccurrences(of: "PlayerLast", with: "Player\(activePlayer + 1)")
+            self.activePlayer = Int(playerSpell.replacingOccurrences(of: "Player", with:""))! - 1
+            print(" Zaklęcie ready \(((gra["Zaklęcie"] as! [String:Any])["karty"] as! [Any]).count)")
+            if(spellState)
             {
-                print(" Zaklęcie showing")
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    graLock.sync {
-                        showZaklęcie = true
+                if(activePlayer == thisDevice || thisDevice == -1)
+                {
+                    print(" Zaklęcie showing \(activePlayer)")
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        graLock.sync {
+                            showZaklęcie = true
+                        }
                     }
                 }
+                else
+                {
+                    connectionManager.send(gameState: gra)
+                }
             }
-            else
-            {
-                connectionManager.send(gameState: gra)
-            }
-        }
             
         }
     }
@@ -107,9 +114,9 @@ extension ContentView
     }
     func allSpells()
     {
-        allSpellsBase(&gra, activePlayer: &activePlayer, createSpell: createSpellLong)
+        var status = allSpellsBase(&gra, activePlayer: &activePlayer, createSpell: createSpellLong)
         showZaklęcie = false
-        checkumberOfCards(endMove: true)
+        checkumberOfCards(endMove: status)
     }
     
     
