@@ -3,36 +3,31 @@ import SwiftUI
 func generateFilmGrain(size: CGSize) -> UIImage? {
     let context = CIContext()
 
-    // Generate base random noise
     guard let filter = CIFilter(name: "CIRandomGenerator"),
           let outputImage = filter.outputImage else { return nil }
 
     let rect = CGRect(origin: .zero, size: size)
-    let croppedImage = outputImage.cropped(to: rect) // Crop noise
+    let croppedImage = outputImage.cropped(to: rect)
 
-    // Convert noise to grayscale (remove color)
     let grayscaleFilter = CIFilter(name: "CIColorControls")
     grayscaleFilter?.setValue(croppedImage, forKey: kCIInputImageKey)
-    grayscaleFilter?.setValue(0.0, forKey: kCIInputSaturationKey) // No color
-    grayscaleFilter?.setValue(1.8, forKey: kCIInputContrastKey) // Boost contrast
+    grayscaleFilter?.setValue(0.0, forKey: kCIInputSaturationKey)
+    grayscaleFilter?.setValue(1.8, forKey: kCIInputContrastKey)
 
     guard let grayNoise = grayscaleFilter?.outputImage else { return nil }
 
-    // Create alpha mask (adjust opacity)
     let alphaFilter = CIFilter(name: "CIMultiplyCompositing")
     alphaFilter?.setValue(grayNoise, forKey: kCIInputImageKey)
     alphaFilter?.setValue(CIImage(color: CIColor(red: 1, green: 1, blue: 1, alpha: 0.1)), forKey: kCIInputBackgroundImageKey)
 
     guard let alphaAdjustedNoise = alphaFilter?.outputImage else { return nil }
 
-    // Apply a slight blur to soften the grain
     let blurFilter = CIFilter(name: "CIGaussianBlur")
     blurFilter?.setValue(alphaAdjustedNoise, forKey: kCIInputImageKey)
-    blurFilter?.setValue(0.1, forKey: kCIInputRadiusKey) // Small blur for smooth grain
+    blurFilter?.setValue(0.1, forKey: kCIInputRadiusKey)
 
     guard let finalImage = blurFilter?.outputImage else { return nil }
 
-    // Convert to UIImage
     if let cgImage = context.createCGImage(finalImage, from: finalImage.extent) {
         #if os(macOS)
         return UIImage(cgImage: cgImage, size: size)

@@ -118,6 +118,31 @@ func sizeFullActionBot(_ gra: inout Dictionary<String, Any>, for playerKey:Strin
     var rzuć = (rzućSzansa > 0)
     if(rzuć)
     {
+        
+        var cost = calculateSpellCostBase(&gra, activePlayer: activePlayer) ?? 0
+        var manaMax = getData(&gra, for: playerKey, key: "mana")
+        var życieMax = getData(&gra, for: playerKey, key: "życie")
+        var kartyMax = getData(&gra, for: playerKey, key: "ilośćKart")
+        
+        mana = min(cost, manaMax)
+        var karty = 0
+        var życie = 0
+        if(mana < cost)
+        {
+            karty = min(cost - mana, kartyMax)
+            
+            if(mana + karty < cost)
+            {
+                życie = min(cost - (mana + karty), życieMax)
+            }
+        }
+        setData(&gra, for: playerKey, key: "mana", manaMax - mana)
+        setData(&gra, for: playerKey, key: "życie", życieMax - życie)
+        setData(&gra, for: playerKey, key: "ilośćKart", kartyMax - karty)
+        if var gracz = gra["Zaklęcie"] as? [String: Any] {
+            gracz["sacrifice"] = max(0, życie + karty)
+            gra["Zaklęcie"] = gracz
+        }
         allSpellsBase(&gra, activePlayer: &activePlayer, createSpell: sizeFullActionBot)
     }
     else

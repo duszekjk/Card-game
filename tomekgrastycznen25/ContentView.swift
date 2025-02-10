@@ -139,7 +139,7 @@ struct ContentView: View {
                             .sheet(isPresented: $showOdrzucanie) {
                                 checkumberOfCards(endMove: odrzucanieEndMove)
                             } content: {
-                                OdrzucanieKartView(gra: $gra, activePlayer: $activePlayer, gameRound: $gameRound, show: $showOdrzucanie, selectedCard: $selectedCard)
+                                OdrzucanieKartView(gra: $gra, activePlayer: $activePlayer, gameRound: $gameRound, show: $showOdrzucanie, selectedCard: $selectedCard, random: botPlayers.contains("Player\((activePlayer + 1))"))
                             }
                             
                             
@@ -302,6 +302,8 @@ struct ContentView: View {
                                     playerLoose = ""
                                     gameRound = 1
                                     loadGame()
+                                    gra["ZaklęcieCast"] = nil
+                                    gra["ZaklęcieLast"] = nil
                                     showMenu = false
                                 }
                                 .buttonStyle(.borderedProminent)
@@ -359,9 +361,12 @@ struct ContentView: View {
                         if(thisDevice == 1)
                         {
                             endGame = false
+                            
                             playerLoose = ""
                             gameRound = 1
                             loadGame()
+                            gra["ZaklęcieCast"] = nil
+                            gra["ZaklęcieLast"] = nil
                             gameRound += 1
                         }
                         else
@@ -372,15 +377,19 @@ struct ContentView: View {
                     }
                     .onChange(of: gameRound)
                     {
-                        if(!botPlayers.contains("Player\((activePlayer + 1))"))
+                        activePlayer = gameRound % playersList.count
+                        if(botPlayers.contains("Player\((activePlayer + 1))"))
                         {
                             DispatchQueue.main.async {
-                                print("showMoveSummary \(gra["ZaklęcieCast"]) \(gra["ZaklęcieLast"])")
-                                if let _ = gra["ZaklęcieCast"], let _ = gra["ZaklęcieLast"]
-                                {
-                                    showMoveSummary = true
+                                
+                                graLock.sync {
+                                    print("showMoveSummary \(gra["ZaklęcieCast"]) \(gra["ZaklęcieLast"])")
+                                    if let _ = gra["ZaklęcieCast"], let _ = gra["ZaklęcieLast"]
+                                    {
+                                        showMoveSummary = true
+                                    }
+                                    print("showMoveSummary = \(showMoveSummary)")
                                 }
-                                print("showMoveSummary = \(showMoveSummary)")
                             }
                         }
                         waitForMoveEndToBeFalse
@@ -467,12 +476,14 @@ struct ContentView: View {
                     }
                     .onChange(of: showMoveSummary) { newValue in
                         if !newValue {
+                            DispatchQueue.main.async {
+                                gra["ZaklęcieCast"] = nil
+                                gra["ZaklęcieLast"] = nil
+                            }
                             if let pendingPlayer = pendingActivePlayer,
                                let pendingRound = pendingGameRound {
                                 DispatchQueue.main.async {
 //                                    graLast = nil
-                                    gra["ZaklęcieCast"] = nil
-                                    gra["ZaklęcieLast"] = nil
                                     activePlayer = pendingPlayer
                                     gameRound = pendingRound
                                     pendingActivePlayer = nil
@@ -538,6 +549,8 @@ struct ContentView: View {
                                 playerWin = ""
                                 nameWin = ""
                                 nameLoose = ""
+                                gra["ZaklęcieCast"] = nil
+                                gra["ZaklęcieLast"] = nil
                                 gameRound = 1
                                 loadGame()
                                 if(UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight)

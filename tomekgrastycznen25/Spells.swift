@@ -84,42 +84,46 @@ func createSpellBase(_ gra: inout Dictionary<String, Any>, for playerKey:String,
     if var playerData = gra[tableKey] as? [String: Any] {
         print("for \(tableKey)")
         if var zaklęcieData = gra["Zaklęcie"] as? [String: Any] {
-            var kartyZaklęte = [[String: Any]]()
-            let stareKarty = kards//(playerData["karty"] as? [[String: Any]] ?? [[String: Any]]())
-            print("with \(stareKarty.count) karty")
-            for kartaZaklęta in stareKarty
-            {
-                print("\t-\(kartaZaklęta["opis"]) ")
-                var kartaNowa = kartaZaklęta
-                kartaNowa["lingeringNow"] = ""
-                kartaNowa["wanderingNow"] = ""
-                if(kartaNowa["wandering"] != nil)
+//            graLock.sync
+//            {
+                var kartyZaklęte = [[String: Any]]()
+                let stareKarty = kards//(playerData["karty"] as? [[String: Any]] ?? [[String: Any]]())
+                print("with \(stareKarty.count) karty")
+                for kartaZaklęta in stareKarty
                 {
-                    kartaNowa["wanderingNow"] = kartaNowa["wandering"]
-                }
-                kartyZaklęte.append(kartaNowa)
-            }
-            print("karty w kartyZaklęte \(kartyZaklęte.count)")
-            if var wanderingData = gra["Wandering"] as? [String: Any] {
-                if(wanderingData["karty"] != nil)
-                {
-                    var wanderingKarty = (wanderingData["karty"] as? [[String: Any]] ?? [[String: Any]]())
-                    if(wanderingKarty.count > 0)
+                    print("\t-\(kartaZaklęta["opis"]) ")
+                    var kartaNowa = kartaZaklęta
+                    kartaNowa["lingeringNow"] = ""
+                    kartaNowa["wanderingNow"] = ""
+                    if(kartaNowa["wandering"] != nil)
                     {
-                        kartyZaklęte.append(contentsOf: wanderingKarty)
+                        kartaNowa["wanderingNow"] = kartaNowa["wandering"]
                     }
-                    wanderingData["karty"] = [[String: Any]]()
-                    gra["Wandering"] = wanderingData
+                    kartyZaklęte.append(kartaNowa)
                 }
-            }
-            print("saving")
-            zaklęcieData["karty"] = kartyZaklęte
-            gra["Zaklęcie"] = zaklęcieData
-            gra["ZaklęcieLast"] = zaklęcieData
-            playerData["karty"] = []
-            gra[String(tableKey)] = playerData
-            print("saved")
-            return true
+                print("karty w kartyZaklęte \(kartyZaklęte.count)")
+                if var wanderingData = gra["Wandering"] as? [String: Any] {
+                    if(wanderingData["karty"] != nil)
+                    {
+                        var wanderingKarty = (wanderingData["karty"] as? [[String: Any]] ?? [[String: Any]]())
+                        if(wanderingKarty.count > 0)
+                        {
+                            kartyZaklęte.append(contentsOf: wanderingKarty)
+                        }
+                        wanderingData["karty"] = [[String: Any]]()
+                        gra["Wandering"] = wanderingData
+                    }
+                }
+                print("saving")
+                zaklęcieData["karty"] = kartyZaklęte
+                gra["Zaklęcie"] = zaklęcieData
+                gra["ZaklęcieLast"] = zaklęcieData
+                gra["ZaklęcieLastTableKey"] = tableKey
+                playerData["karty"] = []
+                gra[String(tableKey)] = playerData
+                print("saved")
+                return true
+//            }
         }
     } else {
         print("Player not found: \(playerKey)")
@@ -129,7 +133,6 @@ func createSpellBase(_ gra: inout Dictionary<String, Any>, for playerKey:String,
 
 func cancelSpellBase(_ gra: inout Dictionary<String, Any>, activePlayer: Int)
 {
-    gra["ZaklęcieCast"] = false
     var playerNow = gra["Player\(activePlayer + 1)"] as! [String: Any]
     print(playerNow)
     if(playerNow["akcjaOdrzuconeZaklęcie"] != nil)
@@ -146,6 +149,7 @@ func cancelSpellBase(_ gra: inout Dictionary<String, Any>, activePlayer: Int)
         spell(&gra, player: "Player\(activePlayer + 1)", run: zaklęcie["akcjaOdrzuconeZaklęcie"] as! String, against: "Player\((activePlayer + 1) % 2 + 1)")
     }
     graLock.sync {
+        gra["ZaklęcieCast"] = false
         for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
         {
             var player = zaklęcie["player"] as! String
@@ -164,7 +168,6 @@ func cancelSpellBase(_ gra: inout Dictionary<String, Any>, activePlayer: Int)
 }
 func allSpellsBase(_ gra: inout Dictionary<String, Any>, activePlayer: inout Int, createSpell:(inout Dictionary<String, Any>, String, String, Array<Dictionary<String, Any>>, inout Int) -> Void) -> Bool
 {
-    gra["ZaklęcieCast"] = true
     if let spellCost = calculateSpellCostBase(&gra, activePlayer: activePlayer) {
         print("Spell cost: \(spellCost)")
         if var playerData = gra["Zaklęcie"] as? [String: Any] {
@@ -224,6 +227,11 @@ func allSpellsBase(_ gra: inout Dictionary<String, Any>, activePlayer: inout Int
         
         for zaklęcie in ((gra["Zaklęcie"] as! Dictionary<String, Any>)["karty"] as! Array<Dictionary<String, Any>>)
         {
+            
+            graLock.sync
+            {
+                gra["ZaklęcieCast"] = true
+            }
             var zaklęcieNow = zaklęcie
             let player = zaklęcie["player"] as! String
             

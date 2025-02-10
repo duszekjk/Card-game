@@ -15,6 +15,8 @@ struct OdrzucanieKartView: View {
     
     @State var cards: CGFloat = 2.0
     @State var maxCards: CGFloat = 1.0
+    
+    var random = false
     var body: some View {
         VStack {
             Text("Odrzucanie kart")
@@ -36,7 +38,7 @@ struct OdrzucanieKartView: View {
                                 let karta = karty[index]
                                 Button(action: {
                                     let player = karta["player"] as! String
-                                    var talia = getKarty(&gra, for: "Talia\(player)")//talie[player] as! Array<Dictionary<String, Any>>
+                                    var talia = getKarty(&gra, for: "Talia\(player)")
                                     talia.append(karta)
                                     var kartyEdit = karty
                                     kartyEdit.remove(at: index)
@@ -58,7 +60,40 @@ struct OdrzucanieKartView: View {
                         {
                             show = false
                         }
-                        
+                        if(maxCards == 0)
+                        {
+                            for index in 0..<karty.count
+                            {
+                                let karta = karty[index]
+                                let player = karta["player"] as! String
+                                var talia = getKarty(&gra, for: "Talia\(player)")
+                                talia.append(karta)
+                                setKarty(&gra, for: "Talia\(player)", value: talia)
+                            }
+                            var kartyEdit = karty
+                            kartyEdit.removeAll()
+                            var containerEdit = container
+                            containerEdit["karty"] = kartyEdit
+                            gra[playersList[activePlayer]] = containerEdit
+                        }
+                        else
+                        {
+                            if(random)
+                            {
+                                let index = Int.random(in: 0..<karty.count)
+                                let karta = karty[index]
+                                let player = karta["player"] as? String ?? playersList[activePlayer]
+                                var talia = getKarty(&gra, for: "Talia\(player)")
+                                talia.append(karta)
+                                var kartyEdit = karty
+                                kartyEdit.remove(at: index)
+                                var containerEdit = container
+                                containerEdit["karty"] = kartyEdit
+                                gra[playersList[activePlayer]] = containerEdit
+                                setKarty(&gra, for: "Talia\(player)", value: talia)
+                                show = false
+                            }
+                        }
                     }
                     .onChange(of: kartyLoad.count)
                     {
@@ -68,6 +103,20 @@ struct OdrzucanieKartView: View {
                         {
                             show = false
                         }
+//                        if(random)
+//                        {
+//                            let index = Int.random(in: 0..<karty.count)
+//                            let karta = karty[index]
+//                            let player = karta["player"] as? String ?? playersList[activePlayer]
+//                            var talia = getKarty(&gra, for: "Talia\(player)")
+//                            talia.append(karta)
+//                            var kartyEdit = karty
+//                            kartyEdit.remove(at: index)
+//                            var containerEdit = container
+//                            containerEdit["karty"] = kartyEdit
+//                            gra[playersList[activePlayer]] = containerEdit
+//                            setKarty(&gra, for: "Talia\(player)", value: talia)
+//                        }
                     }
                 
                 }

@@ -342,7 +342,6 @@ struct KartaContainerView: View {
 
                     VStack {
                         LazyVGrid(columns: columns, spacing: 5) {
-                            // Add a drop box at the beginning
                             if isReorderable {
                                 DropBoxView(isReordering: $isReordering, index: 0, containerKey: containerKey, handleDrop: handleReorderDrop)
                             }
@@ -368,7 +367,6 @@ struct KartaContainerView: View {
                                     
                                 }
 
-                                // Add a drop box between items
                                 if isReorderable {
                                     DropBoxView(isReordering: $isReordering, index: index + 1, containerKey: containerKey, handleDrop: handleReorderDrop)
                                 }

@@ -1,9 +1,9 @@
 import SwiftUI
 
 struct AnimatedShapesView: View {
-    let shapes: [AnyView]  // List of spell shapes
+    let shapes: [AnyView]
     let viewSize: CGSize = CGSize(width: min(400, UIScreen.main.bounds.size.width-160), height: min(350, (UIScreen.main.bounds.size.width-160) * 0.875))
-    let stepsBetweenFrames = 10  // Extra steps for smooth transitions
+    let stepsBetweenFrames = 10
     @Binding var noiseImage: UIImage
     var animate: Bool
     @State private var shapeParameters: [[ShapeParams]] = []
@@ -11,13 +11,12 @@ struct AnimatedShapesView: View {
     @State private var isAnimating = false
     @State private var size: CGFloat = 350
 
-    // Fantasy-themed gradient palette
     let fantasyGradients: [LinearGradient] = [
-        LinearGradient(colors: [Color.red, Color.orange], startPoint: .top, endPoint: .bottom), // Fire Magic
-        LinearGradient(colors: [Color.blue, Color.black], startPoint: .leading, endPoint: .trailing), // Water Magic
-        LinearGradient(colors: [Color.black, Color.yellow], startPoint: .top, endPoint: .bottomTrailing), // Nature Magic
-        LinearGradient(colors: [Color.gray, Color.white], startPoint: .bottomLeading, endPoint: .topTrailing), // Holy Magic
-        LinearGradient(colors: [Color.purple, Color.black], startPoint: .topLeading, endPoint: .bottomTrailing) // Shadow Magic
+        LinearGradient(colors: [Color.red, Color.orange], startPoint: .top, endPoint: .bottom),
+        LinearGradient(colors: [Color.blue, Color.black], startPoint: .leading, endPoint: .trailing),
+        LinearGradient(colors: [Color.black, Color.yellow], startPoint: .top, endPoint: .bottomTrailing),
+        LinearGradient(colors: [Color.gray, Color.white], startPoint: .bottomLeading, endPoint: .topTrailing),
+        LinearGradient(colors: [Color.purple, Color.black], startPoint: .topLeading, endPoint: .bottomTrailing)
     ]
 
     struct ShapeParams {
@@ -35,7 +34,7 @@ struct AnimatedShapesView: View {
                     shapes[index]
                         .shadow(color: .white, radius: 4)
                         .frame(width: size, height: size)
-                        .overlay(FilmGrain())  // Add film grain effect
+                        .overlay(FilmGrain())
                         .foregroundStyle(params.gradient)
                         .rotation3DEffect(.degrees(params.rotation), axis: (x: 1, y: 1, z: 0))
                         .position(x: params.x, y: params.y)
@@ -155,7 +154,6 @@ struct AnimatedShapesView: View {
     }
 }
 
-// Film grain effect for magical aesthetic
 struct FilmGrain: View {
     var body: some View {
         GeometryReader { geometry in

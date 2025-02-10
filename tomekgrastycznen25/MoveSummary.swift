@@ -19,7 +19,7 @@ struct MoveSummary: View {
     func spellCasted() -> SKScene {
         // Create a blank SKScene
         let scene = SKScene(size: UIScreen.main.bounds.size)  // or some other size
-        scene.anchorPoint = CGPoint(x: 0.5, y: 0.1)           // center = (0,0)
+        scene.anchorPoint = CGPoint(x: 0.5, y: 0.0)           // center = (0,0)
         scene.scaleMode = .resizeFill
         scene.backgroundColor = .clear
 
@@ -57,6 +57,7 @@ struct MoveSummary: View {
                 {
                     Image("\(player["nazwa"] as! String) Mini")
                     Text(player["nazwa"] as! String)
+                        .font(.custom("Cinzel", size: 15))
                 }
                 PlayerSumary(player: player)
             }
@@ -67,21 +68,26 @@ struct MoveSummary: View {
                 {
                     Image("\(player["nazwa"] as! String) Mini")
                     Text(player["nazwa"] as! String)
+                        .font(.custom("Cinzel", size: 15))
                 }
                 PlayerSumary(player: player)
             }
             Divider()
+            Text(graAfter["ZaklęcieLastTableKey"] as! String)
+                .font(.footnote)
+                .padding(0)
+                .padding(.bottom, -5)
             KartaContainerView(gra: .constant(graAfter), lastPlayed: .constant("None"), activePlayer: .constant(-21), gameRound: .constant(-21), landscape: .constant(true), selectedCard: .constant(nil), containerKey: "ZaklęcieLast", isDragEnabled: false, isDropEnabled: false)
             HStack
             {
-                Image(systemName: (graAfter["ZaklęcieCast"] as? Bool)! ? "wand.and.rays" : "xmark")
-                    .foregroundStyle((graAfter["ZaklęcieCast"] as? Bool)! ? .green : .red)
+                Image(systemName: (graAfter["ZaklęcieCast"] as? Bool) ?? false ? "wand.and.rays" : "xmark")
+                    .foregroundStyle((graAfter["ZaklęcieCast"] as? Bool) ?? false ? .green : .red)
                 ForEach(Range(0...5))
                 {_ in
                     Image(systemName: "arrowshape.down")
                 }
-                Image(systemName: (graAfter["ZaklęcieCast"] as? Bool)! ? "wand.and.rays" : "xmark")
-                    .foregroundStyle((graAfter["ZaklęcieCast"] as? Bool)! ? .green : .red)
+                Image(systemName: (graAfter["ZaklęcieCast"] as? Bool) ?? false ? "wand.and.rays" : "xmark")
+                    .foregroundStyle((graAfter["ZaklęcieCast"] as? Bool) ?? false ? .green : .red)
             }
             .padding(.bottom)
             Divider()
@@ -93,6 +99,7 @@ struct MoveSummary: View {
                 {
                     Image("\(player["nazwa"] as! String) Mini")
                     Text(player["nazwa"] as! String)
+                        .font(.custom("Cinzel", size: 15))
                 }
                 PlayerSumary(player: player)
             }
@@ -103,6 +110,7 @@ struct MoveSummary: View {
                 {
                     Image("\(player["nazwa"] as! String) Mini")
                     Text(player["nazwa"] as! String)
+                        .font(.custom("Cinzel", size: 15))
                 }
                 PlayerSumary(player: player)
             }
@@ -113,6 +121,8 @@ struct MoveSummary: View {
             }, label:
                     {
                 Text("OK")
+                    .padding()
+                    .foregroundStyle(Color.accentColor)
             })
         }
         .padding()
@@ -125,7 +135,8 @@ struct MoveSummary: View {
                             scene: scene!,
                             preferredFramesPerSecond: 24
                         )
-                        .ignoresSafeArea()
+                        .padding(.bottom, 30)
+//                        .frame(maxWidth: 300)
                         .background(Color.clear)
                     }
                 }
@@ -133,8 +144,10 @@ struct MoveSummary: View {
         )
         .background(.black.opacity(0.65))
         .cornerRadius(20)
+        .foregroundStyle(.white)
+        .shadow(color: .black, radius: 5)
         .padding()
-        .shadow(radius: 5)
+        .frame(maxWidth:600)
         .onAppear {
             scene = (((graAfter["ZaklęcieCast"] as? Bool) == true) ? spellCasted() : smokeCasted())
             showFireworks = true
