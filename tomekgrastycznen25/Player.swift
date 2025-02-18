@@ -60,6 +60,9 @@ struct PlayerView: View {
                             .font(.custom("Cinzel", size: 20))
                             .fontWeight(.bold)
                             .padding(.leading, 90)
+                        Text(playerKey)
+                            .font(.custom("Cinzel", size: 15))
+                            .padding(.leading, 10)
                     }
                     .frame(width: 300, height: 15)
                     .onDrag {

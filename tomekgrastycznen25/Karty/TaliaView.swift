@@ -363,7 +363,7 @@ struct TaliaContainerView: View {
         return LazyVGrid(columns: columns, spacing: 5) {
             ForEach(0..<talia.count, id: \.self) { (index:Int) in
                 let karta = talia[index]
-                KartaView(karta: karta, showPostacie: false, selectedCard: $selectedCard)
+                KartaView(karta: karta, showPostacie: false, selectedCard: $selectedCard, orderChanges: $gameRound)
             }
         }
         .frame(minWidth: size * 100)
@@ -560,7 +560,10 @@ struct TaliaEditorView: View {
                     let karta = talia[index]
                     VStack
                     {
-                        KartaView(karta: karta, showPostacie: true, selectedCard: $selectedCard)
+                        KartaView(karta: karta, showPostacie: true, selectedCard: $selectedCard, orderChanges: Binding(
+                            get: { selectedCardIndex ?? -1 },
+                            set: { selectedCardIndex = ($0 == -1 ? nil : $0) }
+                        ))
 //                            .onDrag {
 //                                NSItemProvider(object: isDragEnabled ? "\(containerKey)|\(index)" as NSString : "" as NSString)
 //                            }

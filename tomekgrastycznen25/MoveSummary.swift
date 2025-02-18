@@ -29,6 +29,11 @@ struct MoveSummary: View {
             scene.addChild(emitter)
         }
 
+        if let view = scene.view {
+            view.showsFPS = false
+            view.showsNodeCount = false
+            view.showsPhysics = false
+        }
         return scene
     }
     func smokeCasted() -> SKScene {
@@ -45,6 +50,11 @@ struct MoveSummary: View {
             scene.addChild(emitter)
         }
 
+        if let view = scene.view {
+            view.showsFPS = false
+            view.showsNodeCount = false
+            view.showsPhysics = false
+        }
         return scene
     }
     
@@ -133,10 +143,11 @@ struct MoveSummary: View {
                     {
                         SpriteView(
                             scene: scene!,
-                            preferredFramesPerSecond: 24
+                            preferredFramesPerSecond: 24,
+                            debugOptions: []
                         )
+                        .ignoresSafeArea()
                         .padding(.bottom, 30)
-//                        .frame(maxWidth: 300)
                         .background(Color.clear)
                     }
                 }

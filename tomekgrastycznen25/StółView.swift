@@ -117,36 +117,36 @@ struct StółView: View {
             }
             .padding(UIDevice.current.userInterfaceIdiom == .phone ? 1 : 8)
             
-            VStack {
-                Text("Lingering")
-                    .font(.footnote)
-                VStack {
-                    
-                    KartaContainerView(
-                        gra: $gra,
-                        lastPlayed: $PlayerLast,
-                        activePlayer: $activePlayer,
-                        gameRound: $gameRound,
-                        landscape: $landscape,
-                        selectedCard: $selectedCard,
-                        containerKey: "Lingering",
-                        isDragEnabled: false,
-                        isLingering: true,
-                        size: 4,
-                        sizeFullAction: { tableKey, kards in
-                            gameRound += 1
-                        }
-                    )
-                    .scaleEffect(UIDevice.current.userInterfaceIdiom == .phone ? 0.7 : 0.8)
-                    .padding(UIDevice.current.userInterfaceIdiom == .phone ? 1 : 8)
-                    .rotationEffect(Angle(degrees: 90))
-                    
-                }
-                .frame(
-                    width: UIDevice.current.userInterfaceIdiom == .phone ? 70 : 240,
-                    height: 340
-                )
-            }
+//            VStack {
+//                Text("Lingering")
+//                    .font(.footnote)
+//                VStack {
+//                    
+//                    KartaContainerView(
+//                        gra: $gra,
+//                        lastPlayed: $PlayerLast,
+//                        activePlayer: $activePlayer,
+//                        gameRound: $gameRound,
+//                        landscape: $landscape,
+//                        selectedCard: $selectedCard,
+//                        containerKey: "Lingering",
+//                        isDragEnabled: false,
+//                        isLingering: true,
+//                        size: 4,
+//                        sizeFullAction: { tableKey, kards in
+//                            gameRound += 1
+//                        }
+//                    )
+//                    .scaleEffect(UIDevice.current.userInterfaceIdiom == .phone ? 0.7 : 0.8)
+//                    .padding(UIDevice.current.userInterfaceIdiom == .phone ? 1 : 8)
+//                    .rotationEffect(Angle(degrees: 90))
+//                    
+//                }
+//                .frame(
+//                    width: UIDevice.current.userInterfaceIdiom == .phone ? 70 : 240,
+//                    height: 340
+//                )
+//            }
         }
         .foregroundStyle(.white)
     }

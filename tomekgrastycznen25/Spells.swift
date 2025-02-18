@@ -77,7 +77,7 @@ func calculateSpellCostBase(_ gra: inout Dictionary<String, Any>, activePlayer: 
     return totaltotalCost
 }
 
-func createSpellBase(_ gra: inout Dictionary<String, Any>, for playerKey:String, from tableKey:String,  with kards: Array<Dictionary<String, Any>>, activePlayer: Int) -> Bool
+func createSpellBase(_ gra: inout Dictionary<String, Any>, for playerKey:String, from tableKey:String,  with kards: Array<Dictionary<String, Any>>, activePlayer: Int, botPlayers:[String]) -> Bool
 {
     print("creatingSpell")
     gra["activePlayer"] = activePlayer
@@ -98,6 +98,10 @@ func createSpellBase(_ gra: inout Dictionary<String, Any>, for playerKey:String,
                     if(kartaNowa["wandering"] != nil)
                     {
                         kartaNowa["wanderingNow"] = kartaNowa["wandering"]
+                    }
+                    if(kartaNowa["lingering"] != nil && tableKey != "TablePlayerLast")
+                    {
+                        kartaNowa["lingeringNow"] = kartaNowa["lingering"]
                     }
                     kartyZaklęte.append(kartaNowa)
                 }
@@ -122,13 +126,18 @@ func createSpellBase(_ gra: inout Dictionary<String, Any>, for playerKey:String,
                 playerData["karty"] = []
                 gra[String(tableKey)] = playerData
                 print("saved")
-                return true
+            
+            
+                var playerSpell = tableKey.replacingOccurrences(of: "Table", with: "").replacingOccurrences(of: "PlayerLast", with: "Player\(activePlayer + 1)")
+                var activePlayerNow = Int(playerSpell.replacingOccurrences(of: "Player", with:""))! - 1
+            
+                return !(botPlayers.contains("Player\((activePlayerNow + 1))"))
 //            }
         }
     } else {
         print("Player not found: \(playerKey)")
     }
-    return false
+    return true
 }
 
 func cancelSpellBase(_ gra: inout Dictionary<String, Any>, activePlayer: Int)
@@ -166,7 +175,7 @@ func cancelSpellBase(_ gra: inout Dictionary<String, Any>, activePlayer: Int)
         }
     }
 }
-func allSpellsBase(_ gra: inout Dictionary<String, Any>, activePlayer: inout Int, createSpell:(inout Dictionary<String, Any>, String, String, Array<Dictionary<String, Any>>, inout Int) -> Void) -> Bool
+func allSpellsBase(_ gra: inout Dictionary<String, Any>, activePlayer: inout Int, botPlayers : [String], createSpell:(inout Dictionary<String, Any>, String, String, Array<Dictionary<String, Any>>, inout Int, [String]) -> Void) -> Bool
 {
     if let spellCost = calculateSpellCostBase(&gra, activePlayer: activePlayer) {
         print("Spell cost: \(spellCost)")
@@ -310,7 +319,7 @@ func allSpellsBase(_ gra: inout Dictionary<String, Any>, activePlayer: inout Int
                                 setKarty(&gra, for: "Lingering", value: ligeringKarty)
                             }
 //                            DispatchQueue.global().asyncAfter(deadline: .now() + 1.0) {
-                            createSpell(&gra, "Player\(activePlayer + 1)", "TablePlayerLast", stareKarty, &activePlayer)
+                            createSpell(&gra, "Player\(activePlayer + 1)", "TablePlayerLast", stareKarty, &activePlayer, botPlayers)
                             print("setKarty for Player\(activePlayer + 1) ")
                             graLock.sync
                             {

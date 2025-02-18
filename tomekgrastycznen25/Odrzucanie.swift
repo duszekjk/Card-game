@@ -19,13 +19,31 @@ struct OdrzucanieKartView: View {
     var random = false
     var body: some View {
         VStack {
+            Text(gra["ZaklęcieLastTableKey"] as? String ?? "")
+                .font(.footnote)
+                .padding(.bottom, -5)
+            KartaContainerView(gra: .constant(gra), lastPlayed: .constant("None"), activePlayer: .constant(-21), gameRound: .constant(-21), landscape: .constant(true), selectedCard: .constant(nil), containerKey: "ZaklęcieLast", isDragEnabled: false, isDropEnabled: false)
+            
+            Divider()
+            Spacer()
+            Divider()
             Text("Odrzucanie kart")
-                .font(.headline)
+                .font(.title2)
             Text(playersList[activePlayer])
                 .font(.footnote)
+            
             Text("Jeśli masz za dużo kart. Musisz wybrać, które chesz odrzucić")
             
-            ProgressView(value: min(maxCards, cards)/max(cards, 1))
+            HStack
+            {
+                ProgressView(value: min(maxCards, cards)/max(cards, 1))
+                    .padding()
+                Text("\(min(maxCards, cards), specifier: "%d") / \(max(cards, 1), specifier: "%d")")
+                
+            }
+            .padding()
+            
+            
             if let container = gra[playersList[activePlayer]] as? Dictionary<String, Any>
                 {
                     let kartyLoad = container["karty"] as? Array<Dictionary<String, Any>> ?? emptyKarty
@@ -46,16 +64,18 @@ struct OdrzucanieKartView: View {
                                     containerEdit["karty"] = kartyEdit
                                     gra[playersList[activePlayer]] = containerEdit
                                     setKarty(&gra, for: "Talia\(player)", value: talia)
-                                }, label: { KartaView(karta: karta, showPostacie: false, selectedCard: $selectedCard) })
+                                }, label: { KartaView(karta: karta, showPostacie: false, selectedCard: $selectedCard, orderChanges: $gameRound) })
                                 
                                     
                             }
                         }
                     }
+                    .padding()
                     .onAppear()
                     {
                         cards = CGFloat(kartyLoad.count)
                         maxCards = CGFloat(container["ilośćKart"] as? Int ?? 0)// + (activePlayer == (gameRound % playersList.count) ? 1 : 0)
+                        print("onAppear OdrzucanieKartView maxCards \(maxCards)")
                         if(cards <= maxCards)
                         {
                             show = false
@@ -78,7 +98,8 @@ struct OdrzucanieKartView: View {
                         }
                         else
                         {
-                            if(random)
+                            print("onAppear OdrzucanieKartView \((gameRound < 3)) \(gameRound)")
+                            if(random || gameRound < 3)
                             {
                                 let index = Int.random(in: 0..<karty.count)
                                 let karta = karty[index]
@@ -128,7 +149,7 @@ struct OdrzucanieKartView: View {
                         LazyVGrid(columns: columns, spacing: 5) {
                             ForEach(0..<karty.count, id: \.self) { index in
                                 let karta = karty[index]
-                                KartaView(karta: karta, showPostacie: false, selectedCard: $selectedCard)
+                                KartaView(karta: karta, showPostacie: false, selectedCard: $selectedCard, orderChanges: $gameRound)
                             }
                         }
                     }

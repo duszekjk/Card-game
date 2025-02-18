@@ -5,11 +5,13 @@ struct TextWithSymbols: View {
     var font: Font
     var foregroundColor: Color = .primary
 
+    @Binding var orderChanges : Int
     @State var components : [AnyView] = []
+    
 
     var body: some View {
 
-        let size = fontSize(for: font)
+        let size = fontSize(for: font) + CGFloat(orderChanges % 2)
         WrappingGridView(items: components, size: size)
             .padding(0)
             .onAppear()

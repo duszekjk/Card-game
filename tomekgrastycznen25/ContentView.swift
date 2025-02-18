@@ -386,7 +386,7 @@ struct ContentView: View {
                                     print("showMoveSummary \(gra["ZaklęcieCast"]) \(gra["ZaklęcieLast"])")
                                     if let _ = gra["ZaklęcieCast"], let _ = gra["ZaklęcieLast"]
                                     {
-                                        showMoveSummary = true
+                                        showMoveSummary = gameRound > 2
                                     }
                                     print("showMoveSummary = \(showMoveSummary)")
                                 }
@@ -412,6 +412,7 @@ struct ContentView: View {
                                         setData(&gra, for: playersList[activePlayer], key: "tarcza", max(0, getData(&gra, for: playersList[activePlayer], key: "tarcza") - 1))
                                         var maxKart = getData(&gra, for: playersList[activePlayer], key: "ilośćKart")  + 1
                                         var karty = getKarty(&gra, for: playersList[activePlayer])
+                                        
                                         karty.append(contentsOf: loadCards(conut: max(1, maxKart - karty.count), for: playersList[activePlayer]))
                                         setKarty(&gra, for: playersList[activePlayer], value: karty)
                                         

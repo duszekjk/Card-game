@@ -5,6 +5,7 @@ struct KartaView: View {
     let karta: Dictionary<String, Any>
     let showPostacie: Bool
     @Binding var selectedCard: String?
+    @Binding var orderChanges : Int
     @State public var showBig = false
     
     @State private var capturedImage: UIImage?
@@ -64,9 +65,12 @@ struct KartaView: View {
                 }
                 VStack
                 {
-                    TextWithSymbols(text: "\(karta["opis"] as? String ?? "")", font: .caption, foregroundColor: .black)
+                    TextWithSymbols(text: "\(karta["opis"] as? String ?? "")", font: .caption, foregroundColor: .black, orderChanges: $orderChanges)
                         .lineLimit(6)
                         .padding(3)
+                    
+                    Text("Zimeniono kolejność \(orderChanges) razy")
+                        .font(.custom("Cinzel", size: 1))
                 }
                 .frame(width: 92, height: 70)
                     .background(
@@ -107,7 +111,7 @@ struct KartaView: View {
             }
         })
         {
-            KartaBigView(karta: karta, showBig: $showBig, onLongPress: { image in
+            KartaBigView(karta: karta, showBig: $showBig, orderChanges: $orderChanges, onLongPress: { image in
                 capturedImage = image
                 showBig = false
             })
@@ -127,6 +131,7 @@ struct KartaView: View {
 struct KartaBigView: View {
     let karta: Dictionary<String, Any>
     @Binding var showBig: Bool
+    @Binding var orderChanges : Int
     let onLongPress: (UIImage) -> Void
     @State var isSharing: Bool = false
     @State private var noiseImage: UIImage = generateFilmGrain(size: CGSize(width: 1024, height: 2048))!
@@ -191,7 +196,7 @@ struct KartaBigView: View {
                     Spacer()
                     VStack
                     {
-                        TextWithSymbols(text: "\(karta["opis"] as? String ?? karta["akcjaRzucaneZaklęcie"] as? String ?? "----------")", font: .custom("Papyrus", size: 40), foregroundColor: .black)
+                        TextWithSymbols(text: "\(karta["opis"] as? String ?? karta["akcjaRzucaneZaklęcie"] as? String ?? "----------")", font: .custom("Papyrus", size: 40), foregroundColor: .black, orderChanges: $orderChanges)
                             .lineLimit(6)
                             .padding(25)
                     }
@@ -351,7 +356,7 @@ struct KartaContainerView: View {
                                     
                                     if(isReorderable)
                                     {
-                                        KartaView(karta: karty[index], showPostacie: false, selectedCard: $selectedCard)
+                                        KartaView(karta: karty[index], showPostacie: false, selectedCard: $selectedCard, orderChanges: $orderChanges)
                                             .onDrag {
                                                 draggedIndex = index
                                                 isReordering = true
@@ -359,7 +364,7 @@ struct KartaContainerView: View {
                                             }
                                     }
                                     else {
-                                        KartaView(karta: karty[index], showPostacie: false, selectedCard: $selectedCard)
+                                        KartaView(karta: karty[index], showPostacie: false, selectedCard: $selectedCard, orderChanges: $orderChanges)
                                             .onDrag {
                                                 NSItemProvider(object: isDragEnabled ? "\(containerKey)|\(index)" as NSString : "" as NSString)
                                             }
@@ -389,6 +394,7 @@ struct KartaContainerView: View {
             .frame(minWidth: min(size*100+20, (UIScreen.main.bounds.size.width - 20) * (isReorderable ? 1.35 : 1.0) * (UIDevice.current.userInterfaceIdiom == .phone ? 1.40 : 1.0)), alignment: .center)
             .background(RoundedRectangle(cornerRadius: 10).stroke(Color.gray, lineWidth: 2))
             .onDrop(of: [UTType.text], isTargeted: nil) {  providers, location in
+                orderChanges += 1
                 isReordering = false
                 guard isDropEnabled else { return false }
                 print("drop")

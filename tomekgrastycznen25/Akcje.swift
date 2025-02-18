@@ -61,7 +61,7 @@ func setData(_ gra: inout Dictionary<String, Any>, for player: String, key:Strin
 }
 extension ContentView
 {
-    func createSpellLong(_ gra: inout Dictionary<String, Any>, for playerKey:String, from tableKey:String,  with kards: Array<Dictionary<String, Any>>, activePlayer: inout Int)
+    func createSpellLong(_ gra: inout Dictionary<String, Any>, for playerKey:String, from tableKey:String,  with kards: Array<Dictionary<String, Any>>, activePlayer: inout Int, botPlayers: [String])
     {
         
         var plr = activePlayer
@@ -77,11 +77,12 @@ extension ContentView
         var spellState = false
         DispatchQueue.main.async {
             graLock.sync {
-                    spellState = createSpellBase(&gra, for: playerKey, from: tableKey,  with: kards, activePlayer: activePlayer)
+                spellState = createSpellBase(&gra, for: playerKey, from: tableKey,  with: kards, activePlayer: activePlayer, botPlayers: botPlayers)
             }
+            
             var playerSpell = tableKey.replacingOccurrences(of: "Table", with: "").replacingOccurrences(of: "PlayerLast", with: "Player\(activePlayer + 1)")
             self.activePlayer = Int(playerSpell.replacingOccurrences(of: "Player", with:""))! - 1
-            print(" Zaklęcie ready \(((gra["Zaklęcie"] as! [String:Any])["karty"] as! [Any]).count)")
+            print(" Zaklęcie ready \(spellState)")
             if(spellState)
             {
                 if(activePlayer == thisDevice || thisDevice == -1)
@@ -97,6 +98,11 @@ extension ContentView
                 {
                     connectionManager.send(gameState: gra)
                 }
+            }
+            else
+            {
+                sizeFullActionBot(&gra, for: playerSpell, from: tableKey, with: kards, activePlayer: &activePlayer, botPlayers: botPlayers)
+                gameRound += 1
             }
             
         }
@@ -114,7 +120,7 @@ extension ContentView
     }
     func allSpells()
     {
-        var status = allSpellsBase(&gra, activePlayer: &activePlayer, createSpell: createSpellLong)
+        var status = allSpellsBase(&gra, activePlayer: &activePlayer, botPlayers: botPlayers, createSpell: createSpellLong)
         showZaklęcie = false
         checkumberOfCards(endMove: status)
     }

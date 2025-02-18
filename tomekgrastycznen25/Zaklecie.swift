@@ -120,7 +120,7 @@ struct ZaklęcieView: View {
                     allSpells()
                 })
                 .buttonStyle(.borderedProminent)
-                .disabled((mana + życie + karty) != cost)
+                .disabled((mana + życie + karty) != cost || życieMax - życie < 3)
                 
                 Button("Odrzuć", action: {
                     cancelSpell()

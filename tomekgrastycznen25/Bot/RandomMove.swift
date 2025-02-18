@@ -41,15 +41,15 @@ func makeRandomMove(_ gra: inout Dictionary<String, Any>, for player: String, ac
             tablePlaceholders.append("Table\(player)")
         }
         
-        if let _ = karta["lingering"] as? Int
-        {
-            containerKey = "Lingering"
-            isLingering = true
-        }
-        else
-        {
+//        if let _ = karta["lingering"] as? Int
+//        {
+//            containerKey = "Lingering"
+//            isLingering = true
+//        }
+//        else
+//        {
             containerKey = tablePlaceholders.randomElement()!
-        }
+//        }
     
         graLock.sync {
             moveOk = moveCard(&gra, from:player, at: kartaID, to: containerKey, isLingering: isLingering)
@@ -70,7 +70,9 @@ func makeRandomMove(_ gra: inout Dictionary<String, Any>, for player: String, ac
                     }
                     if(botPlayers.contains(playerSpell))
                     {
-                        sizeFullActionBot(&gra, for: playerSpell, from: containerKey, with: kartyLoad, activePlayer: &activePlayer)
+                        activePlayer = playersList.firstIndex(of: playerSpell) ?? activePlayer
+                        createSpellBase(&gra, for:playerSpell, from:containerKey,  with: kartyLoad, activePlayer: activePlayer, botPlayers: botPlayers)
+                        sizeFullActionBot(&gra, for: playerSpell, from: containerKey, with: kartyLoad, activePlayer: &activePlayer, botPlayers: botPlayers)
                         gameRound += 1
                     }
                     else {
@@ -93,10 +95,8 @@ func makeRandomMove(_ gra: inout Dictionary<String, Any>, for player: String, ac
     return (-1, "", activePlayer, gameRound)
 }
 
-func sizeFullActionBot(_ gra: inout Dictionary<String, Any>, for playerKey:String, from tableKey:String,  with kards: Array<Dictionary<String, Any>>, activePlayer: inout Int)
+func sizeFullActionBot(_ gra: inout Dictionary<String, Any>, for playerKey:String, from tableKey:String,  with kards: Array<Dictionary<String, Any>>, activePlayer: inout Int, botPlayers: [String])
 {
-    activePlayer = playersList.firstIndex(of: playerKey) ?? activePlayer
-    createSpellBase(&gra, for:playerKey, from:tableKey,  with: kards, activePlayer: activePlayer)
     print(" Zaklęcie ready")
     var rzućSzansa = 0
     var koszt = calculateSpellCostBase(&gra, activePlayer: activePlayer) ?? 4
@@ -143,7 +143,7 @@ func sizeFullActionBot(_ gra: inout Dictionary<String, Any>, for playerKey:Strin
             gracz["sacrifice"] = max(0, życie + karty)
             gra["Zaklęcie"] = gracz
         }
-        allSpellsBase(&gra, activePlayer: &activePlayer, createSpell: sizeFullActionBot)
+        allSpellsBase(&gra, activePlayer: &activePlayer, botPlayers: botPlayers, createSpell: sizeFullActionBot)
     }
     else
     {
@@ -170,21 +170,21 @@ func moveCard(_ gra: inout Dictionary<String, Any>, from sourceKey: String, at s
     if let lingeringString = cardTMP["lingering"] as? String
     {
         print(lingeringString)
-        if((!(lingeringString.count > 3) && isLingering) || ((lingeringString.count > 3) && !isLingering))
-        {
-            print("false A")
-            return false
-        }
+//        if((!(lingeringString.count > 3) && isLingering) || ((lingeringString.count > 3) && !isLingering))
+//        {
+//            print("false A")
+//            return false
+//        }
         print("true B")
     }
     else
     {
-        if let lingeringString = cardTMP["lingering"] as? Int, !isLingering
-        {
-            print(cardTMP["lingering"])
-            print("false B")
-            return false
-        }
+//        if let lingeringString = cardTMP["lingering"] as? Int, !isLingering
+//        {
+//            print(cardTMP["lingering"])
+//            print("false B")
+//            return false
+//        }
     }
     print("true A")
     let card = sourceCards.remove(at: sourceIndexCorrected)
