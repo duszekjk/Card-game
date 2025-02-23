@@ -64,6 +64,8 @@ extension ContentView
         gra["Zaklęcie"] = loadSpell()
         setKarty(&gra, for: "Player1", value: loadCards(conut: getData(&gra, for: "Player1", key: "ilośćKart"), for: "Player1"))
         setKarty(&gra, for: "Player2", value: loadCards(conut: getData(&gra, for: "Player2", key: "ilośćKart"), for: "Player2"))
+        gra["KoniecŻyciaCounterPlayer1"] = 0
+        gra["KoniecŻyciaCounterPlayer2"] = 0
     }
     func loadTable() -> Dictionary<String, Any>
     {

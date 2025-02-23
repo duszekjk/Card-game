@@ -473,6 +473,10 @@ func assignValue(_ gra: inout Dictionary<String, Any>, to key: String, value: An
                     }
                     else
                     {
+                        if(dict.count < 1)
+                        {
+                            return
+                        }
                         atIndex = Int(key) ?? Int.random(in: 0..<dict.count)
                     }
                     selected = atIndex

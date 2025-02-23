@@ -55,11 +55,16 @@ struct KartaView: View {
                     }
                     else
                     {
-                        AnimatedShapesView(shapes: (karta["opis"] as? String ?? "").getShapes(), noiseImage: $noiseImage, animate: false)
-                            .scaleEffect(0.1)
-                            .frame(width: 40, height: 35)
-                            .clipped()
-                            .padding(-5)
+                        ZStack
+                        {
+                            ImageGeneratorView(label: karta["opis"] as? String ?? "")
+                                .frame(width: 40, height: 35)
+                            AnimatedShapesView(shapes: (karta["opis"] as? String ?? "").getShapes(), noiseImage: $noiseImage, animate: false)
+                                .scaleEffect(0.1)
+                                .frame(width: 40, height: 35)
+                                .clipped()
+                                .padding(-5)
+                        }
                     }
                     Spacer()
                 }
@@ -169,6 +174,8 @@ struct KartaBigView: View {
                         Spacer()
                         ZStack(alignment: .topTrailing)
                         {
+                            ImageGeneratorView(label: karta["opis"] as? String ?? "")
+//                                .frame(width: 260, height: 180)
                             AnimatedShapesView(shapes: (karta["opis"] as? String ?? "").getShapes(), noiseImage: $noiseImage, animate: true)
                                 .padding(15)
                             VStack(alignment: .trailing, spacing: 0)

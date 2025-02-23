@@ -141,14 +141,19 @@ struct PlayerView: View {
                     {
                         HStack {
                             HStack {
-                                Image(systemName: "doc.on.doc")
+                                CardsIn()
+                                    .frame(width:26, height:26)
+                                    .foregroundColor(Color(#colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)))
                                 Text("\(player["ilośćKart"] as? Int ?? 0)")
                             }
                             
                             Spacer()
                             
                             HStack {
-                                Image(systemName: "bolt.fill")
+//                                Image(systemName: "bolt.fill")
+                                ManaIn()
+                                    .frame(width:26, height:26)
+                                    .foregroundColor(Color(#colorLiteral(red: 0.1924221963, green: 0.4215232134, blue: 0, alpha: 1)))
                                 Text("\(player["mana"] as? Int ?? 0) /\(player["manaMax"] as? Int ?? 0)")
                             }
 //                            .onChange(of: player["mana"] as? Int ?? 0)
@@ -165,16 +170,20 @@ struct PlayerView: View {
                             Spacer()
                             
                             HStack {
-                                Image(systemName: "shield.pattern.checkered")
-                                    .foregroundColor(.red)
+                                ShieldIn()
+                                    .frame(width:26, height:26)
+                                    .foregroundColor(Color(#colorLiteral(red: 0.3774702847, green: 0.2657877505, blue: 0, alpha: 1)))
+//                                Image(systemName: "shield.pattern.checkered")
                                 Text("\(player["tarcza"] as? Int ?? 0)")
                             }
                             
                             Spacer()
                             
                             HStack {
-                                Image(systemName: "heart.fill")
-                                    .foregroundColor(.red)
+//                                Image(systemName: "heart.fill")
+                                Heart()
+                                    .frame(width:26, height:26)
+                                    .foregroundColor(Color(#colorLiteral(red: 0.7651655674, green: 0, blue: 0, alpha: 1)))
                                 Text("\(player["życie"] as? Int ?? 0)")
                             }
 //                            .onChange(of: player["życie"] as? Int ?? 0) { newValue in
@@ -328,14 +337,47 @@ struct PlayerView: View {
         }
         if life == 0 {
             
+            guard var player = gra[playerKey] as? [String: Any] else { return }
             DispatchQueue.main.async {
-                playerLoose = playerKey
-                playerWin = playersList.first { $0 != playerLoose } ?? "Unknown"
-                nameWin = getTextData(&gra, for: playerWin, key: "nazwa")
-                nameLoose = getTextData(&gra, for: playerLoose, key: "nazwa")
-                connectionManager.send(gameState: gra)
-                endGame = true
+                spell(&gra, player: playerKey, run: player["akcjaKoniecŻycia"] as? String ?? "", against: (playersList.first { $0 != playerKey })!)
             }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2)
+            {
+                graLock.sync {
+                    
+                    player = gra[playerKey] as! [String: Any]
+                    
+                    // ✅ Mana Correction
+                    let mana = player["mana"] as? Int ?? 0
+                    let manaMax = player["manaMax"] as? Int ?? 0
+                    if mana > manaMax {
+                        player["mana"] = manaMax
+                    }
+                    
+                    // ✅ Life Check
+                    life = player["życie"] as? Int ?? 0
+                    
+                    if life < 0 {
+                        life = 0
+                        player["życie"] = life
+                    }
+                    
+                    // ✅ Update dictionary
+                    gra[playerKey] = player
+                }
+                
+                if life == 0 {
+                        playerLoose = playerKey
+                        playerWin = playersList.first { $0 != playerLoose } ?? "Unknown"
+                        nameWin = getTextData(&gra, for: playerWin, key: "nazwa")
+                        nameLoose = getTextData(&gra, for: playerLoose, key: "nazwa")
+                        connectionManager.send(gameState: gra)
+                        endGame = true
+                    }
+            }
+            
+            
         }
     }
     func addMissingKeys(to json: [String: Any]) -> [String: Any] {

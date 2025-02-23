@@ -116,7 +116,6 @@ struct StółView: View {
                 .frame(width: kartaWidth, height: kartaHeight)
             }
             .padding(UIDevice.current.userInterfaceIdiom == .phone ? 1 : 8)
-            
 //            VStack {
 //                Text("Lingering")
 //                    .font(.footnote)

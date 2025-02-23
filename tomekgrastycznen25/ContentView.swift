@@ -410,13 +410,17 @@ struct ContentView: View {
                                     waitForOdrzucanieToBeFalse {
                                         setData(&gra, for: playersList[activePlayer], key: "mana", getData(&gra, for: playersList[activePlayer], key: "mana") + 1)
                                         setData(&gra, for: playersList[activePlayer], key: "tarcza", max(0, getData(&gra, for: playersList[activePlayer], key: "tarcza") - 1))
+                                        showOdrzucanie = false
                                         var maxKart = getData(&gra, for: playersList[activePlayer], key: "ilośćKart")  + 1
                                         var karty = getKarty(&gra, for: playersList[activePlayer])
+                                        showOdrzucanie = false
                                         
                                         karty.append(contentsOf: loadCards(conut: max(1, maxKart - karty.count), for: playersList[activePlayer]))
                                         setKarty(&gra, for: playersList[activePlayer], value: karty)
+                                        showOdrzucanie = false
                                         
                                         DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
+                                            showOdrzucanie = false
                                             var maxKart = getData(&gra, for: playersList[activePlayer], key: "ilośćKart")  + 1
                                             var karty = getKarty(&gra, for: playersList[activePlayer])
                                             if(maxKart > karty.count)
@@ -424,6 +428,7 @@ struct ContentView: View {
                                                 karty.append(contentsOf: loadCards(conut: max(0, maxKart - karty.count), for: playersList[activePlayer]))
                                                 setKarty(&gra, for: playersList[activePlayer], value: karty)
                                             }
+                                            showOdrzucanie = false
                                             
                                             if(botLevel > 0 && botPlayers.contains("Player\((activePlayer + 1))"))
                                             {
@@ -607,18 +612,19 @@ struct ContentView: View {
 
     func waitForOdrzucanieToBeFalse(completion: @escaping () -> Void) {
         DispatchQueue.global().async {
-            var counter = 4
+            var counter = 2
             while counter > 0
             {
                 counter -= 1
                 while self.showOdrzucanie {
                     // Wait for a short period before checking again
-                    counter = 7
-                    Thread.sleep(forTimeInterval: 0.1)
+                    counter = 3
+                    Thread.sleep(forTimeInterval: 0.05)
                 }
-                Thread.sleep(forTimeInterval: 0.1)
+                Thread.sleep(forTimeInterval: 0.05)
             }
             DispatchQueue.main.async {
+                Thread.sleep(forTimeInterval: 0.15)
                 completion()
             }
         }

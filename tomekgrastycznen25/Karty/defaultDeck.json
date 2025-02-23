@@ -7,7 +7,8 @@
     "postacie" : [
       "Mag Światła",
       "Pijawka Magii",
-      "Mag Krwii"
+      "Mag Krwii",
+      "Feniks"
     ],
     "lingering" : "",
     "akcjaOdrzuconeZaklęcie" : "",
@@ -21,7 +22,8 @@
     "koszt" : 3,
     "postacie" : [
       "Mag Światła",
-      "Mag Krwii"
+      "Mag Krwii",
+      "Feniks"
     ],
     "lingering" : "",
     "akcjaOdrzuconeZaklęcie" : ""
@@ -38,7 +40,8 @@
       "Mag Światła",
       "Pijawka Magii",
       "Mag Ognia",
-      "Mag Krwii"
+      "Mag Krwii",
+      "Feniks"
     ]
   },
   {
@@ -79,7 +82,8 @@
       "Mag Światła",
       "Pijawka Magii",
       "Mag Ognia",
-      "Mag Krwii"
+      "Mag Krwii",
+      "Feniks"
     ],
     "pacyfizm" : "@PlayerYou.ilośćKart = @PlayerYou.ilośćKart + 1 & @PlayerYou.mana = @PlayerYou.mana + 2",
     "koszt" : 1
@@ -105,7 +109,8 @@
     "postacie" : [
       "Mag Światła",
       "Mag Ognia",
-      "Pijawka Magii"
+      "Pijawka Magii",
+      "Feniks"
     ],
     "wandering" : "",
     "lingering" : "",
@@ -133,7 +138,8 @@
       "Mag Światła",
       "Mag Krwii",
       "Mag Ognia",
-      "Pijawka Magii"
+      "Pijawka Magii",
+      "Feniks"
     ],
     "wandering" : "",
     "akcjaOdrzuconeZaklęcie" : "@PlayerMe.ilośćKart = @PlayerMe.ilośćKart - 1",
@@ -174,10 +180,10 @@
     "pacyfizm" : "",
     "lingering" : 1,
     "wandering" : "",
-    "id" : "845E1AD9-19FE-4A78-BE20-7BE5B9D2107E",
     "postacie" : [
       "Mag Światła",
-      "Mag Krwii"
+      "Mag Krwii",
+      "Feniks"
     ],
     "opis" : "1❤️‍🔥\nLingering"
   },
@@ -185,7 +191,8 @@
     "postacie" : [
       "Mag Światła",
       "Pijawka Magii",
-      "Mag Krwii"
+      "Mag Krwii",
+      "Feniks"
     ],
     "lingering" : "",
     "akcjaRzucaneZaklęcie" : "@PlayerYou.życie = @PlayerYou.życie - 1",
@@ -193,12 +200,12 @@
     "opis" : "1❤️‍🔥\nWandering",
     "wandering" : 1,
     "pacyfizm" : "",
-    "akcjaOdrzuconeZaklęcie" : "",
-    "id" : "FCD98525-F776-44AB-BDC9-697885B9A259"
+    "akcjaOdrzuconeZaklęcie" : ""
   },
   {
     "postacie" : [
-      "Mag Ognia"
+      "Mag Ognia",
+      "Feniks"
     ],
     "lingering" : "",
     "akcjaRzucaneZaklęcie" : "@PlayerYou.życie = @PlayerYou.życie - 2 & @PlayerMe.mana = @PlayerMe.mana + 4",
@@ -206,12 +213,12 @@
     "opis" : "Pustka 1\n2❤️‍🔥, 4🔋",
     "wandering" : "",
     "pacyfizm" : "",
-    "akcjaOdrzuconeZaklęcie" : "@PlayerMe.ilośćKart = @PlayerMe.ilośćKart - 1",
-    "id" : "FCD98525-F776-44AB-BDC9-0000001"
+    "akcjaOdrzuconeZaklęcie" : "@PlayerMe.ilośćKart = @PlayerMe.ilośćKart - 1"
   },
   {
     "postacie" : [
-      "Mag Ognia"
+      "Mag Ognia",
+      "Feniks"
     ],
     "lingering" : "",
     "akcjaRzucaneZaklęcie" : "@PlayerYou.życie = @PlayerYou.życie - 3 & @PlayerMe.tarcza = @PlayerMe.tarcza + 3",
@@ -219,7 +226,45 @@
     "opis" : "3❤️‍🔥, 3🛡️",
     "wandering" : "",
     "pacyfizm" : "",
-    "akcjaOdrzuconeZaklęcie" : "",
-    "id" : "FCD98525-F776-44AB-BDC9-0000002"
+    "akcjaOdrzuconeZaklęcie" : ""
+  },
+  {
+    "postacie" : [
+      "Mag Ognia",
+      "Feniks"
+    ],
+    "lingering" : "",
+    "akcjaRzucaneZaklęcie" : " if @PlayerMe.życie < @PlayerYou.życie : @PlayerMe.życie = @PlayerMe.życie - 1 & @PlayerYou.życie = @PlayerYou.życie - 2",
+    "koszt" : 0,
+    "opis" : "Pustka 1\nWadering\nJeśli masz mniej ❤️ niż przeciwnik, strać 1 ❤️, 2❤️‍🔥",
+    "wandering" : 1,
+    "pacyfizm" : "",
+    "akcjaOdrzuconeZaklęcie" : "@PlayerMe.ilośćKart = @PlayerMe.ilośćKart - 1"
+  },
+  {
+    "postacie" : [
+      "Mag Ognia",
+      "Feniks"
+    ],
+    "lingering" : "",
+    "akcjaRzucaneZaklęcie" : "@PlayerYou.ilośćKart = @PlayerYou.ilośćKart - 1 & if @Zaklęcie.sacrifice == 0 : @PlayerYou.ilośćKart = @PlayerYou.ilośćKart - 1",
+    "koszt" : 2,
+    "opis" : "Przeciwnik 2 🎇\nSacrifice tylko 1 🎇",
+    "wandering" : "",
+    "pacyfizm" : "",
+    "akcjaOdrzuconeZaklęcie" : ""
+  },
+  {
+    "postacie" : [
+      "Mag Ognia",
+      "Feniks"
+    ],
+    "lingering" : "",
+    "akcjaRzucaneZaklęcie" : "@PlayerYou.życie = @PlayerYou.życie - 1 & @PlayerMe.ilośćKart = @PlayerMe.ilośćKart + 1 & @PlayerYou.ilośćKart = @PlayerYou.ilośćKart - 1",
+    "koszt" : 5,
+    "opis" : "1 ❤️‍🔥, 1🃏\nPrzeciwnik 🎇",
+    "wandering" : "",
+    "pacyfizm" : "",
+    "akcjaOdrzuconeZaklęcie" : ""
   }
 ]

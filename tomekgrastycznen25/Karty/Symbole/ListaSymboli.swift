@@ -11,9 +11,10 @@ import SwiftUI
 var emojiSymbols : [String:any Shape] = [
     "🃏": CardsIn(),
     "🎇": CardsOut(),
-    "❤️‍🔥": FlamingHeart(),
-    "❤️": Heart(),
-    "🛡️": ShieldIn(),
+    "❤️‍🔥": FlamingHeart(), // takes opponent life/health
+    "❤️": Heart(), // gains life/health
+    "🛡️": ShieldIn(), // adds shield
     "🔋": ManaIn(),
+    "🪫": ManaOut(),
 ]
 

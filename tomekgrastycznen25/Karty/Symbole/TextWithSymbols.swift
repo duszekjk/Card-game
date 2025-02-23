@@ -61,7 +61,7 @@ extension String {
                     components.append(AnyView(Text(currentText).font(font))) // Add plain text before emoji
                     currentText = ""
                 }
-                components.append(AnyView(shape.frame(width: size, height: size)))
+                components.append(AnyView(shape.padding(.top,-((size/7) - 0.5)).padding(.bottom, (size/7) - 0.5).frame(width: size, height: size)))
             } else {
                 if(strChar == " ")
                 {

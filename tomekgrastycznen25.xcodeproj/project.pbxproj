@@ -299,7 +299,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = tomekgrastycznen25/tomekgrastycznen25.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_ASSET_PATHS = "\"tomekgrastycznen25/Preview Content\"";
 				DEVELOPMENT_TEAM = QASSY2FVRR;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -342,7 +342,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = tomekgrastycznen25/tomekgrastycznen25.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_ASSET_PATHS = "\"tomekgrastycznen25/Preview Content\"";
 				DEVELOPMENT_TEAM = QASSY2FVRR;
 				ENABLE_HARDENED_RUNTIME = YES;
