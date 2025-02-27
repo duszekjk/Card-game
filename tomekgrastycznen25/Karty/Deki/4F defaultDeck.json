@@ -1,0 +1,89 @@
+[
+    {
+      "koszt": 4,
+      "opis": "Pustka 4\n3 🃏\nLingering",
+      "akcjaRzucaneZaklęcie": "@PlayerMe.ilośćKart = @PlayerMe.ilośćKart + 3",
+      "wandering": "",
+      "lingering": 1,
+      "pacyfizm": "",
+      "akcjaOdrzuconeZaklęcie": "@PlayerMe.ilośćKart = @PlayerMe.ilośćKart - 4",
+      "postacie": [
+        "Mag Światła",
+        "Mag Krwii",
+        "Mag Ognia",
+        "Pijawka Magii",
+        "Feniks"
+      ]
+    },
+    {
+      "koszt": 2,
+      "opis": "2 ❤️‍🔥",
+      "akcjaRzucaneZaklęcie": "@PlayerYou.życie = @PlayerYou.życie - 2",
+      "wandering": "",
+      "lingering": "",
+      "pacyfizm": "",
+      "akcjaOdrzuconeZaklęcie": "",
+      "postacie": [
+        "Mag Światła",
+        "Mag Krwii",
+        "Mag Ognia",
+        "Pijawka Magii",
+        "Feniks"
+      ]
+    },
+    {
+      "koszt": 1,
+      "opis": "Pustka 3\nStrać 1 ❤️ żeby 2 ❤️‍🔥",
+      "akcjaRzucaneZaklęcie": "@PlayerMe.życie = @PlayerMe.życie - ( 1 * #COUNTER# ) & @PlayerYou.życie = @PlayerYou.życie - ( 2 * #COUNTER# )",
+      "wandering": "",
+      "lingering": "",
+      "pacyfizm": "",
+      "akcjaOdrzuconeZaklęcie": "@PlayerMe.ilośćKart = @PlayerMe.ilośćKart - 3",
+      "postacie": [
+        "Mag Światła",
+        "Mag Krwii",
+        "Mag Ognia",
+        "Pijawka Magii",
+        "Feniks"
+      ]
+    },
+    {
+      "koszt": 0,
+      "opis": "Niestabilny 2\n1 🎇 żeby 1 ❤️‍🔥",
+      "akcjaRzucaneZaklęcie": "@PlayerMe.ilośćKart = @PlayerMe.ilośćKart - ( 1 * #COUNTER# ) & @PlayerYou.życie = @PlayerYou.życie - ( 1 * #COUNTER# )",
+      "wandering": "",
+      "lingering": "",
+      "pacyfizm": "",
+      "akcjaOdrzuconeZaklęcie": "@PlayerMe.życie = @PlayerMe.życie - 2",
+      "postacie": [
+        "Mag Światła",
+        "Mag Krwii",
+        "Mag Ognia",
+        "Pijawka Magii",
+        "Feniks"
+      ]
+    },
+    {
+      "koszt": 2,
+      "opis": "Przeciwnik odrzuca 2 karty.\nSacrifice: 1 kartę",
+      "akcjaRzucaneZaklęcie": "@PlayerYou.ilośćKart = @PlayerYou.ilośćKart - 1 & if @Zaklęcie.sacrifice == 0 : @PlayerMe.ilośćKart = @PlayerMe.ilośćKart - 1",
+      "wandering": "",
+      "lingering": "",
+      "pacyfizm": "",
+      "akcjaOdrzuconeZaklęcie": "",
+      "postacie": [
+        "Mag Światła",
+        "Mag Krwii",
+        "Mag Ognia",
+        "Pijawka Magii",
+        "Feniks"
+      ]
+    },
+    
+
+
+
+
+
+]
+

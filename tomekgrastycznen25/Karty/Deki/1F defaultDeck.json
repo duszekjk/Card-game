@@ -1,0 +1,82 @@
+    [
+      {
+        "koszt": 8,
+        "opis": "4 ❤️‍🔥",
+        "akcjaRzucaneZaklęcie": "@PlayerYou.życie = @PlayerYou.życie - 4",
+        "wandering": "",
+        "lingering": "",
+        "pacyfizm": "",
+        "akcjaOdrzuconeZaklęcie": "",
+        "postacie": [
+          "Mag Światła",
+          "Mag Krwii",
+          "Mag Ognia",
+          "Pijawka Magii",
+          "Feniks"
+        ]
+      },
+      {
+        "koszt": 1,
+        "opis": "Wandering\nPrzeciwnik 1 🪫 za każde 3 many które kosztuje to zaklęcie",
+        "akcjaRzucaneZaklęcie": "@PlayerYou.mana = @PlayerYou.mana - ( @Zaklęcie.koszt / 3 )",
+        "wandering": 1,
+        "lingering": "",
+        "pacyfizm": "",
+        "akcjaOdrzuconeZaklęcie": "",
+        "postacie": [
+          "Mag Światła",
+          "Mag Krwii",
+          "Mag Ognia",
+          "Pijawka Magii",
+          "Feniks"
+        ]
+      },
+      {
+        "koszt": 3,
+        "opis": "Niestabilny 1\n4 🔋",
+        "akcjaRzucaneZaklęcie": "@PlayerMe.mana = @PlayerMe.mana + 4",
+        "wandering": "",
+        "lingering": "",
+        "pacyfizm": "",
+        "akcjaOdrzuconeZaklęcie": "@PlayerMe.życie = @PlayerMe.życie - 1",
+        "postacie": [
+          "Mag Światła",
+          "Mag Krwii",
+          "Mag Ognia",
+          "Pijawka Magii",
+          "Feniks"
+        ]
+      },
+      {
+        "koszt": 4,
+        "opis": "1 ❤️‍🔥 za każde 4 many które kosztuje to zaklęcie",
+        "akcjaRzucaneZaklęcie": "@PlayerYou.życie = @PlayerYou.życie - ( @Zaklęcie.koszt / 4 )",
+        "wandering": "",
+        "lingering": "",
+        "pacyfizm": "",
+        "akcjaOdrzuconeZaklęcie": "",
+        "postacie": [
+          "Mag Światła",
+          "Mag Krwii",
+          "Mag Ognia",
+          "Pijawka Magii",
+          "Feniks"
+        ]
+      },
+      {
+        "koszt": 2,
+        "opis": "Niestabilny 1\n2 🃏\nPrzeciwnik 2 🔋",
+        "akcjaRzucaneZaklęcie": "@PlayerMe.ilośćKart = @PlayerMe.ilośćKart + 2 & @PlayerYou.mana = @PlayerYou.mana + 2",
+        "wandering": "",
+        "lingering": "",
+        "pacyfizm": "",
+        "akcjaOdrzuconeZaklęcie": "@PlayerYou.ilośćKart = @PlayerYou.ilośćKart - 1",
+        "postacie": [
+          "Mag Światła",
+          "Mag Krwii",
+          "Mag Ognia",
+          "Pijawka Magii",
+          "Feniks"
+        ]
+      }
+    ]

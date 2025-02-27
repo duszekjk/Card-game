@@ -1,0 +1,83 @@
+[
+{
+  "koszt": 2,
+  "opis": "Przeciwnik 2 🎇\nSacrifice: tylko 1 🎇",
+  "akcjaRzucaneZaklęcie": "@PlayerYou.ilośćKart = @PlayerYou.ilośćKart - 2 & if @Zaklęcie.sacrifice == 0 : @PlayerYou.ilośćKart = @PlayerYou.ilośćKart - 1",
+  "wandering": "",
+  "lingering": "",
+  "pacyfizm": "",
+  "akcjaOdrzuconeZaklęcie": "",
+  "postacie": [
+    "Mag Światła",
+    "Mag Krwii",
+    "Mag Ognia",
+    "Pijawka Magii",
+    "Feniks"
+  ]
+},
+{
+  "koszt": 3,
+  "opis": "Niestabilny 1\n2 🃏\nSacrifice: zamiast tego przeciwnik 2 🎇",
+  "akcjaRzucaneZaklęcie": "if @Zaklęcie.sacrifice == 0 : @PlayerMe.ilośćKart = @PlayerMe.ilośćKart + 2 & if @Zaklęcie.sacrifice > 0 : @PlayerYou.ilośćKart = @PlayerYou.ilośćKart - 2",
+  "wandering": "",
+  "lingering": "",
+  "pacyfizm": "",
+  "akcjaOdrzuconeZaklęcie": "@PlayerMe.życie = @PlayerMe.życie - 1",
+  "postacie": [
+    "Mag Światła",
+    "Mag Krwii",
+    "Mag Ognia",
+    "Pijawka Magii",
+    "Feniks"
+  ]
+},
+{
+  "koszt": 5,
+  "opis": "Przeciwnik 3 🎇, następnie jeśli nie ma on kart 1 ❤️‍🔥",
+  "akcjaRzucaneZaklęcie": "@PlayerYou.ilośćKart = @PlayerYou.ilośćKart - 3 & if @PlayerYou.ilośćKart == 0 : @PlayerYou.życie = @PlayerYou.życie - 1",
+  "wandering": "",
+  "lingering": "",
+  "pacyfizm": "",
+  "akcjaOdrzuconeZaklęcie": "",
+  "postacie": [
+    "Mag Światła",
+    "Mag Krwii",
+    "Mag Ognia",
+    "Pijawka Magii",
+    "Feniks"
+  ]
+},
+{
+  "koszt": 1,
+  "opis": "Wandering\nGdy rzucasz to zaklęcie, każde Sacrifice daje 2 many",
+  "akcjaRzucaneZaklęcie": "@PlayerMe.mana = @PlayerMe.mana + ( 2 * @Zaklęcie.sacrifice )",
+  "wandering": 1,
+  "lingering": "",
+  "pacyfizm": "",
+  "akcjaOdrzuconeZaklęcie": "",
+  "postacie": [
+    "Mag Światła",
+    "Mag Krwii",
+    "Mag Ognia",
+    "Pijawka Magii",
+    "Feniks"
+  ]
+},
+{
+  "koszt": 1,
+  "opis": "Niestabilny 1\n2 ❤️‍🔥 Przeciwnik\n2 🃏",
+  "akcjaRzucaneZaklęcie": "@PlayerYou.życie = @PlayerYou.życie - 2 & @PlayerMe.ilośćKart = @PlayerMe.ilośćKart + 2",
+  "wandering": "",
+  "lingering": "",
+  "pacyfizm": "",
+  "akcjaOdrzuconeZaklęcie": "@PlayerMe.życie = @PlayerMe.życie - 1",
+  "postacie": [
+    "Mag Światła",
+    "Mag Krwii",
+    "Mag Ognia",
+    "Pijawka Magii",
+    "Feniks"
+  ]
+}
+]
+

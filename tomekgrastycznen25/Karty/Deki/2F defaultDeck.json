@@ -1,0 +1,85 @@
+[
+{
+  "koszt": 0,
+  "opis": "Niestabilny 1\n2 🎇 żeby 2 🃏\nLingering",
+  "akcjaRzucaneZaklęcie": "@PlayerMe.ilośćKart = @PlayerMe.ilośćKart - 2",
+  "wandering": "",
+  "lingering": "@PlayerMe.ilośćKart = @PlayerMe.ilośćKart + 2",
+  "pacyfizm": "",
+  "akcjaOdrzuconeZaklęcie": "@PlayerMe.życie = @PlayerMe.życie - 1",
+  "postacie": [
+    "Mag Światła",
+    "Mag Krwii",
+    "Mag Ognia",
+    "Pijawka Magii",
+    "Feniks"
+  ]
+},
+{
+  "koszt": 0,
+  "opis": "1 ❤️‍🔥\nPacyfizm: Przeciwnik 🃏",
+  "akcjaRzucaneZaklęcie": "@PlayerYou.życie = @PlayerYou.życie - 1",
+  "wandering": "",
+  "lingering": "",
+  "pacyfizm": "@PlayerYou.ilośćKart = @PlayerYou.ilośćKart + 1",
+  "akcjaOdrzuconeZaklęcie": "",
+  "postacie": [
+    "Mag Światła",
+    "Mag Krwii",
+    "Mag Ognia",
+    "Pijawka Magii",
+    "Feniks"
+  ]
+},
+{
+  "koszt": 3,
+  "opis": "3 🃏\nPacyfizm: Przeciwnik 🃏",
+  "akcjaRzucaneZaklęcie": "@PlayerMe.ilośćKart = @PlayerMe.ilośćKart + 3",
+  "wandering": "",
+  "lingering": "",
+  "pacyfizm": "@PlayerYou.ilośćKart = @PlayerYou.ilośćKart + 1",
+  "akcjaOdrzuconeZaklęcie": "",
+  "postacie": [
+    "Mag Światła",
+    "Mag Krwii",
+    "Mag Ognia",
+    "Pijawka Magii",
+    "Feniks"
+  ]
+},
+{
+  "koszt": 4,
+  "opis": "Wszyscy gracze wszystkie 🎇",
+  "akcjaRzucaneZaklęcie": "@PlayerYou.ilośćKart = 0 & @PlayerMe.ilośćKart = 0",
+  "wandering": "",
+  "lingering": "",
+  "pacyfizm": "",
+  "akcjaOdrzuconeZaklęcie": "",
+  "postacie": [
+    "Mag Światła",
+    "Mag Krwii",
+    "Mag Ognia",
+    "Pijawka Magii",
+    "Feniks"
+  ]
+},
+{
+  "koszt": 0,
+  "opis": "3 🎇 żeby 3 ❤️‍🔥",
+  "akcjaRzucaneZaklęcie": "@PlayerMe.ilośćKart = @PlayerMe.ilośćKart - ( 3 * #COUNTER# ) & @PlayerYou.życie = @PlayerYou.życie - ( 3 * #COUNTER# )",
+  "wandering": "",
+  "lingering": "",
+  "pacyfizm": "",
+  "akcjaOdrzuconeZaklęcie": "",
+  "postacie": [
+    "Mag Światła",
+    "Mag Krwii",
+    "Mag Ognia",
+    "Pijawka Magii",
+    "Feniks"
+  ]
+}
+]
+
+
+
