@@ -95,7 +95,6 @@ struct LoadPostacieView: View {
                 refreshPostacieFiles()
             }
         }
-        .padding()
     }
 
     private func refreshPostacieFiles() {

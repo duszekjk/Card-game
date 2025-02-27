@@ -180,7 +180,7 @@ struct TaliaView: View {
             }
             .onDrag {
                 // Ensure all cards in `taliaBase` are complete before exporting
-                let completeDeck = completeDeck(gra["Talia"] as! [[String:Any]])
+                let completeDeck = completeDeck(gra["TaliaLoad\(playerID)"] as! [[String:Any]])
 
                 if let data = sortedJSONData(fromArray: completeDeck),
                    let jsonString = String(data: data, encoding: .utf8) {
@@ -220,9 +220,9 @@ struct TaliaView: View {
                                 
                                 // Update the deck
                                 DispatchQueue.main.async {
-                                    gra["Talia"] = validatedDeck
+                                    gra["TaliaLoad\(playerID)"] = validatedDeck
 //                                    let taliaAll = Array(repeating: taliaBase, count: taliaRepeat).flatMap { $0 }
-                                    let taliaAll = gra["Talia"] as! [[String:Any]]
+                                    let taliaAll = gra["TaliaLoad\(playerID)"] as! [[String:Any]]
                                     for playerNew in playersList
                                     {
                                         if let gracz = gra[playerNew] as? Dictionary<String, Any>{
@@ -278,7 +278,7 @@ struct TaliaView: View {
 
                 DispatchQueue.main.async {
                     let parts = identifier.split(separator: "|")
-                    guard parts.count == 2, parts.first == "Talia" else { return }
+                    guard parts.count == 2, parts.first == "TaliaLoad\(playerID)" else { return }
 
                     // Dropped card's source key and index (use for other sources too)
                     if let sourceKey = parts.first, let sourceIndex = Int(parts.last ?? "") {
@@ -292,7 +292,7 @@ struct TaliaView: View {
 
     private func moveCardToTalia(from sourceKey: String, at sourceIndex: Int) {
         // Handle adding card back to the talia.
-        if sourceKey == "Talia" { return } // Prevent adding to the same talia.
+        if sourceKey == "TaliaLoad\(playerID)" { return } // Prevent adding to the same talia.
 
         // Retrieve card from source
         if var sourceCards = gra[sourceKey] as? [String: Any],
@@ -316,6 +316,7 @@ struct TaliaView: View {
 struct TaliaContainerView: View {
     @Binding var gra: Dictionary<String, Any>
     @Binding var lastPlayed: String
+    var playerID: String
     @Binding var activePlayer: Int
     @Binding var gameRound: Int
     @Binding var show: Bool
@@ -376,7 +377,7 @@ struct TaliaContainerView: View {
         }
         .onDrag {
             // Ensure all cards in `taliaBase` are complete before exporting
-            let completeDeck = completeDeck(gra["Talia"] as! [[String:Any]])
+            let completeDeck = completeDeck(gra["TaliaLoad\(playerID)"] as! [[String:Any]])
 
             if let data = sortedJSONData(fromArray: completeDeck),
                let jsonString = String(data: data, encoding: .utf8) {
@@ -416,9 +417,9 @@ struct TaliaContainerView: View {
                             
                             // Update the deck
                             DispatchQueue.main.async {
-                                gra["Talia"] = validatedDeck
+                                gra["TaliaLoad\(playerID)"] = validatedDeck
 //                                    let taliaAll = Array(repeating: taliaBase, count: taliaRepeat).flatMap { $0 }
-                                let taliaAll = gra["Talia"] as! [[String:Any]]
+                                let taliaAll = gra["TaliaLoad\(playerID)"] as! [[String:Any]]
                                 for playerNew in playersList
                                 {
                                     if let gracz = gra[playerNew] as? Dictionary<String, Any>{
@@ -473,6 +474,7 @@ struct TaliaEditorView: View {
             {
                 ManageDecksView(gra: $gra, selectedFile: $selectedFile)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .cornerRadius(10)
             }
             else
             {
@@ -528,13 +530,11 @@ struct TaliaEditorView: View {
     private var header: some View {
         let talia = gra["Talia"] as! Array<Dictionary<String, Any>>//getKarty(&gra, for: containerKey)
         return HStack {
-            Button(action:
-            {
-                editDecks.toggle()
-                
-            },label:
-            {
-                Image(systemName: editDecks ? "document.on.document": "folder.badge.gear")
+            Button(action: {
+                show = false
+            }, label:
+                    {
+                    Image(systemName: "chevron.backward")
             })
             Spacer()
             Text(editDecks ? "Lista talii": "Karty z talii \((gra["TaliaNazwa"] as? String) ?? "")")
@@ -543,11 +543,16 @@ struct TaliaEditorView: View {
                 .padding()
             Text("\(talia.count)")
             Spacer()
-            Button("Ok") {
-                show = false
-            }
+            Button(action:
+            {
+                editDecks.toggle()
+                
+            },label:
+            {
+                Image(systemName: editDecks ? "document.on.document": "folder.badge.gear")
+            })
         }
-        .frame(width: min(size * 135, UIScreen.main.bounds.size.width) - 40)
+//        .frame(width: min(size * 135, UIScreen.main.bounds.size.width) - 40)
     }
 
     private var cardGrid: some View {

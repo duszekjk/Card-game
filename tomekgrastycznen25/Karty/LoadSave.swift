@@ -47,8 +47,9 @@ func saveDeck(_ deck: [[String: Any]], withName name: String) {
         }
     }
 }
+
 func loadDeck(fromFile name: String) -> [[String: Any]]? {
-    let fileURL = getDecksDirectory().appendingPathComponent(name)
+    let fileURL = getDecksDirectory().appendingPathComponent(name+".json")
     do {
         let data = try Data(contentsOf: fileURL)
         if let deck = try JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
@@ -68,6 +69,36 @@ func loadDefaultDeck() -> [[String: Any]]? {
     }
     return nil
 }
+func loadDefaultDecks() {
+//    print(try! FileManager.default.contentsOfDirectory(at: Bundle.main.resourceURL!, includingPropertiesForKeys: nil))
+//    guard let dekiFolderURL = Bundle.main.resourceURL?.appendingPathComponent("karty").appendingPathComponent("Deki")
+//    else {
+//        print("Could not locate 'deki' folder in the project.")
+//        return
+//    }
+
+    do {
+        let fileURLs = try FileManager.default.contentsOfDirectory(at: Bundle.main.resourceURL!, includingPropertiesForKeys: nil)
+        
+        let jsonFiles = fileURLs.filter { $0.pathExtension == "json" && $0.lastPathComponent.hasSuffix("defaultDeck.json") }
+
+        for fileURLAll in jsonFiles {
+            do {
+                let deckName = fileURLAll.deletingPathExtension().lastPathComponent
+                if let fileURL = Bundle.main.url(forResource: deckName, withExtension: "json"),
+                   let data = try? Data(contentsOf: fileURL),
+                   let deck = try? JSONSerialization.jsonObject(with: data, options: []) as? [[String: Any]] {
+                    saveDeck(deck, withName: deckName)
+                }
+            } catch {
+                print("Failed to load deck from \(fileURLAll.lastPathComponent): \(error)")
+            }
+        }
+    } catch {
+        print("Failed to read contents of 'deki' folder: \(error)")
+    }
+}
+
 
 func validateAndCompleteCard(_ card: [String: Any]) -> ([String: Any], [String]) {
     
@@ -142,7 +173,7 @@ func listDeckFiles(failed: Bool = false, completion: @escaping ([String]) -> Voi
         if !filteredFiles.contains(where: {$0 == "Default5"}), !failed {
             print("No JSON files found. Creating Default deck.")
             var df = loadDefaultDeck()!
-            saveDeck(df, withName: "Default5")
+//            saveDeck(df, withName: "Default5")
             DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
                 listDeckFiles(failed: true, completion: completion)
             }
@@ -153,7 +184,7 @@ func listDeckFiles(failed: Bool = false, completion: @escaping ([String]) -> Voi
         if !failed {
             print("Failed to access directory. Creating Default deck.")
             var df = loadDefaultDeck()!
-            saveDeck(df, withName: "Default")
+//            saveDeck(df, withName: "Default")
             DispatchQueue.global().asyncAfter(deadline: .now() + 0.2) {
                 listDeckFiles(failed: true, completion: completion)
             }
@@ -173,15 +204,15 @@ struct LoadDeckView: View {
     var body: some View {
         VStack {
             Menu {
-                Picker("Select a Deck", selection: $selectedFile) {
-                    Text("Select a deck").tag(String?.none) // Placeholder option
+                Picker("Wybierz", selection: $selectedFile) {
+                    Text("Wybierz").tag(String?.none) // Placeholder option
                     ForEach(deckFiles, id: \.self) { file in
                         Text(file).tag(file as String?)
                     }
                     .onAppear {
                         listDeckFiles { files in
                             print("Deck files: \(files)")
-                            let filesload = files
+                            var filesload = files.map { $0.replacingOccurrences(of: ".json", with: "") }
                             print("Deck files load: \(files)")
                             deckFiles = filesload
                         }
@@ -198,11 +229,12 @@ struct LoadDeckView: View {
                     .onTapGesture {
                         listDeckFiles { files in
                             print("Deck files: \(files)")
-                            let filesload = files
+                            var filesload = files.map { $0.replacingOccurrences(of: ".json", with: "") }
                             print("Deck files load: \(files)")
                             deckFiles = filesload
                         }
                     }
+                    .scaleEffect(0.8)
             }
             .onChange(of: selectedFile) { newValue in
                 if let file = newValue, let loadedDeck = loadDeck(fromFile: file) {
@@ -215,12 +247,17 @@ struct LoadDeckView: View {
                         var fileName: String = file
                         fileName = fileName.replacingOccurrences(of: ".json", with: "").replacingOccurrences(of: ".JSON", with: "")
                         gra["TaliaNazwa"] = fileName
+                        var karty  = getKarty(&gra, for: "Talia")
+                        for karta in karty
+                        {
+                            ImageGenerator()!.generateImage(from: karta["opis"] as? String ?? "")
+                        }
                     }
                 }
                 
                 listDeckFiles { files in
                     print("Deck files: \(files)")
-                    let filesload = files
+                    var filesload = files.map { $0.replacingOccurrences(of: ".json", with: "") }
                     print("Deck files load: \(files)")
                     deckFiles = filesload
                 }
@@ -228,7 +265,7 @@ struct LoadDeckView: View {
             .onAppear {
                 listDeckFiles { files in
                     print("Deck files: \(files)")
-                    let filesload = files
+                    var filesload = files.map { $0.replacingOccurrences(of: ".json", with: "") }
                     print("Deck files load: \(files)")
                     deckFiles = filesload
                 }
@@ -259,7 +296,8 @@ struct LoadDeckView: View {
                 }
             }
         }
-        .padding()
+        .padding(-10)
+        .cornerRadius(10)
     }
 }
 struct ManageDecksView: View {
@@ -349,15 +387,30 @@ struct ManageDecksView: View {
     }
     private func refreshDeckFiles() {
         listDeckFiles { files in
-            deckFiles = files
+            
+            var filesload = files.map { $0.replacingOccurrences(of: ".json", with: "") }
+            deckFiles = filesload
         }
     }
     private func selectFile(_ file: String) {
         selectedFile = file
         if let loadedDeck = loadDeck(fromFile: file) {
-            gra["Talia"] = loadedDeck
-            gra["TaliaNazwa"] = file.replacingOccurrences(of: ".json", with: "")
+            DispatchQueue.main.async()
+            {
+                gra["Talia"] = loadedDeck
+                
+                print("\((gra["Talia"]! as! [Any]))")
+                var fileName: String = file
+                fileName = fileName.replacingOccurrences(of: ".json", with: "").replacingOccurrences(of: ".JSON", with: "")
+                gra["TaliaNazwa"] = fileName
+                var karty  = getKarty(&gra, for: "Talia")
+                for karta in karty
+                {
+                    ImageGenerator()!.generateImage(from: karta["opis"] as? String ?? "")
+                }
+            }
         }
+        
     }
     private func prepareRename(_ file: String) {
         editingFile = file
@@ -367,8 +420,8 @@ struct ManageDecksView: View {
     private func renameFile() {
         guard let selectedFile = editingFile else { return }
         let directory = getDecksDirectory()
-        let oldPath = directory.appendingPathComponent(selectedFile)
-        let newPath = directory.appendingPathComponent(newFileName)
+        let oldPath = directory.appendingPathComponent(selectedFile+".json")
+        let newPath = directory.appendingPathComponent(newFileName+".json")
 
         do {
             try FileManager.default.moveItem(at: oldPath, to: newPath)
@@ -384,7 +437,7 @@ struct ManageDecksView: View {
     }
     private func removeFile(_ file: String) {
         let directory = getDecksDirectory()
-        let filePath = directory.appendingPathComponent(file)
+        let filePath = directory.appendingPathComponent(file+".json")
 
         do {
             try FileManager.default.removeItem(at: filePath)
@@ -396,9 +449,11 @@ struct ManageDecksView: View {
         showAlert = true
     }
     private func duplicateFile(_ file: String) {
-        let newName = file.replacingOccurrences(of: ".json", with: "_copy.json")
+        
+        var file_start = file + ".json"
+        let newName = file_start.replacingOccurrences(of: ".json", with: "_copy.json")
         let directory = getDecksDirectory()
-        let oldPath = directory.appendingPathComponent(file)
+        let oldPath = directory.appendingPathComponent(file_start)
         let newPath = directory.appendingPathComponent(newName)
 
         do {

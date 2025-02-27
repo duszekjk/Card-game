@@ -17,25 +17,45 @@ extension ContentView
     func loadGame()
     {
         print("LOAD_START")
-        if(gra["TaliaNazwa"] != nil)
+        loadDefaultDecks()
+        
+        //#--- PLAYER1 LOAD
+        
+        var talia1 = gra["TaliaLoadPlayer1"] as? Array<Dictionary<String, Any>> ?? Array<Dictionary<String, Any>>()
+        var taliaNazwa = selectedTaliaFile1A ?? "1F defaultDeck"
+        if(selectedTaliaFile1A != nil )
         {
-            var taliaNazwa = gra["TaliaNazwa"] as! String
-            var talia = loadDeck(fromFile: taliaNazwa+".json")
-            gra["Talia"] = talia
+            var taliaNazwa = selectedTaliaFile1A!//gra["TaliaNazwa"] as! String
+            gra["TaliaNazwaPlayer1"] = taliaNazwa
+            talia1 = loadDeck(fromFile: taliaNazwa) ?? []
+            gra["TaliaLoadPlayer1"] = talia1
+            
+            if(selectedTaliaFile1B != nil)
+            {
+                taliaNazwa = selectedTaliaFile1B!
+                talia1 = loadDeck(fromFile: taliaNazwa) ?? []
+                gra["TaliaLoadPlayer1"] = gra["TaliaLoadPlayer1"] as! [[String : Any]] + talia1
+                
+                if(selectedTaliaFile1C != nil)
+                {
+                    taliaNazwa = selectedTaliaFile1C!
+                    talia1 = loadDeck(fromFile: taliaNazwa) ?? []
+                    gra["TaliaLoadPlayer1"] = gra["TaliaLoadPlayer1"] as! [[String : Any]] + talia1
+                }
+            }
         }
         else
         {
-            gra["Talia"] = loadDefaultDeck() ?? taliaBase
+            gra["TaliaLoadPlayer1"] = loadDefaultDeck() ?? taliaBase
         }
         print("TALIA LOADED")
-        var talia = gra["Talia"] as! Array<Dictionary<String, Any>>
-        if(talia.count < 2)
+        if(talia1.count < 2)
         {
-            print("wielkości: \(talia.count) \(taliaBase.count)")
-            print("TALIA LOADED IS EMPTY RELOADING \(talia)")
-            gra["Talia"] =  taliaBase
-            print(taliaBase)
+            print("wielkości: \(talia1.count) \(taliaBase.count)")
+            print("TALIA LOADED IS EMPTY RELOADING \(talia1)")
+            gra["TaliaLoadPlayer1"] =  taliaBase
         }
+        
         var graczLoad = (selectedPlayer1File != nil ? loadPlayer(jsonPath: getPostacieDirectory().appendingPathComponent(selectedPlayer1File!).appendingPathExtension("json"), id: 0) : loadPlayerDef(id:1))!
         print("graczLoad: \(graczLoad)")
         if(graczLoad.isEmpty)
@@ -45,6 +65,42 @@ extension ContentView
         }
         gra["Player1"] = graczLoad
         loadTalia(taliaName: "Player1", characterName: getTextData(&gra, for: "Player1", key: "nazwa"))
+        
+        
+        var talia2 = gra["TaliaLoadPlayer2"] as? Array<Dictionary<String, Any>> ?? Array<Dictionary<String, Any>>()
+        //#--- PLAYER2 LOAD
+        if(selectedTaliaFile2A != nil )
+        {
+            taliaNazwa = selectedTaliaFile1A!
+            talia2 = loadDeck(fromFile: taliaNazwa) ?? []
+            gra["TaliaLoadPlayer2"] = talia2
+            
+            if(selectedTaliaFile2B != nil)
+            {
+                taliaNazwa = selectedTaliaFile1A!
+                talia2 = loadDeck(fromFile: taliaNazwa) ?? []
+                gra["TaliaLoadPlayer2"] = gra["TaliaLoadPlayer2"] as! [[String : Any]] + talia2
+                
+                if(selectedTaliaFile2C != nil)
+                {
+                    taliaNazwa = selectedTaliaFile1A!
+                    talia2 = loadDeck(fromFile: taliaNazwa) ?? []
+                    gra["TaliaLoadPlayer2"] = gra["TaliaLoadPlayer2"] as! [[String : Any]] + talia2
+                }
+            }
+        }
+        else
+        {
+            gra["TaliaLoadPlayer2"] = loadDefaultDeck() ?? taliaBase
+        }
+        taliaNazwa = selectedTaliaFile1A ?? "1F defaultDeck"
+        print("TALIA LOADED")
+        if(talia2.count < 2)
+        {
+            print("wielkości: \(talia2.count) \(taliaBase.count)")
+            print("TALIA LOADED IS EMPTY RELOADING \(talia2)")
+            gra["TaliaLoadPlayer1"] =  taliaBase
+        }
         
         graczLoad = (selectedPlayer1File != nil ? loadPlayer(jsonPath: getPostacieDirectory().appendingPathComponent(selectedPlayer2File!).appendingPathExtension("json"), id: 1) : loadPlayerDef(id:2))!
         print("graczLoad: \(graczLoad)")
@@ -85,7 +141,7 @@ extension ContentView
     }
     func loadTalia(taliaName: String, characterName: String)
     {
-        let taliaAll = Array(repeating: gra["Talia"] as! [[String:Any]], count: taliaRepeat).flatMap { $0 }
+        let taliaAll = Array(repeating: gra["TaliaLoad\(taliaName)"] as! [[String:Any]], count: taliaRepeat).flatMap { $0 }
         var karty = Dictionary<String, Any>()
         karty["karty"] = taliaAll
         gra["Talia\(taliaName)"] = karty

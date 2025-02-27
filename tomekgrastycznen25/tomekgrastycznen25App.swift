@@ -28,6 +28,7 @@ struct tomekgrastycznen25App: App {
                     .scaledToFill()
                     .frame(maxWidth: UIScreen.main.bounds.size.width, maxHeight: UIScreen.main.bounds.size.height) // Ensures full coverage
                     .ignoresSafeArea() // Extends beyond safe area
+                    .scaledToFill()
                 
                 ContentView(yourName: yourName)
             }

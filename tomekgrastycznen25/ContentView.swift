@@ -48,7 +48,12 @@ struct ContentView: View {
     @State public var showMoveSummary = false
     @State public var odrzucanieEndMove = false
     @State public var selectedCard: String?
-    @State public var selectedTaliaFile: String?
+    @State public var selectedTaliaFile1A: String? = "1F defaultDeck"
+    @State public var selectedTaliaFile1B: String? = "2F defaultDeck"
+    @State public var selectedTaliaFile1C: String? = "3F defaultDeck"
+    @State public var selectedTaliaFile2A: String? = "2F defaultDeck"
+    @State public var selectedTaliaFile2B: String? = "3F defaultDeck"
+    @State public var selectedTaliaFile2C: String? = "4F defaultDeck"
     @State public var selectedPlayer1File: String?
     @State public var selectedPlayer2File: String?
     
@@ -73,7 +78,7 @@ struct ContentView: View {
     var body: some View {
         if(showEditor)
         {
-            TaliaEditorView(gra: $gra, lastPlayed: $PlayerLast, activePlayer: $activePlayer, gameRound: $gameRound, show: $showEditor, selectedCard: $selectedCard, selectedFile: $selectedTaliaFile, containerKey: "Talia")
+            TaliaEditorView(gra: $gra, lastPlayed: $PlayerLast, activePlayer: $activePlayer, gameRound: $gameRound, show: $showEditor, selectedCard: $selectedCard, selectedFile: $selectedTaliaFile1A, containerKey: "Talia")
         }
         else
         {
@@ -157,9 +162,36 @@ struct ContentView: View {
                             HStack
                             {
                                 Spacer()
+                                
+                                
+                                CardsIn()
+                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
+                                    .frame(width: 20, height: 20)
+                                CardsOut()
+                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
+                                    .frame(width: 20, height: 20)
+                                FlamingHeart()
+                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
+                                    .frame(width: 20, height: 20)
+                                Heart()
+                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
+                                    .frame(width: 20, height: 20)
                                 Text("Menu")
                                     .font(.title)
+                                    .padding()
                                 
+                                ManaIn()
+                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
+                                    .frame(width: 20, height: 20)
+                                ManaOut()
+                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
+                                    .frame(width: 20, height: 20)
+                                ShieldIn()
+                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
+                                    .frame(width: 20, height: 20)
+                                ShieldOut()
+                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
+                                    .frame(width: 20, height: 20)
                                 
                                 Spacer()
                                 Menu {
@@ -180,36 +212,6 @@ struct ContentView: View {
                                 }
 
                             }
-                            HStack
-                            {
-                                Spacer()
-                                
-                                CardsIn()
-                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
-                                    .frame(width: 40, height: 40)
-                                CardsOut()
-                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
-                                    .frame(width: 40, height: 40)
-                                FlamingHeart()
-                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
-                                    .frame(width: 40, height: 40)
-                                Heart()
-                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
-                                    .frame(width: 40, height: 40)
-                                ManaIn()
-                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
-                                    .frame(width: 40, height: 40)
-                                ManaOut()
-                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
-                                    .frame(width: 40, height: 40)
-                                ShieldIn()
-                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
-                                    .frame(width: 40, height: 40)
-                                ShieldOut()
-                                    .fill(LinearGradient(gradient: Gradient(colors: [.red, .orange]), startPoint: .bottom, endPoint: .top))
-                                    .frame(width: 40, height: 40)
-                                Spacer()
-                            }
                             Spacer()
                             Text("Wczytaj")
                                 .font(.headline)
@@ -218,11 +220,6 @@ struct ContentView: View {
                             {
                                 VStack
                                 {
-                                    HStack
-                                    {
-                                        Text("Talię:")
-                                        LoadDeckView(gra: $gra, selectedFile: $selectedTaliaFile)
-                                    }
                                     HStack
                                     {
                                         VStack
@@ -236,18 +233,43 @@ struct ContentView: View {
                                             LoadPostacieView(gra: $gra, selectedFile: $selectedPlayer2File, playerId: 2)
                                         }
                                     }
+                                    HStack
+                                    {
+                                        VStack
+                                        {
+                                            Text("Talie 1:")
+                                            LoadDeckView(gra: $gra, selectedFile: $selectedTaliaFile1A)
+                                                .padding(0)
+                                            LoadDeckView(gra: $gra, selectedFile: $selectedTaliaFile1B)
+                                                .opacity((selectedTaliaFile1A == nil) ? 0.4 : 1.0)
+                                                .disabled(selectedTaliaFile1A == nil)
+                                                .padding(0)
+                                            LoadDeckView(gra: $gra, selectedFile: $selectedTaliaFile1C)
+                                                .opacity((selectedTaliaFile1B == nil || selectedTaliaFile1A == nil) ? 0.4 : 1.0)
+                                                .disabled(selectedTaliaFile1B == nil || selectedTaliaFile1A == nil)
+                                                .padding(0)
+                                        }
+                                        VStack
+                                        {
+                                            Text("Talie 2:")
+                                            LoadDeckView(gra: $gra, selectedFile: $selectedTaliaFile2A)
+                                                .padding(0)
+                                            LoadDeckView(gra: $gra, selectedFile: $selectedTaliaFile2B)
+                                                .opacity((selectedTaliaFile2A == nil) ? 0.4 : 1.0)
+                                                .disabled(selectedTaliaFile1A == nil)
+                                                .padding(0)
+                                            LoadDeckView(gra: $gra, selectedFile: $selectedTaliaFile2C)
+                                                .opacity((selectedTaliaFile2B == nil || selectedTaliaFile2A == nil) ? 0.4 : 1.0)
+                                                .disabled(selectedTaliaFile1A == nil)
+                                                .padding(0)
+                                        }
+                                    }
                                 }
                             }
                             else
                             {
                                 HStack
                                 {
-                                    VStack
-                                    {
-                                        Text("Talię:")
-                                        LoadDeckView(gra: $gra, selectedFile: $selectedTaliaFile)
-                                    }
-                                    Spacer()
                                     VStack
                                     {
                                         Text("Postać 1")
@@ -257,6 +279,38 @@ struct ContentView: View {
                                     {
                                         Text("Postać 2")
                                         LoadPostacieView(gra: $gra, selectedFile: $selectedPlayer2File, playerId: 2)
+                                    }
+                                }
+                                
+                                HStack
+                                {
+                                    VStack
+                                    {
+                                        Text("Talia:")
+                                        LoadDeckView(gra: $gra, selectedFile: $selectedTaliaFile1A)
+                                            .padding(0)
+                                        LoadDeckView(gra: $gra, selectedFile: $selectedTaliaFile1B)
+                                            .opacity((selectedTaliaFile1A == nil) ? 0.4 : 1.0)
+                                            .disabled(selectedTaliaFile1A == nil)
+                                            .padding(0)
+                                        LoadDeckView(gra: $gra, selectedFile: $selectedTaliaFile1C)
+                                            .opacity((selectedTaliaFile1B == nil || selectedTaliaFile1A == nil) ? 0.4 : 1.0)
+                                            .disabled(selectedTaliaFile1B == nil || selectedTaliaFile1A == nil)
+                                            .padding(0)
+                                    }
+                                    VStack
+                                    {
+                                        Text("Talia:")
+                                        LoadDeckView(gra: $gra, selectedFile: $selectedTaliaFile2A)
+                                            .padding(0)
+                                        LoadDeckView(gra: $gra, selectedFile: $selectedTaliaFile2B)
+                                            .opacity((selectedTaliaFile2A == nil) ? 0.4 : 1.0)
+                                            .disabled(selectedTaliaFile1A == nil)
+                                            .padding(0)
+                                        LoadDeckView(gra: $gra, selectedFile: $selectedTaliaFile2C)
+                                            .opacity((selectedTaliaFile2B == nil || selectedTaliaFile2A == nil) ? 0.4 : 1.0)
+                                            .disabled(selectedTaliaFile1A == nil)
+                                            .padding(0)
                                     }
                                 }
                             }

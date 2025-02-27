@@ -59,7 +59,7 @@ struct PlayerView: View {
                         Text(player["nazwa"] as? String ?? "Unknown Player")
                             .font(.custom("Cinzel", size: 20))
                             .fontWeight(.bold)
-                            .padding(.leading, 90)
+                            .padding(.leading, 60)
                         Text(playerKey)
                             .font(.custom("Cinzel", size: 15))
                             .padding(.leading, 10)
@@ -124,7 +124,7 @@ struct PlayerView: View {
                                         ScrollView {
                                             TaliaContainerView(
                                                 gra: $gra,
-                                                lastPlayed: $lastPlayed,
+                                                lastPlayed: $lastPlayed, playerID: player["id"] as! String,
                                                 activePlayer: $activePlayer,
                                                 gameRound: $gameRound, show: $showTalia, selectedCard: $selectedCard,
                                                 containerKey: "TaliaPlayer\(showTaliaID)",
@@ -135,6 +135,7 @@ struct PlayerView: View {
                             }
                             KartaContainerView(gra: $gra, lastPlayed: $lastPlayed, activePlayer: $activePlayer, gameRound: $gameRound, landscape: $landscape, selectedCard: $selectedCard, containerKey: playerKey, isDropEnabled: false, size: max(3, min(CGFloat(integerLiteral: (player["karty"]  as? Array<Dictionary<String, Any>>)?.count ?? 3), 10)))
                         }
+                        .animation(.easeInOut(duration: 1.0), value: isActive)
                     }
                     
                     HStack
@@ -340,6 +341,10 @@ struct PlayerView: View {
             guard var player = gra[playerKey] as? [String: Any] else { return }
             DispatchQueue.main.async {
                 spell(&gra, player: playerKey, run: player["akcjaKoniecŻycia"] as? String ?? "", against: (playersList.first { $0 != playerKey })!)
+                
+                graLock.sync {
+                    gra["KoniecŻyciaCounter\(playerKey)"] = gra["KoniecŻyciaCounterPlayer1"] as! Int + 1
+                }
             }
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2)
@@ -560,7 +565,7 @@ struct PlayerBigView: View {
                                         ScrollView {
                                             TaliaContainerView(
                                                 gra: $gra,
-                                                lastPlayed: $lastPlayed,
+                                                lastPlayed: $lastPlayed, playerID: player["id"] as! String,
                                                 activePlayer: $activePlayer,
                                                 gameRound: $gameRound, show: $showTalia, selectedCard: $selectedCard,
                                                 containerKey: "TaliaPlayer\(showTaliaID)",

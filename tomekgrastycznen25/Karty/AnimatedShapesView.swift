@@ -141,10 +141,13 @@ struct AnimatedShapesView: View {
         DispatchQueue.global().async {
             while isAnimating {
                 DispatchQueue.main.async {
-                    if animationStep < shapeParameters.first!.count - 1 {
-                        animationStep += 1
-                    } else {
-                        isAnimating = false
+                    if(shapeParameters.count > 0)
+                    {
+                        if animationStep < shapeParameters.first!.count - 1 {
+                            animationStep += 1
+                        } else {
+                            isAnimating = false
+                        }
                     }
                 }
                 noiseImage = generateFilmGrain(size: CGSize(width: noiseImage.size.width, height: noiseImage.size.height))!

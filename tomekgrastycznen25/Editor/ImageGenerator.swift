@@ -19,10 +19,12 @@ struct ImageGeneratorView: View {
     var body: some View {
         if(allImagesGenerator[label] != nil)
         {
+            
             Image(uiImage: allImagesGenerator[label]!)
                 .resizable()
                 .scaledToFit()
                 .cornerRadius(showingLabel ? 5 : 40)
+                .animation(.easeInOut(duration: 0.4), value: showingLabel)
         }
         else
         {
@@ -51,7 +53,7 @@ struct ImageGeneratorView: View {
                         DispatchQueue.main.async
                         {
                             showingLabel = showingLabelNow
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8)
                             {
                                 showingLabel = true
                             }
